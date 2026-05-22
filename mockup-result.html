@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VimQuest - Result Screen</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #1a1a2e;
+            --accent: #7c7cff;
+            --text-primary: #e0e0e0;
+            --text-dim: #888;
+            --star-gold: #ffd700;
+            --success: #44ddaa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .result-container {
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stage Clear */
+        .clear-label {
+            font-size: 14px;
+            color: var(--success);
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+        }
+
+        .stage-name {
+            font-size: 20px;
+            color: var(--text-dim);
+            margin-bottom: 32px;
+        }
+
+        /* Stars */
+        .stars-container {
+            margin-bottom: 40px;
+        }
+
+        .stars {
+            font-size: 56px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .star-result {
+            color: rgba(255, 255, 255, 0.1);
+            transition: all 0.5s ease;
+        }
+
+        .star-result.earned {
+            color: var(--star-gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: starPop 0.5s ease;
+        }
+
+        @keyframes starPop {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .star-label {
+            font-size: 13px;
+            color: var(--text-dim);
+            margin-top: 8px;
+        }
+
+        /* Spell Display */
+        .spell-section {
+            margin-bottom: 40px;
+        }
+
+        .spell-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .spell {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 4px;
+            line-height: 1.6;
+            text-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
+            padding: 20px;
+            background: rgba(124, 124, 255, 0.05);
+            border: 1px solid rgba(124, 124, 255, 0.15);
+            border-radius: 12px;
+        }
+
+        .spell .cmd {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2px 4px;
+            padding: 4px 10px 2px;
+            background: rgba(124, 124, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .spell .cmd-dmg {
+            font-size: 10px;
+            color: var(--text-dim);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        .spell .cmd-efficient {
+            color: var(--success);
+            background: rgba(68, 221, 170, 0.1);
+        }
+
+        .spell .cmd-dim {
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+
+        /* Actions */
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .btn {
+            font-family: 'Inter', sans-serif;
+            padding: 12px 32px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #9a9aff;
+            box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-dim);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .btn-secondary:hover {
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* New weapon notice */
+        .new-weapon {
+            margin-bottom: 32px;
+            padding: 12px 20px;
+            background: rgba(124, 124, 255, 0.08);
+            border: 1px solid rgba(124, 124, 255, 0.2);
+            border-radius: 8px;
+            animation: weaponGlow 2s infinite;
+        }
+
+        .new-weapon-label {
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .new-weapon-cmd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        @keyframes weaponGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 rgba(124, 124, 255, 0);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(124, 124, 255, 0.15);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="result-container">
+        <div class="clear-label">S T A G E C L E A R</div>
+        <div class="stage-name">Stage 12 — ci" で属性値を書き換えろ</div>
+
+        <div class="stars-container">
+            <div class="stars">
+                <span class="star-result earned">★</span>
+                <span class="star-result earned">★</span>
+                <span class="star-result">☆</span>
+            </div>
+        </div>
+
+        <div class="spell-section">
+            <div class="spell-label">YOUR SPELL</div>
+            <div class="spell">
+                <span class="cmd">3j<span class="cmd-dmg">-1</span></span>
+                <span class="cmd cmd-efficient">ci"<span class="cmd-dmg">-1</span></span>
+                <span class="cmd cmd-dim">#333333<span class="cmd-dmg">-1</span></span>
+                <span class="cmd cmd-dim">Esc<span class="cmd-dmg">-0</span></span>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value">3</div>
+                <div class="stat-label">DAMAGE</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">7 / 10</div>
+                <div class="stat-label">LIFE</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value">BEST: 3</div>
+                <div class="stat-label">damage</div>
+            </div>
+        </div>
+
+        <div class="new-weapon">
+            <div class="new-weapon-label">N E W W E A P O N</div>
+            <div class="new-weapon-cmd">s / S / C unlocked!</div>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-secondary">もう一度</button>
+            <button class="btn btn-secondary">ツリーへ</button>
+            <button class="btn btn-primary">次のステージへ →</button>
+        </div>
+    </div>
+
+</body>
+
+</html>
