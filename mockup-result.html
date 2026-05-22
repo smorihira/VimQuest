@@ -90,6 +90,36 @@
             animation: starPop 0.5s ease;
         }
 
+        .star-result.locked {
+            color: #444;
+            position: relative;
+        }
+
+        .star-result.locked::after {
+            content: '🔒';
+            position: absolute;
+            font-size: 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .hint-notice {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 8px;
+        }
+
+        .hint-notice .hint-label {
+            color: #dd4444;
+        }
+
+        .hint-challenge {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 4px;
+        }
+
         @keyframes starPop {
             0% {
                 transform: scale(0);
@@ -276,8 +306,10 @@
             <div class="stars">
                 <span class="star-result earned">★</span>
                 <span class="star-result earned">★</span>
-                <span class="star-result">☆</span>
+                <span class="star-result locked">☆</span>
             </div>
+            <div class="hint-notice"><span class="hint-label">ヒント使用</span>: ☆3獲得不可</div>
+            <div class="hint-challenge">ヒントなしで☆3に挑戦</div>
         </div>
 
         <div class="spell-section">

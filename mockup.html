@@ -370,6 +370,31 @@
             animation: pulse 1.5s infinite;
         }
 
+        .card.register {
+            border-color: var(--star-gold);
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .card.register:hover {
+            border-color: var(--star-gold);
+            box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+        }
+
+        .card.register .reg-name {
+            font-size: 11px;
+            color: var(--star-gold);
+            margin-bottom: 2px;
+        }
+
+        .card.register .reg-preview {
+            font-size: 12px;
+            color: var(--text-dim);
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         @keyframes pulse {
 
             0%,
@@ -473,6 +498,93 @@
             letter-spacing: 1px;
         }
 
+        /* ===== Insert Mode Card Area ===== */
+        .insert-info {
+            display: none;
+            text-align: center;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .insert-info.active {
+            display: block;
+        }
+
+        .insert-char-count {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--life-full);
+        }
+
+        .insert-char-count.over {
+            color: #dd4444;
+        }
+
+        .insert-char-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .insert-esc-reminder {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 12px;
+        }
+
+        .insert-esc-reminder kbd {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            padding: 1px 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* ===== Stage Intro Overlay ===== */
+        .stage-intro {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 15, 26, 0.95);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .stage-intro.active {
+            display: flex;
+        }
+
+        .stage-intro .intro-stage-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--accent);
+            letter-spacing: 4px;
+        }
+
+        .stage-intro .intro-stage-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stage-intro .intro-objective {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        .stage-intro .intro-skip {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-top: 24px;
+        }
+
         /* ===== Vision overlay ===== */
         .vision-overlay {
             display: none;
@@ -563,6 +675,7 @@
         <button class="demo-btn" onclick="setMode('insert')">Insert</button>
         <button class="demo-btn" onclick="setMode('visual')">Visual</button>
         <button class="demo-btn" onclick="toggleVision()">Space (Vision)</button>
+        <button class="demo-btn" onclick="toggleIntro()">Stage Intro</button>
     </div>
 
     <!-- Top Bar -->
@@ -682,7 +795,27 @@
                 <div>ci"</div>
                 <div class="card-desc">⚡ combined</div>
             </div>
+            <div class="card" style="border-color: #666; opacity: 0.6;">
+                <div>.</div>
+                <div class="card-desc">repeat</div>
+            </div>
+            <div style="width: 1px; background: rgba(255,255,255,0.1); margin: 0 4px;"></div>
+            <div class="card register" title="hello world (full text)">
+                <div class="reg-name">"a</div>
+                <div class="reg-preview">hello wo…</div>
+            </div>
+            <div class="card register" title="#333333 (full text)">
+                <div class="reg-name">"0</div>
+                <div class="reg-preview">#333333</div>
+            </div>
         </div>
+    </div>
+
+    <!-- Insert Mode Card Area (hidden by default) -->
+    <div class="insert-info" id="insertInfo">
+        <div class="insert-char-count" id="insertCharCount">3/5 FREE</div>
+        <div class="insert-char-label">INPUT CHARACTERS</div>
+        <div class="insert-esc-reminder"><kbd>Esc</kbd> でノーマルに戻る</div>
     </div>
 
     <!-- Navigator -->
@@ -715,27 +848,43 @@
         <div style="font-size: 11px; color: var(--text-dim);">Space を離すと戻ります</div>
     </div>
 
+    <!-- Stage Intro Overlay -->
+    <div class="stage-intro" id="stageIntro">
+        <div class="intro-stage-num">S T A G E 1 2</div>
+        <div class="intro-stage-name">ci" で属性値を書き換えろ</div>
+        <div class="intro-objective">「#ff0000」を「#333333」に変更せよ</div>
+        <div class="intro-skip">任意のキー / クリック でスキップ</div>
+    </div>
+
     <script>
         function setMode(mode) {
             document.body.className = '';
             document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
 
             const indicator = document.getElementById('modeIndicator');
+            const cardPanel = document.querySelector('.card-panel');
+            const insertInfo = document.getElementById('insertInfo');
 
             if (mode === 'insert') {
                 document.body.classList.add('insert-mode');
                 indicator.textContent = 'INSERT';
                 indicator.style.background = 'rgba(255, 140, 50, 0.2)';
                 indicator.style.color = '#ff8c32';
+                cardPanel.style.display = 'none';
+                insertInfo.classList.add('active');
             } else if (mode === 'visual') {
                 document.body.classList.add('visual-mode');
                 indicator.textContent = 'VISUAL';
                 indicator.style.background = 'rgba(50, 200, 100, 0.2)';
                 indicator.style.color = '#32c864';
+                cardPanel.style.display = '';
+                insertInfo.classList.remove('active');
             } else {
                 indicator.textContent = 'NORMAL';
                 indicator.style.background = 'rgba(124, 124, 255, 0.2)';
                 indicator.style.color = '#7c7cff';
+                cardPanel.style.display = '';
+                insertInfo.classList.remove('active');
             }
 
             event.target.classList.add('active');
@@ -746,17 +895,28 @@
             overlay.classList.toggle('active');
         }
 
+        function toggleIntro() {
+            const intro = document.getElementById('stageIntro');
+            intro.classList.toggle('active');
+        }
+
         // Space key for vision
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
                 document.getElementById('visionOverlay').classList.add('active');
             }
+            // Dismiss stage intro on any key
+            document.getElementById('stageIntro').classList.remove('active');
         });
         document.addEventListener('keyup', (e) => {
             if (e.code === 'Space') {
                 document.getElementById('visionOverlay').classList.remove('active');
             }
+        });
+        // Dismiss stage intro on click
+        document.getElementById('stageIntro').addEventListener('click', function () {
+            this.classList.remove('active');
         });
     </script>
 </body>
