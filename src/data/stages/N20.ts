@@ -22,7 +22,7 @@ export const N20_STAGES: Stage[] = [
             'h', 'j', 'k', 'l', 'w', 'b', 'e',
             '0', '$', 'x', 'u', 'dd', 'd$', 'd0', 'dw',
         ],
-        hints: [{ cost: 1, commands: ['e', 'e', 'l', 'd$'] }],
+        hints: [{ cost: 1, commands: ['2e', '2l', 'd$'] }],
         flavor: 'コメントを d$ で行末まで一気に削除せよ',
     },
 ]

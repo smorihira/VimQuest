@@ -55,6 +55,9 @@ export interface Command {
     /** Search pattern for / command */
     searchPattern?: string
 
+    /** Register name for " prefix (e.g., 'a' for "a) */
+    register?: string
+
     /** Whether this command is valid and executable */
     valid: boolean
 }

@@ -34,7 +34,7 @@ export const N37_STAGES: Stage[] = [
         type: 'practice',
         title: '範囲狙撃',
         language: 'html',
-        initialText: 'Hello <b>World</b> end',
+        initialText: 'Hello <World> end',
         goalText: 'Hello  end',
         initialCursor: { line: 0, col: 0 },
         life: 10,

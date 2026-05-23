@@ -14,7 +14,7 @@ export const N41_STAGES: Stage[] = [
         title: 'レジスタ入門',
         language: 'plaintext',
         initialText: 'hello world',
-        goalText: 'hello world hello',
+        goalText: 'hello worldhello',
         initialCursor: { line: 0, col: 0 },
         life: 9,
         stars: [3, 4, 6],

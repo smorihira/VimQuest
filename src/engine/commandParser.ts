@@ -43,12 +43,17 @@ const INSTANT_COMMANDS = new Set<string>([
     'u',
     'D', 'C', 'Y',
     'dd', 'cc', 'yy',
+    's', 'S',
+    'v', 'V',
 ])
 
 /** Commands that bypass hand restriction */
 const ALWAYS_ALLOWED = new Set<string>(['u', 'Ctrl+R', 'Esc'])
 
 const OPERATORS = new Set<string>(['d', 'c', 'y', '>', '<'])
+
+/** Text object modifiers (what comes after i/a in operator+textobj) */
+const TEXT_OBJ_TARGETS = new Set<string>(['w', '"', "'", '(', ')', '{', '}', '[', ']', '<', '>', 't'])
 
 // ─── Guard helpers ──────────────────────────────────────────────────
 
@@ -67,7 +72,16 @@ function isInHand(
 ): boolean {
     if (available === undefined) return true
     if (ALWAYS_ALLOWED.has(commandKey)) return true
-    return available.includes(commandKey)
+    if (available.includes(commandKey)) return true
+    // If a standalone base operator is in hand, allow operator+any motion/textobj
+    // Only for multi-char operators (gU, gu) and yank (y) where stages list the base only
+    const expandableOperators = ['gU', 'gu', 'y']
+    for (const op of expandableOperators) {
+        if (commandKey.startsWith(op) && commandKey.length > op.length && available.includes(op)) {
+            return true
+        }
+    }
+    return false
 }
 
 // ─── Merge counts ───────────────────────────────────────────────────
@@ -90,8 +104,12 @@ export class CommandParser {
     private countPrefix: number | undefined = undefined
     private countAfterOp: number | undefined = undefined
     private operator: Operator | undefined = undefined
+    private textobjPrefix: string | undefined = undefined
+    private searchBuffer: string = ''
+    private registerName: string | undefined = undefined
     private availableCommands: string[] | undefined = undefined
     private onResult: ((result: ParseResult) => void) | undefined = undefined
+    private editorMode: 'normal' | 'visual' | 'insert' = 'normal'
 
     constructor(
         availableCommands?: string[],
@@ -106,6 +124,11 @@ export class CommandParser {
         this.availableCommands = commands
     }
 
+    /** Set editor mode so parser can adjust behavior (e.g. visual mode d/x/y) */
+    setEditorMode(mode: 'normal' | 'visual' | 'insert'): void {
+        this.editorMode = mode
+    }
+
     /** Set result callback */
     setOnResult(cb: (result: ParseResult) => void): void {
         this.onResult = cb
@@ -118,6 +141,9 @@ export class CommandParser {
         this.countPrefix = undefined
         this.countAfterOp = undefined
         this.operator = undefined
+        this.textobjPrefix = undefined
+        this.searchBuffer = ''
+        this.registerName = undefined
     }
 
     /** Get current parser state */
@@ -135,6 +161,10 @@ export class CommandParser {
     }
 
     private emit(command: Command, damage: number): ParseResult {
+        // Attach register if one was set
+        if (this.registerName && !command.register) {
+            command = { ...command, register: this.registerName }
+        }
         const result: ParseResult = { command, damage }
         this.reset()
         return result
@@ -158,6 +188,22 @@ export class CommandParser {
                 return this.handleGPending(key)
             case 'rPending':
                 return this.handleRPending(key)
+            case 'fPending':
+                return this.handleFPending(key)
+            case 'textobjPending':
+                return this.handleTextobjPending(key)
+            case 'searchInput':
+                return this.handleSearchInput(key)
+            case 'guPending':
+                return this.handleGuPending(key)
+            case 'gUPending':
+                return this.handleGUPending(key)
+            case 'zPending':
+                return this.handleZPending(key)
+            case 'registerPending':
+                return this.handleRegisterPending(key)
+            case 'registerAction':
+                return this.handleRegisterAction(key)
             default:
                 this.reset()
                 return null
@@ -204,6 +250,69 @@ export class CommandParser {
             }
             this.state = 'rPending'
             return null
+        }
+
+        // f/F/t/T prefix (find/til char)
+        if (key === 'f' || key === 'F' || key === 't' || key === 'T') {
+            if (!isInHand(key, this.availableCommands)) {
+                return this.emitInvalid(key)
+            }
+            this.state = 'fPending'
+            return null
+        }
+
+        // Register prefix ("a, "b, etc.)
+        if (key === '"') {
+            this.state = 'registerPending'
+            return null
+        }
+
+        // / — search
+        if (key === '/') {
+            if (!isInHand('/', this.availableCommands)) {
+                return this.emitInvalid('/')
+            }
+            this.searchBuffer = ''
+            this.state = 'searchInput'
+            return null
+        }
+
+        // z prefix (zz, zt, zb)
+        if (key === 'z') {
+            this.state = 'zPending'
+            return null
+        }
+
+        // Ctrl+d, Ctrl+u
+        if (key === 'Ctrl+d' || key === 'Ctrl+u') {
+            if (!isInHand(key, this.availableCommands)) {
+                return this.emitInvalid(key)
+            }
+            return this.emit({ raw: key, valid: true }, 1)
+        }
+
+        // Ctrl+v (visual block)
+        if (key === 'Ctrl+v') {
+            if (!isInHand(key, this.availableCommands)) {
+                return this.emitInvalid(key)
+            }
+            return this.emit({ raw: key, valid: true }, 1)
+        }
+
+        // * and # (word under cursor search)
+        if (key === '*' || key === '#') {
+            if (!isInHand(key, this.availableCommands)) {
+                return this.emitInvalid(key)
+            }
+            return this.emit({ raw: key, motion: key as Motion, valid: true }, 1)
+        }
+
+        // >> and << (indent/dedent) — first > or < enters operator
+        // Operator handling below will catch >/< and go to operatorPending
+
+        // In visual mode, d/x/y/c are instant commands (operate on selection)
+        if (this.editorMode === 'visual' && (key === 'd' || key === 'x' || key === 'y' || key === 'c')) {
+            return this.emit({ raw: key, valid: true }, 1)
         }
 
         // Operator
@@ -277,6 +386,15 @@ export class CommandParser {
                 return this.emitInvalid(this.buffer)
             }
             this.state = 'rPending'
+            return null
+        }
+
+        // f/F/t/T prefix after count
+        if (key === 'f' || key === 'F' || key === 't' || key === 'T') {
+            if (!isInHand(key, this.availableCommands)) {
+                return this.emitInvalid(this.buffer)
+            }
+            this.state = 'fPending'
             return null
         }
 
@@ -359,6 +477,23 @@ export class CommandParser {
         // Text object prefix (i/a after operator → textobjPending)
         // For now, not in S5 scope but structurally supported
 
+        // f/F/t/T after operator (e.g., df(, dt;)
+        if (key === 'f' || key === 'F' || key === 't' || key === 'T') {
+            const cmdKey = `${this.operator}${key}`
+            if (!isInHand(cmdKey, this.availableCommands)) {
+                return this.emitInvalid(this.buffer)
+            }
+            this.state = 'fPending'
+            return null
+        }
+
+        // Text object prefix (i/a after operator → textobjPending)
+        if (key === 'i' || key === 'a') {
+            this.textobjPrefix = key
+            this.state = 'textobjPending'
+            return null
+        }
+
         // Esc cancels
         if (key === 'Esc') {
             return this.emit({ raw: 'Esc', valid: true }, 0)
@@ -394,6 +529,13 @@ export class CommandParser {
                 },
                 1,
             )
+        }
+
+        // Text object after operator + count
+        if (key === 'i' || key === 'a') {
+            this.textobjPrefix = key
+            this.state = 'textobjPending'
+            return null
         }
 
         // Esc cancels
@@ -434,6 +576,24 @@ export class CommandParser {
             )
         }
 
+        // gu (lowercase)
+        if (key === 'u') {
+            if (!isInHand('gu', this.availableCommands)) {
+                return this.emitInvalid(this.buffer)
+            }
+            this.state = 'guPending'
+            return null
+        }
+
+        // gU (uppercase)
+        if (key === 'U') {
+            if (!isInHand('gU', this.availableCommands)) {
+                return this.emitInvalid(this.buffer)
+            }
+            this.state = 'gUPending'
+            return null
+        }
+
         // Esc cancels
         if (key === 'Esc') {
             return this.emit({ raw: 'Esc', valid: true }, 0)
@@ -462,6 +622,227 @@ export class CommandParser {
 
         return this.emitInvalid(this.buffer)
     }
+
+    private handleFPending(key: string): ParseResult | null {
+        this.buffer += key
+
+        // Esc cancels
+        if (key === 'Esc') {
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        // Any single character → f/F/t/T + char motion (or operator+motion)
+        if (key.length === 1) {
+            const raw = this.buffer
+            const count = mergeCount(this.countPrefix, this.countAfterOp)
+            // The motion letter is the first char of buffer (or after operator/count prefix)
+            const motionLetter = this.operator
+                ? raw[raw.length - 2]  // e.g., "df(" → 'f'
+                : (this.countPrefix !== undefined ? raw[String(this.countPrefix).length] : raw[0])
+            if (this.operator) {
+                return this.emit(
+                    { raw, operator: this.operator, motion: motionLetter as Motion, char: key, count, valid: true },
+                    1,
+                )
+            }
+            return this.emit(
+                { raw, motion: motionLetter as Motion, char: key, count, valid: true },
+                1,
+            )
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
+
+    private handleTextobjPending(key: string): ParseResult | null {
+        this.buffer += key
+
+        // Esc cancels
+        if (key === 'Esc') {
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        if (TEXT_OBJ_TARGETS.has(key)) {
+            const raw = this.buffer
+            const textObj = `${this.textobjPrefix}${key}` as import('../types/command').TextObject
+            const cmdKey = `${this.operator}${textObj}`
+            if (!isInHand(cmdKey, this.availableCommands)) {
+                return this.emitInvalid(raw)
+            }
+            const count = mergeCount(this.countPrefix, this.countAfterOp)
+            return this.emit(
+                { raw, operator: this.operator, textObject: textObj, count, valid: true },
+                1,
+            )
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
+
+    private handleSearchInput(key: string): ParseResult | null {
+        // Esc cancels search
+        if (key === 'Esc') {
+            this.buffer = 'Esc'
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        // Backspace removes last char
+        if (key === 'Backspace') {
+            if (this.searchBuffer.length > 0) {
+                this.searchBuffer = this.searchBuffer.slice(0, -1)
+            }
+            return null
+        }
+
+        // Enter confirms search
+        if (key === 'Enter') {
+            const raw = `/${this.searchBuffer}`
+            return this.emit(
+                { raw, searchPattern: this.searchBuffer, valid: true },
+                1,
+            )
+        }
+
+        // Accumulate search pattern
+        if (key.length === 1) {
+            this.searchBuffer += key
+            return null
+        }
+
+        return null
+    }
+
+    private handleGuPending(key: string): ParseResult | null {
+        this.buffer += key
+
+        if (key === 'Esc') {
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        // gu + text object (gui/gua → textobj pending with gu operator)
+        if (key === 'i' || key === 'a') {
+            this.operator = 'gu'
+            this.textobjPrefix = key
+            this.state = 'textobjPending'
+            return null
+        }
+
+        // gu + motion
+        if (SIMPLE_MOTIONS.has(key)) {
+            const raw = this.buffer
+            const cmdKey = `gu${key}`
+            if (!isInHand(cmdKey, this.availableCommands)) {
+                return this.emitInvalid(raw)
+            }
+            const count = mergeCount(this.countPrefix, this.countAfterOp)
+            return this.emit(
+                { raw, operator: 'gu', motion: key as Motion, count, valid: true },
+                1,
+            )
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
+
+    private handleGUPending(key: string): ParseResult | null {
+        this.buffer += key
+
+        if (key === 'Esc') {
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        // gU + text object
+        if (key === 'i' || key === 'a') {
+            this.operator = 'gU'
+            this.textobjPrefix = key
+            this.state = 'textobjPending'
+            return null
+        }
+
+        // gU + motion
+        if (SIMPLE_MOTIONS.has(key)) {
+            const raw = this.buffer
+            const cmdKey = `gU${key}`
+            if (!isInHand(cmdKey, this.availableCommands)) {
+                return this.emitInvalid(raw)
+            }
+            const count = mergeCount(this.countPrefix, this.countAfterOp)
+            return this.emit(
+                { raw, operator: 'gU', motion: key as Motion, count, valid: true },
+                1,
+            )
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
+
+    private handleZPending(key: string): ParseResult | null {
+        this.buffer += key
+
+        if (key === 'Esc') {
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        if (key === 'z' || key === 't' || key === 'b') {
+            const raw = this.buffer
+            const cmdKey = `z${key}`
+            if (!isInHand(cmdKey, this.availableCommands)) {
+                return this.emitInvalid(raw)
+            }
+            return this.emit({ raw: cmdKey, valid: true }, 1)
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
+
+    private handleRegisterPending(key: string): ParseResult | null {
+        this.buffer += key
+
+        if (key === 'Esc') {
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        // Register name is a-z, A-Z, 0-9
+        if (/^[a-zA-Z0-9]$/.test(key)) {
+            // Check if register is in hand (e.g., "a → check '"a')
+            const regKey = `"${key}`
+            if (!isInHand(regKey, this.availableCommands)) {
+                return this.emitInvalid(this.buffer)
+            }
+            this.registerName = key
+            // After register, expect the next command (y, d, p, P, etc.)
+            // Reset state to idle but keep register name
+            this.state = 'registerAction'
+            return null
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
+
+    private handleRegisterAction(key: string): ParseResult | null {
+        this.buffer += key
+
+        // Handle y, d, c operators after register
+        if (OPERATORS.has(key)) {
+            this.operator = key as Operator
+            this.state = 'operatorPending'
+            return null
+        }
+
+        // Handle p, P after register
+        if (key === 'p' || key === 'P') {
+            const raw = this.buffer
+            return this.emit({ raw, register: this.registerName, valid: true }, 1)
+        }
+
+        // Handle yy, dd after register
+        if (key === 'y' || key === 'd') {
+            // Check if this is operator start (handled above for single y/d since they're operators)
+            // This shouldn't be reached since y/d are OPERATORS
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
 }
 
 // ─── State type ─────────────────────────────────────────────────────
@@ -473,6 +854,14 @@ type ParserState =
     | 'opNumberPrefix'
     | 'gPending'
     | 'rPending'
+    | 'fPending'
+    | 'textobjPending'
+    | 'searchInput'
+    | 'guPending'
+    | 'gUPending'
+    | 'zPending'
+    | 'registerPending'
+    | 'registerAction'
 
 // ─── Convenience: one-shot parse ────────────────────────────────────
 

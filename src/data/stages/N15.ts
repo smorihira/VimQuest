@@ -27,7 +27,7 @@ export const N15_STAGES: Stage[] = [
             'h', 'j', 'k', 'l', 'Ctrl+d', 'Ctrl+u',
             'zz', 'zt', 'zb', 'x', 'u',
         ],
-        clearConditions: { cursor: { line: 4, col: 0 } },
+        clearConditions: { cursor: { line: 5, col: 0 } },
         hints: [{ cost: 1, commands: ['Ctrl+d', 'zz'] }],
         flavor: 'zz で現在行を画面中央に。zt で上、zb で下に配置',
     },

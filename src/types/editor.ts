@@ -41,12 +41,18 @@ export interface EditorState {
     registers: Record<string, string>
     /** Visual mode selection start (only in visual mode) */
     visualStart?: CursorPosition
+    /** Visual mode type: char (v), line (V), or block (Ctrl+v) */
+    visualType?: 'char' | 'line' | 'block'
     /** Last executed command (for dot repeat) */
     lastCommand?: import('./command').Command
     /** Last search pattern (for n/N) */
     lastSearchPattern?: string
     /** Last search direction */
     lastSearchDirection?: 'forward' | 'backward'
+    /** Last f/F/t/T motion for ; and , repeat */
+    lastFindMotion?: { motion: 'f' | 'F' | 't' | 'T'; char: string }
+    /** Last insert text for dot repeat (text typed during last insert session) */
+    lastInsertText?: string
 }
 
 /** Create initial editor state from text and cursor */

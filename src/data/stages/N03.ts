@@ -35,10 +35,10 @@ export const N03_STAGES: Stage[] = [
         initialText: 'hlo\nwrld',
         goalText: 'hello\nworld',
         initialCursor: { line: 0, col: 0 },
-        life: 10,
-        stars: [4, 6, 8],
+        life: 11,
+        stars: [5, 7, 9],
         availableCommands: ['h', 'j', 'k', 'l', 'x', 'u', 'i', 'a'],
-        hints: [{ cost: 1, commands: ['l', 'i', 'el', 'Esc', 'j', 'i', 'o', 'Esc'] }],
+        hints: [{ cost: 1, commands: ['l', 'i', 'el', 'Esc', 'j', 'h', 'i', 'o', 'Esc'] }],
         flavor: '2行とも文字が抜けている。挿入で補え',
     },
 ]

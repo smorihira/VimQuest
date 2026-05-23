@@ -14,7 +14,7 @@ export const N39_STAGES: Stage[] = [
         title: 'コピーせよ',
         language: 'plaintext',
         initialText: 'hello world',
-        goalText: 'hello world hello',
+        goalText: 'hello worldhello',
         initialCursor: { line: 0, col: 0 },
         life: 9,
         stars: [3, 4, 6],
