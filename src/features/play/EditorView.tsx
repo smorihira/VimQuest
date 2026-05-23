@@ -3,15 +3,16 @@
  * Pure display component, no keyboard handling.
  */
 
-import type { EditorState } from '../../types/editor'
+import type { EditorState, CursorPosition } from '../../types/editor'
 import './EditorView.css'
 
 interface EditorViewProps {
     state: EditorState
     goalText?: string
+    goalCursor?: CursorPosition
 }
 
-export function EditorView({ state, goalText }: EditorViewProps) {
+export function EditorView({ state, goalText, goalCursor }: EditorViewProps) {
     const lines = state.text.split('\n')
 
     return (
@@ -37,10 +38,16 @@ export function EditorView({ state, goalText }: EditorViewProps) {
             </div>
             {goalText !== undefined && (
                 <div className="editor-goal">
-                    <div className="goal-label">GOAL</div>
+                    <div className="goal-label">
+                        {goalCursor ? 'GOAL カーソル位置' : 'GOAL'}
+                    </div>
                     <div className="goal-text">
                         {goalText.split('\n').map((line, i) => (
-                            <div key={i} className="goal-line">{line || '\u00A0'}</div>
+                            <div key={i} className="goal-line">
+                                {goalCursor && goalCursor.line === i
+                                    ? renderGoalLineWithCursor(line, goalCursor.col)
+                                    : (line || '\u00A0')}
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -66,12 +73,32 @@ function renderLineWithCursor(
 
     const cursorClass = state.mode === 'insert' ? 'cursor-line' : 'cursor-block'
 
+    if (state.mode === 'insert') {
+        return [
+            <span key="before">{before}</span>,
+            <span key="cursor" className={cursorClass} />,
+            <span key="rest">{line.slice(col) || '\u00A0'}</span>,
+        ]
+    }
+
     return [
         <span key="before">{before}</span>,
-        <span key="cursor" className={cursorClass}>
-            {state.mode === 'insert' ? '' : cursorChar}
-        </span>,
-        state.mode === 'insert' ? <span key="rest">{line.slice(col)}</span> : null,
+        <span key="cursor" className={cursorClass}>{cursorChar}</span>,
+        after ? <span key="after">{after}</span> : null,
+    ].filter(Boolean) as React.ReactNode[]
+}
+
+function renderGoalLineWithCursor(
+    line: string,
+    col: number,
+): React.ReactNode[] {
+    const before = line.slice(0, col)
+    const cursorChar = line[col] ?? '\u00A0'
+    const after = line.slice(col + 1)
+
+    return [
+        <span key="before">{before}</span>,
+        <span key="cursor" className="goal-cursor">{cursorChar}</span>,
         after ? <span key="after">{after}</span> : null,
     ].filter(Boolean) as React.ReactNode[]
 }

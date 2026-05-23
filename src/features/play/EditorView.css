@@ -131,3 +131,9 @@
     padding: 0 16px 0 56px;
     white-space: pre;
 }
+
+.goal-cursor {
+    background: rgba(124, 124, 255, 0.5);
+    color: #fff;
+    border-radius: 2px;
+}

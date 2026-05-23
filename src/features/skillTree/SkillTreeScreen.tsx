@@ -3,7 +3,7 @@
  * Uses a grid layout (enhanced to Dagre/SVG later).
  */
 
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useAtomValue } from 'jotai'
 import { gameProgressAtom } from '../../store/atoms'
@@ -12,6 +12,7 @@ import { getStagesByNode } from '../../data/stages'
 import { hasTutorial } from '../../data/tutorials'
 import type { SkillNodeDef } from '../../types/game'
 import type { GameProgress } from '../../types/game'
+import type { Stage } from '../../types/stage'
 import './SkillTreeScreen.css'
 
 type NodeStatus = 'locked' | 'available' | 'cleared'
@@ -45,6 +46,7 @@ function getNodeStars(node: SkillNodeDef, progress: GameProgress): { earned: num
 export function SkillTreeScreen() {
     const navigate = useNavigate()
     const progress = useAtomValue(gameProgressAtom)
+    const [selectedNode, setSelectedNode] = useState<SkillNodeDef | null>(null)
 
     const stats = useMemo(() => {
         let totalStages = 0
@@ -83,14 +85,21 @@ export function SkillTreeScreen() {
             return
         }
 
-        // Go to first uncompleted stage, or first stage
-        const firstUncompleted = stages.find((s) => {
-            const r = progress.stageResults[s.id]
-            return !r || r.bestStars === 0
-        })
-        const target = firstUncompleted ?? stages[0]
-        if (target) {
-            navigate(`/play/${target.id}`)
+        // Show stage selector
+        setSelectedNode(node)
+    }
+
+    const handleStageClick = (stage: Stage) => {
+        setSelectedNode(null)
+        navigate(`/play/${stage.id}`)
+    }
+
+    const typeLabel = (type: string) => {
+        switch (type) {
+            case 'teach': return 'T'
+            case 'practice': return 'P'
+            case 'challenge': return 'C'
+            default: return '?'
         }
     }
 
@@ -158,6 +167,40 @@ export function SkillTreeScreen() {
                     )
                 })}
             </div>
+
+            {/* Stage selector overlay */}
+            {selectedNode && (
+                <div className="stage-overlay" onClick={() => setSelectedNode(null)}>
+                    <div className="stage-panel" onClick={(e) => e.stopPropagation()}>
+                        <div className="stage-panel-header">
+                            <span className="stage-panel-id">{selectedNode.id}</span>
+                            <span className="stage-panel-name">{selectedNode.name}</span>
+                            <button className="stage-panel-close" onClick={() => setSelectedNode(null)}>✕</button>
+                        </div>
+                        <div className="stage-panel-list">
+                            {getStagesByNode(selectedNode.id).map((stage) => {
+                                const result = progress.stageResults[stage.id]
+                                const stars = result?.bestStars ?? 0
+                                return (
+                                    <div
+                                        key={stage.id}
+                                        className={`stage-item${stars > 0 ? ' cleared' : ''}`}
+                                        onClick={() => handleStageClick(stage)}
+                                    >
+                                        <span className="stage-type">{typeLabel(stage.type)}</span>
+                                        <span className="stage-name">{stage.title}</span>
+                                        <span className="stage-stars">
+                                            {[0, 1, 2].map((i) => (
+                                                <span key={i} className={i < stars ? 'star-on' : 'star-off'}>★</span>
+                                            ))}
+                                        </span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

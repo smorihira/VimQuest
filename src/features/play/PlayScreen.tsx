@@ -157,7 +157,11 @@ function PlayScreenInner({
 
             {/* Editor */}
             <div className="play-editor-area">
-                <EditorView state={play.editorState} goalText={stage.goalText} />
+                <EditorView
+                    state={play.editorState}
+                    goalText={stage.goalText}
+                    goalCursor={stage.clearConditions?.cursor}
+                />
             </div>
 
             {/* Hand Cards */}

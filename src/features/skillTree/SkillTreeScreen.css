@@ -151,3 +151,146 @@
     font-size: 14px;
     opacity: 0.5;
 }
+
+/* Stage selector overlay */
+.stage-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: overlay-fade 0.15s ease;
+}
+
+@keyframes overlay-fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.stage-panel {
+    background: var(--bg, #0a0a14);
+    border: 1px solid rgba(124, 124, 255, 0.3);
+    border-radius: 12px;
+    min-width: 300px;
+    max-width: 400px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+    animation: panel-slide 0.15s ease;
+}
+
+@keyframes panel-slide {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.stage-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.stage-panel-id {
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.stage-panel-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.stage-panel-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.stage-panel-close:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+.stage-panel-list {
+    padding: 8px;
+}
+
+.stage-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.stage-item:hover {
+    background: rgba(124, 124, 255, 0.1);
+}
+
+.stage-item.cleared {
+    opacity: 0.7;
+}
+
+.stage-item.cleared:hover {
+    opacity: 1;
+}
+
+.stage-type {
+    font-family: var(--font-code);
+    font-size: 11px;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    background: rgba(124, 124, 255, 0.15);
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.stage-name {
+    flex: 1;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.stage-stars {
+    display: flex;
+    gap: 1px;
+    font-size: 12px;
+}
+
+.stage-stars .star-on {
+    color: var(--star);
+}
+
+.stage-stars .star-off {
+    color: rgba(255, 255, 255, 0.12);
+}

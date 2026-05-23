@@ -430,6 +430,24 @@ function executeToggleCase(state: EditorState): EditorState {
     return pushUndo(state, newText, { line: state.cursor.line, col: newCol }, 'normal', 1)
 }
 
+/** Open new line below and enter insert mode (o) */
+function executeOpenBelow(state: EditorState): EditorState {
+    const ls = lines(state.text)
+    const newLines = [...ls]
+    newLines.splice(state.cursor.line + 1, 0, '')
+    const newText = join(newLines)
+    return { ...state, text: newText, cursor: { line: state.cursor.line + 1, col: 0 }, mode: 'insert' as const }
+}
+
+/** Open new line above and enter insert mode (O) */
+function executeOpenAbove(state: EditorState): EditorState {
+    const ls = lines(state.text)
+    const newLines = [...ls]
+    newLines.splice(state.cursor.line, 0, '')
+    const newText = join(newLines)
+    return { ...state, text: newText, cursor: { line: state.cursor.line, col: 0 }, mode: 'insert' as const }
+}
+
 /** Exit insert mode (Esc) */
 function executeEscape(state: EditorState): EditorState {
     if (state.mode === 'normal') return state
@@ -562,6 +580,8 @@ export function executeCommand(state: EditorState, cmd: Command): EditorState {
     if (raw === 'a') return executeInsertAfter(state)
     if (raw === 'I') return executeInsertLineStart(state)
     if (raw === 'A') return executeInsertLineEnd(state)
+    if (raw === 'o') return executeOpenBelow(state)
+    if (raw === 'O') return executeOpenAbove(state)
 
     // Toggle case
     if (raw === '~') return executeToggleCase(state)

@@ -141,7 +141,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
 
             // ── Entering insert mode (i/a/I/A): defer damage to session finalize ──
             if (
-                (raw === 'i' || raw === 'a' || raw === 'I' || raw === 'A') &&
+                (raw === 'i' || raw === 'a' || raw === 'I' || raw === 'A' || raw === 'o' || raw === 'O') &&
                 editorState.mode === 'normal'
             ) {
                 const next = executeCommand(editorState, parseResult.command)
