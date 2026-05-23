@@ -107,8 +107,13 @@ src/
 │   ├── gameOver/
 │   │   └── GameOver.tsx
 │   │
-│   └── weaponGet/
-│       └── WeaponGet.tsx
+│   ├── weaponGet/
+│   │   └── WeaponGet.tsx
+│   │
+│   └── tutorial/
+│       ├── Tutorial.tsx              # チュートリアル画面
+│       └── components/
+│           └── NavigatorBar.tsx       # ナビゲーター会話バー
 │
 ├── shared/                           # 2箇所以上で使う共有モジュール
 │   ├── hooks/
@@ -122,6 +127,11 @@ src/
 │   │   ├── N02.ts
 │   │   ├── ...
 │   │   └── index.ts                  # 全ステージ集約export
+│   ├── tutorials/                    # チュートリアルデータ（7ノード分）
+│   │   ├── N01.ts
+│   │   ├── N02.ts
+│   │   ├── ...                       # N03, N08, N18, N29, N37
+│   │   └── index.ts                  # nodeId → Tutorial マッピング
 │   └── skillTree.ts                  # ノード定義・エッジ・コマンドマッピング
 │
 └── styles/
@@ -307,7 +317,7 @@ export interface Hint {
 [useLocalStorage フック] ─→ LocalStorage に書き込み
     │
     │  キー: 'vimquest_save_v1'
-    │  値: { unlockedNodes, stageResults, dataVersion }
+    │  値: { unlockedNodes, stageResults, tutorialStatus, dataVersion }
     │
     ▼
 [アプリ起動時] ← LocalStorage から読み込み → gameAtoms 初期化
