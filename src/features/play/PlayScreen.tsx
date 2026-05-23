@@ -66,7 +66,7 @@ function PlayScreenInner({
                 play.handleKey(key)
             }
         },
-        [play.handleKey, play.status],
+        [play],
     )
 
     useEffect(() => {

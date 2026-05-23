@@ -55,7 +55,6 @@ function TutorialInner({
     const [wrongMessage, setWrongMessage] = useState<string | null>(null)
 
     const step = tutorial.steps[stepIdx] as TutorialStep | undefined
-    const isLastStep = stepIdx >= tutorial.steps.length - 1
     const isComplete = stepIdx >= tutorial.steps.length
 
     const complete = useCallback(

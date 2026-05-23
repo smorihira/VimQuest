@@ -11,7 +11,7 @@
 import { describe, it, expect } from 'vitest'
 import { ALL_STAGES } from '../data/stages'
 import { SKILL_NODES, SKILL_NODE_MAP } from '../data/skillTree'
-import type { Stage, StageType } from '../types/stage'
+import type { StageType } from '../types/stage'
 
 /** Expected offsets per stage type */
 const FORMULA: Record<StageType, { s2: number; s1: number; life: number }> = {

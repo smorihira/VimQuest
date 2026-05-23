@@ -310,7 +310,6 @@ describe('db delete backward word', () => {
     })
 
     it('deletes single word', () => {
-        const state = createEditorState('hello world', { line: 0, col: 11 })
         // cursor at col 11 is past end, will clamp to col 10 ('d')
         // Let's use a valid position
         const state2 = createEditorState('hello world', { line: 0, col: 10 })

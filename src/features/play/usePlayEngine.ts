@@ -11,7 +11,6 @@ import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import { createEditorState } from '../../types/editor'
 import { CommandParser } from '../../engine/commandParser'
-import type { ParseResult } from '../../engine/commandParser'
 import { executeCommand, finalizeInsertSession } from '../../engine/commandExecutor'
 import { isStageClear } from '../../engine/clearChecker'
 import { evaluateAttempt } from '../../engine/damageCalculator'
@@ -88,22 +87,16 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
 
             if (!parseResult) return // parser is accumulating (e.g., waiting for motion after 'd')
 
-            handleParseResult(parseResult)
-        },
-        [status, editorState, stage],
-    )
+            // --- inline handleParseResult ---
+            setLastInvalid(!parseResult.command.valid)
 
-    const handleParseResult = useCallback(
-        (result: ParseResult) => {
-            setLastInvalid(!result.command.valid)
-
-            if (!result.command.valid) {
+            if (!parseResult.command.valid) {
                 // Invalid command — no damage, red flash
                 return
             }
 
             // Track damage
-            const newDamage = damage + result.damage
+            const newDamage = damage + parseResult.damage
             setDamage(newDamage)
 
             // Check death
@@ -117,45 +110,38 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
 
             // Entering insert mode
             if (
-                (result.command.raw === 'i' || result.command.raw === 'a') &&
+                (parseResult.command.raw === 'i' || parseResult.command.raw === 'a') &&
                 editorState.mode === 'normal'
             ) {
-                next = executeCommand(editorState, result.command)
+                next = executeCommand(editorState, parseResult.command)
                 insertEntryRef.current = editorState
                 setEditorState(next)
                 return
             }
 
             // Leaving insert mode
-            if (result.command.raw === 'Esc' && editorState.mode === 'insert') {
-                next = executeCommand(editorState, result.command)
+            if (parseResult.command.raw === 'Esc' && editorState.mode === 'insert') {
+                next = executeCommand(editorState, parseResult.command)
                 if (insertEntryRef.current) {
                     next = finalizeInsertSession(next, insertEntryRef.current)
                     insertEntryRef.current = null
                 }
                 setEditorState(next)
-                checkClear(next, newDamage)
+                if (isStageClear(next, stage)) {
+                    setStatus('clear')
+                }
                 return
             }
 
-            next = executeCommand(editorState, result.command)
+            next = executeCommand(editorState, parseResult.command)
             setEditorState(next)
 
             // Check clear (only in normal mode)
-            if (next.mode === 'normal') {
-                checkClear(next, newDamage)
-            }
-        },
-        [editorState, damage, life, stage, usedHint],
-    )
-
-    const checkClear = useCallback(
-        (state: EditorState, currentDamage: number) => {
-            if (isStageClear(state, stage)) {
+            if (next.mode === 'normal' && isStageClear(next, stage)) {
                 setStatus('clear')
             }
         },
-        [stage],
+        [status, editorState, damage, life, stage],
     )
 
     const reset = useCallback(() => {

@@ -12,7 +12,6 @@ import { getStagesByNode } from '../../data/stages'
 import { hasTutorial } from '../../data/tutorials'
 import type { SkillNodeDef } from '../../types/game'
 import type { GameProgress } from '../../types/game'
-import type { StarRating } from '../../types/stage'
 import './SkillTreeScreen.css'
 
 type NodeStatus = 'locked' | 'available' | 'cleared'
@@ -111,7 +110,7 @@ export function SkillTreeScreen() {
             <div className="tree-grid">
                 {SKILL_NODES.map((node) => {
                     const status = getNodeStatus(node, progress)
-                    const { earned, total } = getNodeStars(node, progress)
+                    const { earned } = getNodeStars(node, progress)
                     const stages = getStagesByNode(node.id)
 
                     return (

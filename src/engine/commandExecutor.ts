@@ -55,11 +55,6 @@ function isSpace(ch: string): boolean {
     return /\s/.test(ch)
 }
 
-/** Get character at position */
-function charAt(text: string, pos: CursorPosition): string {
-    return lines(text)[pos.line]?.[pos.col] ?? ''
-}
-
 // ─── Snapshot: push to undo stack ──────────────────────────────────
 
 function pushUndo(

@@ -9,23 +9,9 @@
  * with valid=false (u/Ctrl+R/Esc always bypass).
  */
 
-import { createMachine, createActor, type AnyActorRef } from 'xstate'
-import type { Command, Operator, Motion, TextObject } from '../types/command'
+import type { Command, Operator, Motion } from '../types/command'
 
-// ─── Context ────────────────────────────────────────────────────────
-
-interface ParserContext {
-    /** Keys accumulated so far */
-    buffer: string
-    /** Numeric prefix before operator */
-    countPrefix: number | undefined
-    /** Numeric prefix after operator (e.g. d3w) */
-    countAfterOp: number | undefined
-    /** Current operator */
-    operator: Operator | undefined
-    /** Available commands (hand cards) — undefined = unrestricted */
-    availableCommands: string[] | undefined
-}
+// ─── Internal types ─────────────────────────────────────────────────
 
 // ─── Result ─────────────────────────────────────────────────────────
 
@@ -82,17 +68,6 @@ function isInHand(
     if (available === undefined) return true
     if (ALWAYS_ALLOWED.has(commandKey)) return true
     return available.includes(commandKey)
-}
-
-/** Resolve the "command key" for hand-check purposes.
- *  e.g. "dw" → 'dw', "3l" → 'l', "d3w" → 'dw' */
-function resolveCommandKey(
-    operator: Operator | undefined,
-    motion: Motion | undefined,
-    raw: string,
-): string {
-    if (operator && motion) return `${operator}${motion}`
-    return raw.replace(/^\d+/, '')
 }
 
 // ─── Merge counts ───────────────────────────────────────────────────

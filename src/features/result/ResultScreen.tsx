@@ -3,10 +3,13 @@
  * Displays stars, damage stats, and navigation buttons.
  */
 
+import { useEffect, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router'
-import { getStage } from '../../data/stages'
-import { getStagesByNode } from '../../data/stages'
+import { useAtom } from 'jotai'
+import { getStage, getStagesByNode } from '../../data/stages'
 import { calculateStars, applyHintPenalty } from '../../engine/damageCalculator'
+import { gameProgressAtom } from '../../store/atoms'
+import { SKILL_NODES } from '../../data/skillTree'
 import type { StarRating } from '../../types/stage'
 import './ResultScreen.css'
 
@@ -19,7 +22,65 @@ export function ResultScreen() {
     const { stageId } = useParams<{ stageId: string }>()
     const navigate = useNavigate()
     const location = useLocation()
+    const [, setProgress] = useAtom(gameProgressAtom)
+    const saved = useRef(false)
     const stage = stageId ? getStage(stageId) : undefined
+
+    const state = (location.state as LocationState) ?? { damage: 0, usedHint: false }
+    const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
+    const stars = stage ? applyHintPenalty(rawStars, state.usedHint) : (0 as StarRating)
+
+    // Save progress once
+    useEffect(() => {
+        if (!stage || saved.current) return
+        saved.current = true
+
+        setProgress((prev) => {
+            const existing = prev.stageResults[stage.id]
+            const bestStars = existing
+                ? (Math.max(existing.bestStars, stars) as StarRating)
+                : (stars as StarRating)
+            const bestDamage = existing
+                ? Math.min(existing.bestDamage, state.damage)
+                : state.damage
+
+            const nextResults = {
+                ...prev.stageResults,
+                [stage.id]: {
+                    stageId: stage.id,
+                    bestStars,
+                    bestDamage,
+                    usedHint: existing ? existing.usedHint && state.usedHint : state.usedHint,
+                },
+            }
+
+            // Check if all stages in this node are now cleared → unlock dependents
+            const allNodeStages = getStagesByNode(stage.nodeId)
+            const allCleared = allNodeStages.every((s) => nextResults[s.id]?.bestStars >= 1)
+
+            let nextUnlocked = prev.unlockedNodes
+            if (allCleared) {
+                const dependents = SKILL_NODES
+                    .filter((n) => n.prerequisites.includes(stage.nodeId))
+                    .filter((n) => n.prerequisites.every((pre) => {
+                        const preStages = getStagesByNode(pre)
+                        return preStages.every((s) => nextResults[s.id]?.bestStars >= 1)
+                    }))
+                    .map((n) => n.id)
+
+                const newNodes = dependents.filter((id) => !prev.unlockedNodes.includes(id))
+                if (newNodes.length > 0) {
+                    nextUnlocked = [...prev.unlockedNodes, ...newNodes]
+                }
+            }
+
+            return {
+                ...prev,
+                stageResults: nextResults,
+                unlockedNodes: nextUnlocked,
+            }
+        })
+    })
 
     if (!stage) {
         return (
@@ -28,10 +89,6 @@ export function ResultScreen() {
             </div>
         )
     }
-
-    const state = (location.state as LocationState) ?? { damage: 0, usedHint: false }
-    const rawStars = calculateStars(state.damage, stage.stars)
-    const stars = applyHintPenalty(rawStars, state.usedHint)
 
     // Find next stage in the same node
     const nodeStages = getStagesByNode(stage.nodeId)
