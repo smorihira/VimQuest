@@ -1,0 +1,151 @@
+/* GameOverScreen styles */
+
+.gameover-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.gameover-container {
+    text-align: center;
+    max-width: 600px;
+    width: 90%;
+    animation: gameover-fadeIn 0.8s ease;
+}
+
+@keyframes gameover-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gameover-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+.gameover-label {
+    font-size: 14px;
+    color: var(--danger);
+    letter-spacing: 4px;
+    margin-bottom: 8px;
+}
+
+.gameover-stage {
+    font-size: 16px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+}
+
+/* Suggestion */
+.suggestion {
+    background: rgba(124, 124, 255, 0.06);
+    border: 1px solid rgba(124, 124, 255, 0.15);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 32px;
+    text-align: left;
+}
+
+.suggestion-label {
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.suggestion-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.suggestion-commands {
+    font-family: var(--font-code);
+    color: var(--accent);
+    font-weight: 700;
+}
+
+/* Stats */
+.gameover-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 32px;
+}
+
+.gameover-stats .stat {
+    text-align: center;
+}
+
+.gameover-stats .stat-value {
+    font-family: var(--font-code);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.gameover-stats .stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    letter-spacing: 1px;
+}
+
+/* Actions (shared with result) */
+.gameover-screen .actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+
+.gameover-screen .btn {
+    font-family: 'Inter', sans-serif;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.gameover-screen .btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.gameover-screen .btn-primary:hover {
+    background: #9a9aff;
+    box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
+}
+
+.gameover-screen .btn-secondary {
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.gameover-screen .btn-secondary:hover {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.gameover-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: var(--font-code);
+    color: var(--danger);
+    font-size: 18px;
+}

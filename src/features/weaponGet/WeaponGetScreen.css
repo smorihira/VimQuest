@@ -1,0 +1,188 @@
+/* WeaponGetScreen styles */
+
+.weapon-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Particles */
+.particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.particle {
+    position: absolute;
+    bottom: -10px;
+    width: 4px;
+    height: 4px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: particle-rise 3s ease-in infinite;
+    opacity: 0;
+}
+
+@keyframes particle-rise {
+    0% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+    }
+}
+
+/* Container */
+.weapon-container {
+    text-align: center;
+    z-index: 1;
+    max-width: 600px;
+    width: 90%;
+    animation: weapon-fadeIn 0.8s ease;
+}
+
+@keyframes weapon-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.weapon-label {
+    font-size: 14px;
+    color: var(--star);
+    letter-spacing: 4px;
+    margin-bottom: 32px;
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+}
+
+/* Card */
+.weapon-card {
+    background: rgba(124, 124, 255, 0.08);
+    border: 2px solid rgba(124, 124, 255, 0.3);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    animation: weapon-glow 2s ease-in-out infinite;
+}
+
+@keyframes weapon-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(124, 124, 255, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(124, 124, 255, 0.4);
+    }
+}
+
+.weapon-cmd {
+    font-family: var(--font-code);
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 4px;
+    text-shadow: 0 0 24px rgba(124, 124, 255, 0.5);
+}
+
+.weapon-name {
+    font-size: 18px;
+    color: var(--text-dim);
+    margin-top: 8px;
+}
+
+/* Explain */
+.weapon-explain {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.explain-cmd kbd {
+    font-family: var(--font-code);
+    font-size: 16px;
+    color: var(--accent);
+    background: rgba(124, 124, 255, 0.1);
+    border: 1px solid rgba(124, 124, 255, 0.2);
+    border-radius: 6px;
+    padding: 6px 14px;
+}
+
+/* Tutorial section */
+.tutorial-section {
+    margin-top: 16px;
+}
+
+.tutorial-preview-msg {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+}
+
+.tutorial-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 40px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tutorial-btn:hover {
+    background: #9a9aff;
+    box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
+}
+
+/* Proceed button (non-tutorial nodes) */
+.weapon-proceed-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 40px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.weapon-proceed-btn:hover {
+    background: #9a9aff;
+    box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
+}
+
+.weapon-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: var(--font-code);
+    color: var(--danger);
+    font-size: 18px;
+}
