@@ -229,6 +229,8 @@ export function SkillTreeScreen() {
                 return 'P'
             case 'challenge':
                 return 'C'
+            case 'tutorial':
+                return '★'
             default:
                 return '?'
         }

@@ -318,7 +318,7 @@ function PlayScreenInner({
                         {stage.nodeId !== 'N01' && (
                             <div className="base-row">
                                 {(play.editorState.mode === 'visual'
-                                    ? BASE_COMMANDS.filter((c) => c !== 'v' && c !== 'V')
+                                    ? BASE_COMMANDS.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v')
                                     : BASE_COMMANDS
                                 ).map((cmd) => (
                                     <span key={cmd} className={`base-card ${getCardClass(cmd)}`}>
@@ -330,7 +330,7 @@ function PlayScreenInner({
                         <div className="card-row">
                             {(play.editorState.mode === 'visual' && stage.visualCommands
                                 ? [
-                                    ...stage.availableCommands.filter((c) => c !== 'v' && c !== 'V'),
+                                    ...stage.availableCommands.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v'),
                                     ...stage.visualCommands,
                                 ]
                                 : stage.availableCommands
