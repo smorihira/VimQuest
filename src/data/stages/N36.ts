@@ -18,7 +18,7 @@ export const N36_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', 'x', 'u', '>>', '<<'],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', 'x', '>>', '<<'],
     hints: [{ cost: 1, commands: ['j', '>>'] }],
     flavor: '>> で行をインデント。Python のブロック構造を直せ',
   },

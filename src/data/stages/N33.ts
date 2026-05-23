@@ -34,7 +34,6 @@ export const N33_STAGES: Stage[] = [
       '0',
       '$',
       'x',
-      'u',
       'ciw',
       's',
       'S',

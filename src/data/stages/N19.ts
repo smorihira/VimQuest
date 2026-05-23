@@ -31,7 +31,6 @@ export const N19_STAGES: Stage[] = [
       '$',
       '^',
       'x',
-      'u',
       'dw',
       'de',
       'db',

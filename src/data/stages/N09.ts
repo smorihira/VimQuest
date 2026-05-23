@@ -19,7 +19,7 @@ export const N09_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', 'x', 'u'],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', 'x'],
     clearConditions: { cursor: { line: 0, col: 19 } },
     hints: [{ cost: 1, commands: ['W', 'W'] }],
     flavor: 'w だと . で止まる。W なら空白まで一気に飛べる',

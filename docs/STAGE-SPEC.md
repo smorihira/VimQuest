@@ -18,7 +18,7 @@
 | 総ノード数   | 40                                 |
 | 合流ノード数 | 5                                  |
 | 最長パス     | 13ノード（N01→N34 ドットリピート） |
-| 常時利用可能 | `u` `Ctrl+R` `Esc`（ノード不要）   |
+| 常時利用可能 | `u` `Ctrl+R` `Esc`（ノード不要、手札に含めない） |
 
 ### 1.2 全ノード一覧
 
@@ -147,6 +147,23 @@ N01 [h j k l]
 | Teach     | 新コマンド + 必要最小限の既習得（解法を明確に） |
 | Practice  | 新コマンド + 同ノード全コマンド + 主要既習得    |
 | Challenge | 習得済み全コマンド                              |
+
+#### 常時利用可能コマンド
+
+`u`、`Ctrl+R`、`Esc` は全ステージで常に使用可能（`ALWAYS_ALLOWED`）。これらは `availableCommands` に含めず、カード表示もしない。プレイヤーはいつでもundo/redo/Escが使える。
+
+#### Visual専用コマンド（visualCommands）
+
+ステージ定義に `visualCommands?: string[]` を指定すると、そのコマンドは **Visualモード中のみ** 手札に追加される。NORMALモードでは表示も使用もされない。
+
+```typescript
+{
+  availableCommands: ['h', 'j', 'k', 'l', 'v', 'V'],
+  visualCommands: ['d'],  // Visualモード時のみ手札に追加
+}
+```
+
+用途: `d` をオペレータ（`dw` 等）としてではなく、Visual選択削除専用として提供したいステージ（N37, N38等）。
 
 ### 2.3 外科的基準
 

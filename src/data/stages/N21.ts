@@ -30,7 +30,6 @@ export const N21_STAGES: Stage[] = [
       '0',
       '$',
       'x',
-      'u',
       'dd',
       'd$',
       'd0',

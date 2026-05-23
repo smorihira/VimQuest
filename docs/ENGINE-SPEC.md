@@ -132,6 +132,35 @@
 - 数値入力中はカード上に `×N` バッジを表示
 - `f`/`t` 押下後は文字入力待ち状態（カードは全て非アクティブ、ステータスラインに `f` 表示）
 
+### 2.4 手札制限ロジック
+
+#### 常時利用可能コマンド（ALWAYS_ALLOWED）
+
+`u`、`Ctrl+R`、`Esc` は全ステージで常に使用可能。`availableCommands` に含める必要はなく、カード表示もしない。
+
+#### オペレータの手札チェック
+
+オペレータキー（`d`/`c`/`y`/`>`/`<`）を押したとき、以下の順で手札チェックを行う:
+
+1. **直接一致**: `d` が `availableCommands` に含まれている → 許可
+2. **コンボ展開**: `dw`、`dd`、`diw` 等、そのオペレータで始まるコンボが `availableCommands` に含まれている → 許可（operator pending に遷移）
+3. **拡張オペレータ**: `y`、`gU`、`gu` は単体で手札にあれば任意のモーション/テキストオブジェクトと組み合わせ可能
+4. いずれにも該当しない → 無効（赤フラッシュ、ダメージなし）
+
+#### Visual専用コマンド（visualCommands）
+
+ステージは `visualCommands?: string[]` フィールドを持てる。このフィールドに含まれるコマンドは **Visualモード中のみ** 手札に追加される。NORMALモードでは使用不可。
+
+```typescript
+// 例: N37-T — d はVisualモードでのみ使用可能
+{
+  availableCommands: ['h', 'j', 'k', 'l', 'v', 'V', ...],
+  visualCommands: ['d'],  // Visualモード中のみ手札に追加
+}
+```
+
+カード表示もモードに連動し、Visualモード時のみ `visualCommands` のカードが表示される。
+
 ---
 
 ## 3. 検索エンジン仕様
@@ -384,6 +413,13 @@ Insert系コマンドのダメージ = 1（進入コスト） + floor((max(charC
 | ミュート設定           | ON/OFF                                    |
 | データバージョン       | マイグレーション用                        |
 
+**キー名:**
+
+| キー           | 用途                    |
+| -------------- | ----------------------- |
+| `vq-progress`  | ゲーム進捗（ステージ結果、ノード解放等） |
+| `vq-muted`     | ミュート設定（`'true'`/`'false'`）       |
+
 ### 7.2 エラーハンドリング
 
 | シナリオ                                           | 対応                                                                                                                            |
@@ -522,6 +558,48 @@ WORD移動（`W`/`B`/`E`）は空白のみで区切る（`hello-world` = 1つの
 | テキスト言語       | チュートリアル=英文、実践=コード        |
 
 詳細なガイドラインは別途 STAGE-DESIGN-GUIDE.md として作成予定。
+
+---
+
+## 9. サウンドエンジン
+
+### 9.1 概要
+
+Web Audio API によるシンセサイザー方式。音声ファイルを使わず、波形・周波数・エンベロープをコードで定義する。ユーザーのミュート設定は LocalStorage（`vq-muted`）に保存する。
+
+### 9.2 サウンド一覧
+
+| 関数           | トリガー                          | 波形       | 周波数          | 持続時間 |
+| -------------- | --------------------------------- | ---------- | --------------- | -------- |
+| `playTick()`   | 有効なコマンド実行                | square     | 800Hz           | 0.05s    |
+| `playType()`   | Insertモード文字入力              | sine       | 600Hz           | 0.03s    |
+| `playError()`  | 無効なキー入力                    | sawtooth   | 150Hz           | 0.12s    |
+| `playStar()`   | リザルト画面の星点灯              | sine(dual) | 1200Hz + 1600Hz | 0.15s    |
+| `playClear()`  | ステージクリア                    | sine       | 523→659→784Hz   | 0.45s    |
+| `playLock()`   | ロック中ノードクリック            | triangle   | 100Hz           | 0.1s     |
+| `playGameOver()`| ライフ0                          | sawtooth   | 80Hz            | 0.4s     |
+
+### 9.3 トリガー詳細
+
+| 画面          | 操作                    | サウンド       |
+| ------------- | ----------------------- | -------------- |
+| Play          | 有効コマンド入力        | `playTick()`   |
+| Play          | Insert文字入力          | `playType()`   |
+| Play          | 無効キー入力            | `playError()`  |
+| Play          | `:q!` ボタン / Esc退出  | `playTick()`   |
+| Play          | `:r` リトライ           | `playTick()`   |
+| Play          | ステージクリア          | `playClear()`  |
+| Play          | ライフ0                 | `playGameOver()`|
+| Result        | 星点灯演出              | `playStar()`   |
+| Skill Tree    | ロック中ノードクリック  | `playLock()`   |
+| Tutorial      | 全キー入力              | `playTick()`   |
+| Tutorial      | Skipボタン              | `playTick()`   |
+
+### 9.4 ミュート
+
+- Top bar に🔊/🔇トグルボタン
+- 設定は `localStorage.setItem('vq-muted', 'true'/'false')` で永続化
+- ミュート時は全サウンド関数が即 return（AudioContext を作成しない）
 
 ---
 

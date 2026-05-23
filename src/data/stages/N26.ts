@@ -30,7 +30,6 @@ export const N26_STAGES: Stage[] = [
       'f',
       't',
       'x',
-      'u',
       'dw',
       'de',
       'db',

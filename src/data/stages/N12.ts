@@ -18,7 +18,7 @@ export const N12_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 7,
     stars: [1, 2, 4],
-    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', 'gg', 'G', 'x', 'u'],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', 'gg', 'G', 'x'],
     clearConditions: { cursor: { line: 4, col: 0 } },
     hints: [{ cost: 1, commands: ['G'] }],
     flavor: 'G でファイル末尾に一気にジャンプだ',

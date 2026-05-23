@@ -78,7 +78,6 @@ export const N14_STAGES: Stage[] = [
       'Ctrl+d',
       'Ctrl+u',
       'x',
-      'u',
     ],
     clearConditions: { cursor: { line: 16, col: 0 } },
     hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d'] }],

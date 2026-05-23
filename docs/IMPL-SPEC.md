@@ -203,7 +203,9 @@ src/
 
 ### 3.5 手札制限
 
-XStateの `guard` 関数内で `context.availableCommands` をチェック。手札にないコマンドのキー入力は `invalid` イベントとして `idle` に戻す。`u`/`Ctrl+R`/`Esc` はguardをバイパス（常時利用可能）。
+XStateの `guard` 関数内で `context.availableCommands` をチェック。手札にないコマンドのキー入力は `invalid` イベントとして `idle` に戻す。`u`/`Ctrl+R`/`Esc` はguardをバイパス（常時利用可能、`availableCommands` に含めない）。
+
+Visualモード中は `availableCommands` と `visualCommands` をマージした有効手札（`getEffectiveHand()`）を使用する。オペレータキー（d/c/y/>/＜）は、そのキーで始まるコンボ（例: `dw`）が有効手札にあれば operator pending に遷移を許可する。
 
 ---
 
@@ -253,6 +255,7 @@ export interface Stage {
   life: number
   stars: [number, number, number] // [☆3閾値, ☆2閾値, ☆1閾値]
   availableCommands: string[] // 手札
+  visualCommands?: string[] // Visualモード専用手札（Visual時のみavailableCommandsに追加）
   clearConditions?: {
     cursor?: { line: number; col: number }
     registers?: Record<string, string>
@@ -369,6 +372,24 @@ export interface Hint {
 | カスタムドメイン | 対応（設定時に追加）      |
 | ビルドコマンド   | `vite build`              |
 | 出力ディレクトリ | `dist`                    |
+
+---
+
+## 8. CI（継続的インテグレーション）
+
+### 8.1 GitHub Actions
+
+`.github/workflows/ci.yml` で定義。push / PR 時に自動実行。
+
+| ステップ       | コマンド              | 説明                     |
+| -------------- | --------------------- | ------------------------ |
+| Typecheck      | `tsc --noEmit`        | TypeScript型チェック     |
+| Lint           | `eslint .`            | ESLint静的解析           |
+| Format check   | `prettier --check .`  | Prettier書式チェック     |
+| Test           | `vitest run`          | 全テスト実行             |
+| Build          | `vite build`          | プロダクションビルド     |
+
+全ステップが順次実行され、いずれかが失敗するとCIは失敗となる。
 
 ---
 

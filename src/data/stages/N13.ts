@@ -18,7 +18,7 @@ export const N13_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['h', 'l', 'w', 'b', 'e', 'gj', 'gk', 'x', 'u'],
+    availableCommands: ['h', 'l', 'w', 'b', 'e', 'gj', 'gk', 'x'],
     clearConditions: { cursor: { line: 2, col: 0 } },
     hints: [{ cost: 1, commands: ['gj', 'gj'] }],
     flavor: 'j は論理行で動く。gj なら表示行で移動できる。ここでは gj だけが使える',

@@ -29,7 +29,6 @@ export const N40_STAGES: Stage[] = [
       '0',
       '$',
       'x',
-      'u',
       'y',
       'yy',
       'dd',

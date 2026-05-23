@@ -29,7 +29,6 @@ export const N35_STAGES: Stage[] = [
       'f',
       't',
       'x',
-      'u',
       'diw',
       'di"',
       'gu',

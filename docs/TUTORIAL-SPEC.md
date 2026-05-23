@@ -169,6 +169,10 @@ export const N02_TUTORIAL: Tutorial = {
 
 ## 6. 入力制御
 
+### 6.0 サウンド
+
+チュートリアル中のキー入力には `playTick()` を再生する（正解キー・acceptedKeys内キーとも）。Skipボタン押下時も `playTick()` を再生。誤入力時のサウンドはなし（無視のみ）。
+
 ### 6.1 キー入力ルール
 
 | 入力              | 挙動                               |

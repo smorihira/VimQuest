@@ -18,7 +18,7 @@ export const N10_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 7,
     stars: [1, 2, 4],
-    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', 'x', 'u'],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', 'x'],
     clearConditions: { cursor: { line: 0, col: 28 } },
     hints: [{ cost: 1, commands: ['$'] }],
     flavor: '$ で行末に一瞬で飛べる。w 連打とはおさらばだ',

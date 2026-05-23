@@ -117,21 +117,12 @@ function isInHand(commandKey: string, available: string[] | undefined): boolean 
             return true
         }
     }
+    // If checking an operator key, allow it when any combo starting with it exists
+    // (e.g. 'd' is allowed when 'dw', 'dd', 'diw' are in hand)
+    if (OPERATORS.has(commandKey)) {
+        return available.some((cmd) => cmd.startsWith(commandKey) && cmd.length > commandKey.length)
+    }
     return false
-}
-
-/**
- * Check if the hand contains any operator+motion combo for the given operator.
- * e.g. for 'd': true if hand has 'dd', 'dw', 'diw', etc., or 'd' is expandable.
- * Returns true when unrestricted (available === undefined).
- */
-function hasOperatorCombo(op: string, available: string[] | undefined): boolean {
-    if (available === undefined) return true
-    // Expandable operators (y, gU, gu) — standalone presence means combos work
-    const expandableOperators = ['y', 'gU', 'gu']
-    if (expandableOperators.includes(op) && available.includes(op)) return true
-    // Check for explicit combos like 'dd', 'dw', 'diw', 'cc', '>>', etc.
-    return available.some((cmd) => cmd.startsWith(op) && cmd.length > op.length)
 }
 
 // ─── Merge counts ───────────────────────────────────────────────────
@@ -158,17 +149,24 @@ export class CommandParser {
     private searchBuffer: string = ''
     private registerName: string | undefined = undefined
     private availableCommands: string[] | undefined = undefined
+    private visualCommands: string[] | undefined = undefined
     private onResult: ((result: ParseResult) => void) | undefined = undefined
     private editorMode: 'normal' | 'visual' | 'insert' = 'normal'
 
-    constructor(availableCommands?: string[], onResult?: (result: ParseResult) => void) {
+    constructor(
+        availableCommands?: string[],
+        onResult?: (result: ParseResult) => void,
+        visualCommands?: string[],
+    ) {
         this.availableCommands = availableCommands
+        this.visualCommands = visualCommands
         this.onResult = onResult
     }
 
     /** Update hand cards */
-    setAvailableCommands(commands: string[] | undefined): void {
+    setAvailableCommands(commands: string[] | undefined, visualCommands?: string[]): void {
         this.availableCommands = commands
+        this.visualCommands = visualCommands
     }
 
     /** Set editor mode so parser can adjust behavior (e.g. visual mode d/x/y) */
@@ -196,6 +194,15 @@ export class CommandParser {
     /** Get current parser state */
     getState(): ParserState {
         return this.state
+    }
+
+    /** Get effective hand: in visual mode, merge visualCommands into availableCommands */
+    private getEffectiveHand(): string[] | undefined {
+        if (!this.availableCommands) return undefined
+        if (this.editorMode === 'visual' && this.visualCommands?.length) {
+            return [...this.availableCommands, ...this.visualCommands]
+        }
+        return this.availableCommands
     }
 
     /** Get display string for current buffer (for UI display) */
@@ -288,7 +295,7 @@ export class CommandParser {
         // Digit → number prefix (not 0, which is a motion)
         // Only enter number prefix mode if G is in hand (since {count}G is the only allowed count command)
         if (isDigit(key)) {
-            if (!isInHand('G', this.availableCommands)) {
+            if (!isInHand('G', this.getEffectiveHand())) {
                 return null // silently ignore digits when G is not available
             }
             this.countPrefix = parseInt(key, 10)
@@ -304,7 +311,7 @@ export class CommandParser {
 
         // r prefix (replace char)
         if (key === 'r') {
-            if (!isInHand('r', this.availableCommands)) {
+            if (!isInHand('r', this.getEffectiveHand())) {
                 return this.emitInvalid('r')
             }
             this.state = 'rPending'
@@ -313,7 +320,7 @@ export class CommandParser {
 
         // f/F/t/T prefix (find/til char)
         if (key === 'f' || key === 'F' || key === 't' || key === 'T') {
-            if (!isInHand(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(key)
             }
             this.state = 'fPending'
@@ -328,7 +335,7 @@ export class CommandParser {
 
         // / — search
         if (key === '/') {
-            if (!isInHand('/', this.availableCommands)) {
+            if (!isInHand('/', this.getEffectiveHand())) {
                 return this.emitInvalid('/')
             }
             this.searchBuffer = ''
@@ -344,7 +351,7 @@ export class CommandParser {
 
         // Ctrl+d, Ctrl+u
         if (key === 'Ctrl+d' || key === 'Ctrl+u') {
-            if (!isInHand(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(key)
             }
             return this.emit({ raw: key, valid: true }, 1)
@@ -352,7 +359,7 @@ export class CommandParser {
 
         // Ctrl+v (visual block)
         if (key === 'Ctrl+v') {
-            if (!isInHand(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(key)
             }
             return this.emit({ raw: key, valid: true }, 1)
@@ -360,7 +367,7 @@ export class CommandParser {
 
         // * and # (word under cursor search)
         if (key === '*' || key === '#') {
-            if (!isInHand(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(key)
             }
             return this.emit({ raw: key, motion: key as Motion, valid: true }, 1)
@@ -386,11 +393,7 @@ export class CommandParser {
 
         // Operator
         if (OPERATORS.has(key)) {
-            // Check if this operator can complete as operator+motion in the hand
-            // (e.g. 'dw', 'dd', 'diw' etc.)
-            // If only the bare operator is in hand and no combos exist,
-            // it's visual-mode-only — block in normal mode
-            if (this.editorMode !== 'visual' && !hasOperatorCombo(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(key)
             }
             this.operator = key as Operator
@@ -405,7 +408,7 @@ export class CommandParser {
                 motion: key as Motion,
                 valid: true,
             }
-            if (!isInHand(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(key)
             }
             return this.emit(cmd, 1)
@@ -413,7 +416,7 @@ export class CommandParser {
 
         // Instant commands
         if (INSTANT_COMMANDS.has(key)) {
-            if (!isInHand(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(key)
             }
             return this.emit({ raw: key, valid: true }, 1)
@@ -446,7 +449,7 @@ export class CommandParser {
         // {count}G is the ONLY allowed count command
         if (key === 'G') {
             const raw = this.buffer
-            if (!isInHand('G', this.availableCommands)) {
+            if (!isInHand('G', this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             return this.emit({ raw, motion: 'G' as Motion, count: this.countPrefix, valid: true }, 1)
@@ -473,7 +476,7 @@ export class CommandParser {
         if (key === this.operator) {
             const raw = this.buffer
             const doubled = `${this.operator}${this.operator}` as string
-            if (!isInHand(doubled, this.availableCommands)) {
+            if (!isInHand(doubled, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -484,7 +487,7 @@ export class CommandParser {
         if (SIMPLE_MOTIONS.has(key)) {
             const raw = this.buffer
             const cmdKey = `${this.operator}${key}`
-            if (!isInHand(cmdKey, this.availableCommands)) {
+            if (!isInHand(cmdKey, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -506,7 +509,7 @@ export class CommandParser {
         // f/F/t/T after operator (e.g., df(, dt;)
         if (key === 'f' || key === 'F' || key === 't' || key === 'T') {
             const cmdKey = `${this.operator}${key}`
-            if (!isInHand(cmdKey, this.availableCommands)) {
+            if (!isInHand(cmdKey, this.getEffectiveHand())) {
                 return this.emitInvalid(this.buffer)
             }
             this.state = 'fPending'
@@ -541,7 +544,7 @@ export class CommandParser {
         if (SIMPLE_MOTIONS.has(key)) {
             const raw = this.buffer
             const cmdKey = `${this.operator}${key}`
-            if (!isInHand(cmdKey, this.availableCommands)) {
+            if (!isInHand(cmdKey, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -578,7 +581,7 @@ export class CommandParser {
         // gg — go to first line
         if (key === 'g') {
             const raw = this.buffer
-            if (!isInHand('gg', this.availableCommands)) {
+            if (!isInHand('gg', this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -589,7 +592,7 @@ export class CommandParser {
         if (key === 'j' || key === 'k') {
             const raw = this.buffer
             const motionKey = `g${key}` as Motion
-            if (!isInHand(motionKey, this.availableCommands)) {
+            if (!isInHand(motionKey, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -598,7 +601,7 @@ export class CommandParser {
 
         // gu (lowercase)
         if (key === 'u') {
-            if (!isInHand('gu', this.availableCommands)) {
+            if (!isInHand('gu', this.getEffectiveHand())) {
                 return this.emitInvalid(this.buffer)
             }
             this.state = 'guPending'
@@ -607,7 +610,7 @@ export class CommandParser {
 
         // gU (uppercase)
         if (key === 'U') {
-            if (!isInHand('gU', this.availableCommands)) {
+            if (!isInHand('gU', this.getEffectiveHand())) {
                 return this.emitInvalid(this.buffer)
             }
             this.state = 'gUPending'
@@ -689,7 +692,7 @@ export class CommandParser {
             const raw = this.buffer
             const textObj = `${this.textobjPrefix}${key}` as import('../types/command').TextObject
             const cmdKey = `${this.operator}${textObj}`
-            if (!isInHand(cmdKey, this.availableCommands)) {
+            if (!isInHand(cmdKey, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -748,7 +751,7 @@ export class CommandParser {
         if (SIMPLE_MOTIONS.has(key)) {
             const raw = this.buffer
             const cmdKey = `gu${key}`
-            if (!isInHand(cmdKey, this.availableCommands)) {
+            if (!isInHand(cmdKey, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -777,7 +780,7 @@ export class CommandParser {
         if (SIMPLE_MOTIONS.has(key)) {
             const raw = this.buffer
             const cmdKey = `gU${key}`
-            if (!isInHand(cmdKey, this.availableCommands)) {
+            if (!isInHand(cmdKey, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -797,7 +800,7 @@ export class CommandParser {
         if (key === 'z' || key === 't' || key === 'b') {
             const raw = this.buffer
             const cmdKey = `z${key}`
-            if (!isInHand(cmdKey, this.availableCommands)) {
+            if (!isInHand(cmdKey, this.getEffectiveHand())) {
                 return this.emitInvalid(raw)
             }
             return this.emit({ raw: cmdKey, valid: true }, 1)
@@ -817,7 +820,7 @@ export class CommandParser {
         if (/^[a-zA-Z0-9]$/.test(key)) {
             // Check if register is in hand (e.g., "a → check '"a')
             const regKey = `"${key}`
-            if (!isInHand(regKey, this.availableCommands)) {
+            if (!isInHand(regKey, this.getEffectiveHand())) {
                 return this.emitInvalid(this.buffer)
             }
             this.registerName = key
@@ -835,7 +838,7 @@ export class CommandParser {
 
         // Handle y, d, c operators after register
         if (OPERATORS.has(key)) {
-            if (this.editorMode !== 'visual' && !hasOperatorCombo(key, this.availableCommands)) {
+            if (!isInHand(key, this.getEffectiveHand())) {
                 return this.emitInvalid(this.buffer)
             }
             this.operator = key as Operator
