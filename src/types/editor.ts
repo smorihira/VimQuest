@@ -53,6 +53,8 @@ export interface EditorState {
     lastFindMotion?: { motion: 'f' | 'F' | 't' | 'T'; char: string }
     /** Last insert text for dot repeat (text typed during last insert session) */
     lastInsertText?: string
+    /** Top visible line index for viewport scrolling */
+    viewportTop: number
 }
 
 /** Create initial editor state from text and cursor */
@@ -64,5 +66,6 @@ export function createEditorState(text: string, cursor: CursorPosition): EditorS
         undoStack: [],
         redoStack: [],
         registers: {},
+        viewportTop: 0,
     }
 }

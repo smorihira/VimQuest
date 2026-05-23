@@ -54,10 +54,10 @@ export const N18_STAGES: Stage[] = [
         initialText: 'body {\n  color: dark red;\n  background: light blue;\n}',
         goalText: 'body {\n  color: red;\n  background: blue;\n}',
         initialCursor: { line: 0, col: 0 },
-        life: 15,
-        stars: [7, 10, 13],
+        life: 18,
+        stars: [10, 13, 16],
         availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'x', 'u', 'dw', 'de', 'db'],
-        hints: [{ cost: 1, commands: ['j', '3w', 'dw', 'j', 'b', '2w', 'dw'] }],
+        hints: [{ cost: 1, commands: ['j', 'w', 'w', 'w', 'dw', 'j', 'b', 'w', 'w', 'dw'] }],
         flavor: 'dark と light の接頭辞だけを正確に削れ',
     },
 ]

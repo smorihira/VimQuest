@@ -1168,20 +1168,64 @@ function executeChangeToEnd(state: EditorState): EditorState {
     return { ...state, text: newText, cursor: state.cursor, mode: 'insert', registers: { ...state.registers, '': deleted } }
 }
 
+/** Default viewport height in lines */
+const VIEWPORT_HEIGHT = 16
+
+/** Clamp viewport top to valid range */
+function clampViewport(viewportTop: number, totalLines: number): number {
+    const max = Math.max(0, totalLines - 1)
+    return Math.min(Math.max(0, viewportTop), max)
+}
+
+/** Auto-scroll viewport to keep cursor visible */
+function ensureCursorVisible(state: EditorState): EditorState {
+    const { cursor, viewportTop } = state
+    if (cursor.line < viewportTop) {
+        return { ...state, viewportTop: cursor.line }
+    }
+    if (cursor.line >= viewportTop + VIEWPORT_HEIGHT) {
+        return { ...state, viewportTop: cursor.line - VIEWPORT_HEIGHT + 1 }
+    }
+    return state
+}
+
 /** Execute Ctrl+d — half page down */
 function executeHalfPageDown(state: EditorState): EditorState {
     const totalLines = lineCount(state.text)
-    const halfPage = Math.max(1, Math.floor(totalLines / 2))
+    const halfPage = Math.max(1, Math.floor(VIEWPORT_HEIGHT / 2))
     const target = Math.min(state.cursor.line + halfPage, totalLines - 1)
-    return { ...state, cursor: { line: target, col: 0 } }
+    const newViewport = clampViewport(state.viewportTop + halfPage, totalLines)
+    return { ...state, cursor: { line: target, col: 0 }, viewportTop: newViewport }
 }
 
 /** Execute Ctrl+u — half page up */
 function executeHalfPageUp(state: EditorState): EditorState {
     const totalLines = lineCount(state.text)
-    const halfPage = Math.max(1, Math.floor(totalLines / 2))
+    const halfPage = Math.max(1, Math.floor(VIEWPORT_HEIGHT / 2))
     const target = Math.max(state.cursor.line - halfPage, 0)
-    return { ...state, cursor: { line: target, col: 0 } }
+    const newViewport = clampViewport(state.viewportTop - halfPage, totalLines)
+    return { ...state, cursor: { line: target, col: 0 }, viewportTop: newViewport }
+}
+
+/** Execute zz — scroll viewport to center cursor */
+function executeViewportZZ(state: EditorState): EditorState {
+    const totalLines = lineCount(state.text)
+    const newTop = clampViewport(state.cursor.line - Math.floor(VIEWPORT_HEIGHT / 2), totalLines)
+    return { ...state, viewportTop: newTop }
+}
+
+/** Execute zt — scroll viewport to put cursor at top */
+function executeViewportZT(state: EditorState): EditorState {
+    const totalLines = lineCount(state.text)
+    const newTop = clampViewport(state.cursor.line, totalLines)
+    return { ...state, viewportTop: newTop }
+}
+
+/** Execute zb — scroll viewport to put cursor at bottom */
+function executeViewportZB(state: EditorState): EditorState {
+    const totalLines = lineCount(state.text)
+    const newTop = clampViewport(state.cursor.line - VIEWPORT_HEIGHT + 1, totalLines)
+    return { ...state, viewportTop: newTop }
 }
 
 /** Execute >> — indent line */
@@ -1419,6 +1463,12 @@ function executeVisualLine(state: EditorState): EditorState {
  * @returns      New editor state after command execution
  */
 export function executeCommand(state: EditorState, cmd: Command): EditorState {
+    const result = executeCommandInner(state, cmd)
+    // Auto-scroll viewport to keep cursor visible after any command
+    return ensureCursorVisible(result)
+}
+
+function executeCommandInner(state: EditorState, cmd: Command): EditorState {
     if (!cmd.valid) return state
 
     const raw = cmd.raw
@@ -1639,8 +1689,10 @@ export function executeCommand(state: EditorState, cmd: Command): EditorState {
     // Ctrl+u — half page up
     if (raw === 'Ctrl+u') return executeHalfPageUp(state)
 
-    // zz, zt, zb — viewport only, no cursor change in this game
-    if (raw === 'zz' || raw === 'zt' || raw === 'zb') return state
+    // zz, zt, zb — viewport scroll
+    if (raw === 'zz') return executeViewportZZ(state)
+    if (raw === 'zt') return executeViewportZT(state)
+    if (raw === 'zb') return executeViewportZB(state)
 
     // Search
     if (cmd.searchPattern !== undefined) return executeSearch(state, cmd.searchPattern)

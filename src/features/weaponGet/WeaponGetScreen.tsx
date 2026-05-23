@@ -3,6 +3,7 @@
  * Displays the new commands with a celebration effect.
  */
 
+import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { getSkillNode } from '../../data/skillTree'
 import { hasTutorial } from '../../data/tutorials'
@@ -14,26 +15,42 @@ export function WeaponGetScreen() {
     const navigate = useNavigate()
     const node = nodeId ? getSkillNode(nodeId) : undefined
 
+    const isTutorialNode = node ? hasTutorial(node.id) : false
+    const stages = node ? getStagesByNode(node.id) : []
+    const firstStage = stages[0]
+
+    const handleProceed = () => {
+        if (!node) return
+        if (isTutorialNode) {
+            navigate(`/tutorial/${node.id}`)
+        } else if (firstStage) {
+            navigate(`/play/${firstStage.id}`)
+        } else {
+            navigate('/tree', { state: { nodeId: node?.id } })
+        }
+    }
+
+    // Keyboard navigation — Enter/Space to proceed
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.code === 'Space') {
+                e.preventDefault()
+                handleProceed()
+            }
+            if (e.key === 'Escape') {
+                navigate('/tree', { state: { nodeId: node?.id } })
+            }
+        }
+        window.addEventListener('keydown', handleKey)
+        return () => window.removeEventListener('keydown', handleKey)
+    })
+
     if (!node) {
         return (
             <div className="weapon-error">
                 Node not found: {nodeId}
             </div>
         )
-    }
-
-    const isTutorialNode = hasTutorial(node.id)
-    const stages = getStagesByNode(node.id)
-    const firstStage = stages[0]
-
-    const handleProceed = () => {
-        if (isTutorialNode) {
-            navigate(`/tutorial/${node.id}`)
-        } else if (firstStage) {
-            navigate(`/play/${firstStage.id}`)
-        } else {
-            navigate('/tree')
-        }
     }
 
     return (

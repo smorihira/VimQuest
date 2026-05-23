@@ -3,10 +3,12 @@
  * Displays operation log with waste highlighting, damage summary, and hint.
  */
 
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router'
 import { getStage } from '../../data/stages'
 import type { SpellEntry } from '../play/usePlayEngine'
 import './GameOverScreen.css'
+import { playTick } from '../../engine/sound'
 
 interface LocationState {
     damage?: number
@@ -54,6 +56,44 @@ export function GameOverScreen() {
     const collapsed = collapseSpells(spells)
     const overAmount = totalDamage - stage.life
     const optimalDamage = stage.stars[0]
+
+    const actions = useMemo(() => [
+        { label: 'ツリーへ', action: () => navigate('/tree', { state: { nodeId: stage.nodeId } }) },
+        { label: 'リトライ', action: () => navigate(`/play/${stage.id}`) },
+    ], [navigate, stage.id, stage.nodeId])
+
+    const [focusIdx, setFocusIdx] = useState(1) // default to リトライ
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.code === 'Space') {
+                e.preventDefault()
+                playTick()
+                actions[focusIdx].action()
+            }
+            if (e.key === 'r') {
+                e.preventDefault()
+                playTick()
+                navigate(`/play/${stage.id}`)
+            }
+            if (e.key === 'Escape') {
+                navigate('/tree', { state: { nodeId: stage.nodeId } })
+            }
+            if (e.key === 'h' || e.key === 'k' || e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault()
+                setFocusIdx(i => Math.max(0, i - 1))
+                playTick()
+            }
+            if (e.key === 'l' || e.key === 'j' || e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault()
+                setFocusIdx(i => Math.min(actions.length - 1, i + 1))
+                playTick()
+            }
+        }
+        window.addEventListener('keydown', handleKey)
+        return () => window.removeEventListener('keydown', handleKey)
+    }, [navigate, stage.id, stage.nodeId, actions, focusIdx])
 
     return (
         <div className="gameover-screen">
@@ -109,18 +149,15 @@ export function GameOverScreen() {
 
                 {/* Actions */}
                 <div className="actions">
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => navigate('/tree')}
-                    >
-                        ツリーに戻る
-                    </button>
-                    <button
-                        className="btn btn-primary"
-                        onClick={() => navigate(`/play/${stage.id}`)}
-                    >
-                        リトライ
-                    </button>
+                    {actions.map((act, i) => (
+                        <button
+                            key={act.label}
+                            className={`btn ${i === actions.length - 1 ? 'btn-primary' : 'btn-secondary'}${i === focusIdx ? ' focused' : ''}`}
+                            onClick={act.action}
+                        >
+                            {act.label}
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>

@@ -2,11 +2,23 @@
  * LandingScreen — title screen with logo, features, and start button.
  */
 
+import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import './LandingScreen.css'
 
 export function LandingScreen() {
     const navigate = useNavigate()
+
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            if (e.key === 'Enter' || e.code === 'Space') {
+                e.preventDefault()
+                navigate('/tree')
+            }
+        }
+        window.addEventListener('keydown', handleKey)
+        return () => window.removeEventListener('keydown', handleKey)
+    }, [navigate])
 
     return (
         <div className="landing-screen">

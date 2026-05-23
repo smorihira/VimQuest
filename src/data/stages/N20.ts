@@ -16,13 +16,13 @@ export const N20_STAGES: Stage[] = [
         initialText: 'return value; // temporary hack',
         goalText: 'return value;',
         initialCursor: { line: 0, col: 0 },
-        life: 9,
-        stars: [3, 4, 6],
+        life: 11,
+        stars: [5, 6, 8],
         availableCommands: [
             'h', 'j', 'k', 'l', 'w', 'b', 'e',
             '0', '$', 'x', 'u', 'dd', 'd$', 'd0', 'dw',
         ],
-        hints: [{ cost: 1, commands: ['2e', '2l', 'd$'] }],
+        hints: [{ cost: 1, commands: ['e', 'e', 'l', 'l', 'd$'] }],
         flavor: 'コメントを d$ で行末まで一気に削除せよ',
     },
 ]

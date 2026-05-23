@@ -126,35 +126,52 @@ describe('count prefix', () => {
         parser = new CommandParser()
     })
 
-    it('3l → count=3, motion=l', () => {
+    it('3l → invalid (count forbidden except {count}G)', () => {
         const r = feedAll(parser, ['3', 'l'])!
+        expect(r.command.valid).toBe(false)
+    })
+
+    it('12j → invalid (count forbidden)', () => {
+        const r = feedAll(parser, ['1', '2', 'j'])!
+        expect(r.command.valid).toBe(false)
+    })
+
+    it('3x → invalid (count forbidden)', () => {
+        const r = feedAll(parser, ['3', 'x'])!
+        expect(r.command.valid).toBe(false)
+    })
+
+    it('3dw → invalid (count forbidden)', () => {
+        const r = feedAll(parser, ['3', 'd', 'w'])!
+        expect(r.command.valid).toBe(false)
+    })
+
+    it('42G → valid, count=42, motion=G', () => {
+        const r = feedAll(parser, ['4', '2', 'G'])!
         expect(r.command.valid).toBe(true)
-        expect(r.command.count).toBe(3)
-        expect(r.command.motion).toBe('l')
-        expect(r.command.raw).toBe('3l')
+        expect(r.command.count).toBe(42)
+        expect(r.command.motion).toBe('G')
         expect(r.damage).toBe(1)
     })
 
-    it('12j → count=12, motion=j', () => {
-        const r = feedAll(parser, ['1', '2', 'j'])!
+    it('5G → valid, count=5', () => {
+        const r = feedAll(parser, ['5', 'G'])!
         expect(r.command.valid).toBe(true)
-        expect(r.command.count).toBe(12)
-        expect(r.command.motion).toBe('j')
+        expect(r.command.count).toBe(5)
+        expect(r.command.motion).toBe('G')
     })
 
-    it('3x → count=3, instant x', () => {
-        const r = feedAll(parser, ['3', 'x'])!
-        expect(r.command.valid).toBe(true)
-        expect(r.command.count).toBe(3)
-        expect(r.command.raw).toBe('3x')
+    it('3Esc → cancels count, emits Esc', () => {
+        const r1 = parser.feed('3')
+        expect(r1).toBeNull()
+        const r2 = parser.feed('Esc')!
+        expect(r2.command.valid).toBe(true)
+        expect(r2.command.raw).toBe('Esc')
     })
 
-    it('3dw → count=3, operator=d, motion=w', () => {
-        const r = feedAll(parser, ['3', 'd', 'w'])!
-        expect(r.command.valid).toBe(true)
-        expect(r.command.count).toBe(3)
-        expect(r.command.operator).toBe('d')
-        expect(r.command.motion).toBe('w')
+    it('d3w → invalid (count after operator forbidden)', () => {
+        const r = feedAll(parser, ['d', '3', 'w'])!
+        expect(r.command.valid).toBe(false)
     })
 })
 
@@ -190,12 +207,9 @@ describe('operator + motion', () => {
         expect(r.command.motion).toBe('b')
     })
 
-    it('d3w → count=3, operator=d, motion=w', () => {
+    it('d3w → invalid (count after operator forbidden)', () => {
         const r = feedAll(parser, ['d', '3', 'w'])!
-        expect(r.command.valid).toBe(true)
-        expect(r.command.count).toBe(3)
-        expect(r.command.operator).toBe('d')
-        expect(r.command.motion).toBe('w')
+        expect(r.command.valid).toBe(false)
     })
 
     it('dd → operator=d, line-wise delete', () => {
@@ -211,12 +225,9 @@ describe('operator + motion', () => {
         expect(r.command.operator).toBe('y')
     })
 
-    it('count before and after operator multiply: 2d3w → count=6', () => {
+    it('2d3w → invalid (count forbidden)', () => {
         const r = feedAll(parser, ['2', 'd', '3', 'w'])!
-        expect(r.command.valid).toBe(true)
-        expect(r.command.count).toBe(6)
-        expect(r.command.operator).toBe('d')
-        expect(r.command.motion).toBe('w')
+        expect(r.command.valid).toBe(false)
     })
 })
 
@@ -379,11 +390,16 @@ describe('parseKeys convenience', () => {
         expect(r.command.motion).toBe('w')
     })
 
-    it('parses 3l', () => {
+    it('parses 3l → invalid (count forbidden)', () => {
         const r = parseKeys(['3', 'l'])!
+        expect(r.command.valid).toBe(false)
+    })
+
+    it('parses 5G → valid', () => {
+        const r = parseKeys(['5', 'G'])!
         expect(r.command.valid).toBe(true)
-        expect(r.command.count).toBe(3)
-        expect(r.command.motion).toBe('l')
+        expect(r.command.count).toBe(5)
+        expect(r.command.motion).toBe('G')
     })
 
     it('parses with hand restriction', () => {

@@ -219,6 +219,11 @@
     border-color: rgba(255, 255, 255, 0.3);
 }
 
+.gameover-screen .btn.focused {
+    outline: 2px solid var(--accent, #7c7cff);
+    outline-offset: 2px;
+}
+
 .gameover-error {
     display: flex;
     align-items: center;

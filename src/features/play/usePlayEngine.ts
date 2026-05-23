@@ -53,6 +53,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
     const [parserBuffer, setParserBuffer] = useState('')
     const [lastInvalid, setLastInvalid] = useState(false)
     const [lastExecutedRaw, setLastExecutedRaw] = useState('')
+    const [commandSeq, setCommandSeq] = useState(0)
 
     // Ref for insert-mode entry snapshot (for finalizeInsertSession)
     const insertEntryRef = useRef<EditorState | null>(null)
@@ -124,12 +125,13 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
             }
 
             const parseResult = parser.feed(key)
-            setParserBuffer(parser.getState() === 'idle' ? '' : key)
+            setParserBuffer(parser.getState() === 'idle' ? '' : parser.getDisplayBuffer())
 
             if (!parseResult) return // parser is accumulating (e.g., waiting for motion after 'd')
 
             // --- inline handleParseResult ---
             setLastInvalid(!parseResult.command.valid)
+            setCommandSeq(s => s + 1)
 
             if (!parseResult.command.valid) {
                 // Invalid command — no damage, red flash
@@ -281,6 +283,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
         lastInvalid,
         spells,
         lastExecutedRaw,
+        commandSeq,
         handleKey,
         reset,
         useHint,

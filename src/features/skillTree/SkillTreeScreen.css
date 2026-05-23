@@ -294,3 +294,14 @@
 .stage-stars .star-off {
     color: rgba(255, 255, 255, 0.12);
 }
+
+/* Keyboard focus */
+.tree-node.focused {
+    outline: 2px solid var(--accent, #7c7cff);
+    outline-offset: 2px;
+}
+
+.stage-item.focused {
+    background: rgba(124, 124, 255, 0.15);
+    outline: 1px solid var(--accent, #7c7cff);
+}

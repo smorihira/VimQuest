@@ -39,7 +39,12 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
             }
 
             const parser = new CommandParser(stage.availableCommands)
-            const keys = cmdStr.split('')
+
+            // Multi-char commands like "Ctrl+d", "Esc" are fed as a single key
+            // Single-char sequences like "dw" are fed char-by-char
+            const keys = cmdStr.length > 1 && (cmdStr.includes('+') || cmdStr === 'Esc' || cmdStr === 'Enter' || cmdStr === 'Backspace')
+                ? [cmdStr]
+                : cmdStr.split('')
 
             let s = state
             for (const key of keys) {

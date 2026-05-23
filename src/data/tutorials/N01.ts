@@ -37,7 +37,7 @@ export const N01_TUTORIAL: Tutorial = {
             acceptedKeys: ['h', 'j', 'k', 'l'],
         },
         {
-            message: 'h j k l — これがVimの基本移動だ。覚えておけ',
+            message: '💡 困ったら右下のキューブを押せ。答え（ヒント）が再生される。ただし ☆1 確定だ',
             expectedKey: null,
         },
     ],

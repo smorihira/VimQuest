@@ -3,7 +3,7 @@
  * Displays stars, damage stats, and navigation buttons.
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback, useMemo, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router'
 import { useAtom } from 'jotai'
 import { getStage, getStagesByNode } from '../../data/stages'
@@ -13,6 +13,7 @@ import { SKILL_NODES, getSkillNode } from '../../data/skillTree'
 import type { StarRating } from '../../types/stage'
 import type { SpellEntry } from '../play/usePlayEngine'
 import './ResultScreen.css'
+import { playTick } from '../../engine/sound'
 
 interface LocationState {
     damage: number
@@ -114,6 +115,53 @@ export function ResultScreen() {
     }
     const nextNodeId = getNextNodeId()
 
+    // Keyboard navigation
+    // Build action list for keyboard nav
+    const actions = useMemo(() => {
+        const list: { label: string; action: () => void }[] = [
+            { label: 'もう一度', action: () => navigate(`/play/${stage.id}`) },
+            { label: 'ツリーへ', action: () => navigate('/tree', { state: { nodeId: stage.nodeId } }) },
+        ]
+        if (nextStage) {
+            list.push({ label: '次のステージへ →', action: () => navigate(`/play/${nextStage.id}`) })
+        } else if (nextNodeId) {
+            list.push({ label: '次のノードへ →', action: () => navigate(`/weapon/${nextNodeId}`) })
+        }
+        return list
+    }, [navigate, stage.id, nextStage, nextNodeId])
+
+    const [focusIdx, setFocusIdx] = useState(actions.length - 1) // default to last (primary)
+
+    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.code === 'Space') {
+            e.preventDefault()
+            playTick()
+            actions[focusIdx].action()
+        }
+        if (e.key === 'Escape') {
+            navigate('/tree', { state: { nodeId: stage.nodeId } })
+        }
+        if (e.key === 'r') {
+            playTick()
+            navigate(`/play/${stage.id}`)
+        }
+        if (e.key === 'h' || e.key === 'k' || e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            e.preventDefault()
+            setFocusIdx(i => Math.max(0, i - 1))
+            playTick()
+        }
+        if (e.key === 'l' || e.key === 'j' || e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            e.preventDefault()
+            setFocusIdx(i => Math.min(actions.length - 1, i + 1))
+            playTick()
+        }
+    }, [navigate, actions, focusIdx, stage.id])
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+    }, [handleKeyDown])
+
     return (
         <div className="result-screen">
             <div className="result-container">
@@ -200,34 +248,15 @@ export function ResultScreen() {
 
                 {/* Actions */}
                 <div className="actions">
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => navigate(`/play/${stage.id}`)}
-                    >
-                        もう一度
-                    </button>
-                    <button
-                        className="btn btn-secondary"
-                        onClick={() => navigate('/tree')}
-                    >
-                        ツリーへ
-                    </button>
-                    {nextStage && (
+                    {actions.map((act, i) => (
                         <button
-                            className="btn btn-primary"
-                            onClick={() => navigate(`/play/${nextStage.id}`)}
+                            key={act.label}
+                            className={`btn ${i === actions.length - 1 ? 'btn-primary' : 'btn-secondary'}${i === focusIdx ? ' focused' : ''}`}
+                            onClick={act.action}
                         >
-                            次のステージへ →
+                            {act.label}
                         </button>
-                    )}
-                    {!nextStage && nextNodeId && (
-                        <button
-                            className="btn btn-primary"
-                            onClick={() => navigate(`/weapon/${nextNodeId}`)}
-                        >
-                            次のノードへ →
-                        </button>
-                    )}
+                    ))}
                 </div>
             </div>
         </div>

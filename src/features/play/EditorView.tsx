@@ -17,6 +17,8 @@ interface EditorViewProps {
     language?: Language
 }
 
+const VIEWPORT_HEIGHT = 16
+
 export function EditorView({ state, goalText, goalCursor, showGoal, language }: EditorViewProps) {
     const [hlReady, setHlReady] = useState(isHighlighterReady())
 
@@ -33,6 +35,13 @@ export function EditorView({ state, goalText, goalCursor, showGoal, language }: 
     // In vision mode, show goal text with diff highlights
     const displayLines = showGoal && goalLines ? goalLines : currentLines
 
+    // Viewport: only show lines within the viewport range (for long texts)
+    // In vision mode (showGoal), disable viewport to show ALL goal lines
+    const useViewport = !showGoal && displayLines.length > VIEWPORT_HEIGHT
+    const vpTop = useViewport ? state.viewportTop : 0
+    const vpEnd = useViewport ? Math.min(vpTop + VIEWPORT_HEIGHT, displayLines.length) : displayLines.length
+    const visibleLines = displayLines.slice(vpTop, vpEnd)
+
     return (
         <div className={`editor${showGoal ? ' vision-active' : ''}`}>
             <div className="editor-header">
@@ -40,12 +49,19 @@ export function EditorView({ state, goalText, goalCursor, showGoal, language }: 
                 <span className="editor-dot yellow" />
                 <span className="editor-dot green" />
                 <span className="editor-filename">
-                    {showGoal ? 'GOAL VISION (Space)' : 'buffer'}
+                    {showGoal
+                        ? (goalCursor ? 'GOAL VISION — カーソル位置あり' : 'GOAL VISION (Space)')
+                        : 'buffer'}
                 </span>
             </div>
             <div className="editor-content">
-                {displayLines.map((line, lineIdx) => {
+                {useViewport && vpTop > 0 && (
+                    <div className="viewport-indicator top">↑ {vpTop} lines above</div>
+                )}
+                {visibleLines.map((line, i) => {
+                    const lineIdx = vpTop + i
                     const isCurrentLine = !showGoal && lineIdx === state.cursor.line
+                    const isGoalCursorLine = showGoal && goalCursor && lineIdx === goalCursor.line
                     const currentLine = currentLines[lineIdx]
                     const goalLine = goalLines?.[lineIdx]
                     const isDiffLine = showGoal && currentLine !== goalLine
@@ -53,31 +69,41 @@ export function EditorView({ state, goalText, goalCursor, showGoal, language }: 
                     return (
                         <div
                             key={lineIdx}
-                            className={`editor-line${isCurrentLine ? ' active-line' : ''}${isDiffLine ? ' diff-line' : ''}`}
+                            className={`editor-line${isCurrentLine || isGoalCursorLine ? ' active-line' : ''}${isDiffLine ? ' diff-line' : ''}`}
                         >
                             <span className="line-number">{lineIdx + 1}</span>
                             <span className="line-content">
                                 {showGoal && goalLines
-                                    ? renderDiffLine(line, currentLine)
+                                    ? (isGoalCursorLine
+                                        ? renderGoalLineWithCursor(line, goalCursor!.col)
+                                        : renderDiffLine(line, currentLine))
                                     : renderLineWithCursor(line, lineIdx, state, hlReady ? tokenizeLine(line, lang) : null)}
                             </span>
                         </div>
                     )
                 })}
+                {useViewport && vpEnd < displayLines.length && (
+                    <div className="viewport-indicator bottom">↓ {displayLines.length - vpEnd} lines below</div>
+                )}
             </div>
             {goalText !== undefined && !showGoal && (
                 <div className="editor-goal">
                     <div className="goal-label">
                         {goalCursor ? 'GOAL カーソル位置' : 'GOAL'}
+                        <span className="goal-hint"> (Space長押しで重ね合わせ)</span>
                     </div>
                     <div className="goal-text">
-                        {goalText.split('\n').map((line, i) => (
-                            <div key={i} className="goal-line">
-                                {goalCursor && goalCursor.line === i
-                                    ? renderGoalLineWithCursor(line, goalCursor.col)
-                                    : (line || '\u00A0')}
-                            </div>
-                        ))}
+                        {goalText.split('\n').map((line, i) => {
+                            const isDiff = currentLines[i] !== line
+                            const isGoalCursor = goalCursor && goalCursor.line === i
+                            return (
+                                <div key={i} className={`goal-line${isDiff ? ' goal-diff' : ''}${isGoalCursor ? ' goal-cursor-line' : ''}`}>
+                                    {isGoalCursor
+                                        ? renderGoalLineWithCursor(line, goalCursor!.col)
+                                        : (line || '\u00A0')}
+                                </div>
+                            )
+                        })}
                     </div>
                 </div>
             )}

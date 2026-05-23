@@ -3,8 +3,8 @@
  * Uses a grid layout (enhanced to Dagre/SVG later).
  */
 
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { useNavigate, useLocation } from 'react-router'
 import { useAtomValue } from 'jotai'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES } from '../../data/skillTree'
@@ -14,6 +14,7 @@ import type { SkillNodeDef } from '../../types/game'
 import type { GameProgress } from '../../types/game'
 import type { Stage } from '../../types/stage'
 import './SkillTreeScreen.css'
+import { playTick } from '../../engine/sound'
 
 type NodeStatus = 'locked' | 'available' | 'cleared'
 
@@ -45,8 +46,116 @@ function getNodeStars(node: SkillNodeDef, progress: GameProgress): { earned: num
 
 export function SkillTreeScreen() {
     const navigate = useNavigate()
+    const location = useLocation()
     const progress = useAtomValue(gameProgressAtom)
     const [selectedNode, setSelectedNode] = useState<SkillNodeDef | null>(null)
+    const [stageFocusIdx, setStageFocusIdx] = useState(0)
+
+    // Initialize focusIdx from navigation state (e.g., returning from Result/GameOver)
+    const initialFocusIdx = useMemo(() => {
+        const state = location.state as { nodeId?: string } | null
+        if (state?.nodeId) {
+            const idx = SKILL_NODES.findIndex(n => n.id === state.nodeId)
+            if (idx >= 0) return idx
+        }
+        return 0
+    }, [location.state])
+
+    const [focusIdx, setFocusIdx] = useState(initialFocusIdx)
+    const gridRef = useRef<HTMLDivElement>(null)
+
+    // Compute columns from grid layout
+    const getColumns = useCallback(() => {
+        const grid = gridRef.current
+        if (!grid) return 4
+        const style = window.getComputedStyle(grid)
+        const cols = style.gridTemplateColumns.split(' ').length
+        return cols || 4
+    }, [])
+
+    // Keyboard navigation
+    useEffect(() => {
+        const handleKey = (e: KeyboardEvent) => {
+            // Stage selector overlay keyboard
+            if (selectedNode) {
+                const stages = getStagesByNode(selectedNode.id)
+                switch (e.key) {
+                    case 'j':
+                    case 'ArrowDown':
+                        e.preventDefault()
+                        setStageFocusIdx((i) => Math.min(stages.length - 1, i + 1))
+                        playTick()
+                        break
+                    case 'k':
+                    case 'ArrowUp':
+                        e.preventDefault()
+                        setStageFocusIdx((i) => Math.max(0, i - 1))
+                        playTick()
+                        break
+                    case 'Enter':
+                        e.preventDefault()
+                        playTick()
+                        handleStageClick(stages[stageFocusIdx])
+                        break
+                    case 'Escape':
+                        e.preventDefault()
+                        setSelectedNode(null)
+                        break
+                }
+                return
+            }
+
+            // Tree grid keyboard
+            const total = SKILL_NODES.length
+            const cols = getColumns()
+
+            switch (e.key) {
+                case 'h':
+                case 'ArrowLeft':
+                    e.preventDefault()
+                    setFocusIdx((i) => Math.max(0, i - 1))
+                    playTick()
+                    break
+                case 'l':
+                case 'ArrowRight':
+                    e.preventDefault()
+                    setFocusIdx((i) => Math.min(total - 1, i + 1))
+                    playTick()
+                    break
+                case 'j':
+                case 'ArrowDown':
+                    e.preventDefault()
+                    setFocusIdx((i) => Math.min(total - 1, i + cols))
+                    playTick()
+                    break
+                case 'k':
+                case 'ArrowUp':
+                    e.preventDefault()
+                    setFocusIdx((i) => Math.max(0, i - cols))
+                    playTick()
+                    break
+                case 'Enter':
+                    e.preventDefault()
+                    playTick()
+                    handleNodeClick(SKILL_NODES[focusIdx])
+                    break
+                case 'Escape':
+                    e.preventDefault()
+                    navigate('/')
+                    break
+            }
+        }
+        window.addEventListener('keydown', handleKey)
+        return () => window.removeEventListener('keydown', handleKey)
+    }, [selectedNode, focusIdx, stageFocusIdx, getColumns, navigate])
+
+    // Scroll focused node into view
+    useEffect(() => {
+        const grid = gridRef.current
+        if (!grid) return
+        const node = grid.children[focusIdx] as HTMLElement | undefined
+        node?.scrollIntoView({ block: 'nearest' })
+    }, [focusIdx])
 
     const stats = useMemo(() => {
         let totalStages = 0
@@ -86,6 +195,7 @@ export function SkillTreeScreen() {
         }
 
         // Show stage selector
+        setStageFocusIdx(0)
         setSelectedNode(node)
     }
 
@@ -123,8 +233,8 @@ export function SkillTreeScreen() {
             </div>
 
             {/* Tree grid */}
-            <div className="tree-grid">
-                {SKILL_NODES.map((node) => {
+            <div className="tree-grid" ref={gridRef}>
+                {SKILL_NODES.map((node, idx) => {
                     const status = getNodeStatus(node, progress)
                     const { earned } = getNodeStars(node, progress)
                     const stages = getStagesByNode(node.id)
@@ -132,7 +242,7 @@ export function SkillTreeScreen() {
                     return (
                         <div
                             key={node.id}
-                            className={`tree-node ${status}`}
+                            className={`tree-node ${status}${idx === focusIdx ? ' focused' : ''}`}
                             onClick={() => handleNodeClick(node)}
                             role="button"
                             tabIndex={status === 'locked' ? -1 : 0}
@@ -178,13 +288,13 @@ export function SkillTreeScreen() {
                             <button className="stage-panel-close" onClick={() => setSelectedNode(null)}>✕</button>
                         </div>
                         <div className="stage-panel-list">
-                            {getStagesByNode(selectedNode.id).map((stage) => {
+                            {getStagesByNode(selectedNode.id).map((stage, si) => {
                                 const result = progress.stageResults[stage.id]
                                 const stars = result?.bestStars ?? 0
                                 return (
                                     <div
                                         key={stage.id}
-                                        className={`stage-item${stars > 0 ? ' cleared' : ''}`}
+                                        className={`stage-item${stars > 0 ? ' cleared' : ''}${si === stageFocusIdx ? ' focused' : ''}`}
                                         onClick={() => handleStageClick(stage)}
                                     >
                                         <span className="stage-type">{typeLabel(stage.type)}</span>

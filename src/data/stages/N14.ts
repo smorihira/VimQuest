@@ -6,7 +6,7 @@ import type { Stage } from '../../types/stage'
  */
 export const N14_STAGES: Stage[] = [
     // ── Teach: 半ページジャンプ ──
-    // opt = 1 (Ctrl+d)
+    // opt = 2 (Ctrl+d + Ctrl+d)
     {
         id: 'N14-T',
         nodeId: 'N14',
@@ -22,7 +22,20 @@ export const N14_STAGES: Stage[] = [
             '  const e = 5;\n' +
             '  const f = 6;\n' +
             '  const g = 7;\n' +
-            '  return [a, b, c, d, e, f, g];\n' +
+            '  const h = 8;\n' +
+            '  const i = 9;\n' +
+            '  const j = 10;\n' +
+            '  const k = 11;\n' +
+            '  const l = 12;\n' +
+            '  const m = 13;\n' +
+            '  const n = 14;\n' +
+            '  const o = 15;\n' +
+            '  const p = 16;\n' +
+            '  const q = 17;\n' +
+            '  const r = 18;\n' +
+            '  const s = 19;\n' +
+            '  const t = 20;\n' +
+            '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
             '}',
         goalText:
             'function setup() {\n' +
@@ -33,16 +46,29 @@ export const N14_STAGES: Stage[] = [
             '  const e = 5;\n' +
             '  const f = 6;\n' +
             '  const g = 7;\n' +
-            '  return [a, b, c, d, e, f, g];\n' +
+            '  const h = 8;\n' +
+            '  const i = 9;\n' +
+            '  const j = 10;\n' +
+            '  const k = 11;\n' +
+            '  const l = 12;\n' +
+            '  const m = 13;\n' +
+            '  const n = 14;\n' +
+            '  const o = 15;\n' +
+            '  const p = 16;\n' +
+            '  const q = 17;\n' +
+            '  const r = 18;\n' +
+            '  const s = 19;\n' +
+            '  const t = 20;\n' +
+            '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
             '}',
         initialCursor: { line: 0, col: 0 },
-        life: 7,
-        stars: [1, 2, 4],
+        life: 8,
+        stars: [2, 3, 5],
         availableCommands: [
             'h', 'j', 'k', 'l', 'w', 'b', 'e',
-            '0', '$', 'gg', 'G', 'Ctrl+d', 'Ctrl+u', 'x', 'u',
+            '0', '$', 'gg', 'Ctrl+d', 'Ctrl+u', 'x', 'u',
         ],
-        clearConditions: { cursor: { line: 9, col: 0 } },
+        clearConditions: { cursor: { line: 16, col: 0 } },
         hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d'] }],
         flavor: 'j 連打より Ctrl+d で半ページ分ジャンプだ',
     },

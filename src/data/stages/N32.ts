@@ -73,8 +73,8 @@ export const N32_STAGES: Stage[] = [
             '  "role": "admin"\n' +
             '}',
         initialCursor: { line: 0, col: 0 },
-        life: 18,
-        stars: [10, 13, 16],
+        life: 17,
+        stars: [9, 12, 15],
         availableCommands: [
             'h', 'j', 'k', 'l', 'w', 'b', 'e',
             'i', 'a', 'f', 't', '0', '$', 'x', 'u',
@@ -84,9 +84,9 @@ export const N32_STAGES: Stage[] = [
             {
                 cost: 1,
                 commands: [
-                    'j', '5w', 'ci"', 'Bob', 'Esc',
-                    'j', 'ci"', '30', 'Esc',
-                    'j', 'ci"', 'admin', 'Esc',
+                    'j', 'fA', 'ci"', 'Bob', 'Esc',
+                    'j', 'ft', 'ci"', '30', 'Esc',
+                    'j', 'fu', 'ci"', 'admin', 'Esc',
                 ],
             },
         ],

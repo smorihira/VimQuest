@@ -159,6 +159,11 @@
     border-color: rgba(255, 255, 255, 0.3);
 }
 
+.btn.focused {
+    outline: 2px solid var(--accent, #7c7cff);
+    outline-offset: 2px;
+}
+
 /* YOUR SPELL */
 .spell-section {
     margin-bottom: 32px;

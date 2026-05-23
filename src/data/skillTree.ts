@@ -2,7 +2,7 @@
  * Skill tree node definitions — static data for all 40 nodes.
  */
 
-import type { SkillNodeDef, SkillTreeEdge } from '../../types/game'
+import type { SkillNodeDef, SkillTreeEdge } from '../types/game'
 
 export const SKILL_NODES: SkillNodeDef[] = [
     { id: 'N01', name: '基本移動', commands: ['h', 'j', 'k', 'l'], stageCount: 2, prerequisites: [] },
@@ -49,7 +49,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
 
 /** All edges derived from prerequisites */
 export const SKILL_EDGES: SkillTreeEdge[] = SKILL_NODES.flatMap((node) =>
-    node.prerequisites.map((prereq) => ({ source: prereq, target: node.id })),
+    node.prerequisites.map((prereq: string) => ({ source: prereq, target: node.id })),
 )
 
 /** Node lookup by ID */

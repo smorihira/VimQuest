@@ -151,6 +151,14 @@ export class CommandParser {
         return this.state
     }
 
+    /** Get display string for current buffer (for UI display) */
+    getDisplayBuffer(): string {
+        if (this.state === 'searchInput') {
+            return '/' + this.searchBuffer
+        }
+        return this.buffer
+    }
+
     /** Feed a single key event to the parser */
     feed(key: string): ParseResult | null {
         const result = this.transition(key)
@@ -231,7 +239,11 @@ export class CommandParser {
         }
 
         // Digit → number prefix (not 0, which is a motion)
+        // Only enter number prefix mode if G is in hand (since {count}G is the only allowed count command)
         if (isDigit(key)) {
+            if (!isInHand('G', this.availableCommands)) {
+                return null  // silently ignore digits when G is not available
+            }
             this.countPrefix = parseInt(key, 10)
             this.state = 'numberPrefix'
             return null
@@ -367,57 +379,14 @@ export class CommandParser {
             return null
         }
 
-        // Operator after count
-        if (OPERATORS.has(key)) {
-            this.operator = key as Operator
-            this.state = 'operatorPending'
-            return null
-        }
-
-        // g prefix after count
-        if (key === 'g') {
-            this.state = 'gPending'
-            return null
-        }
-
-        // r prefix after count
-        if (key === 'r') {
-            if (!isInHand('r', this.availableCommands)) {
-                return this.emitInvalid(this.buffer)
-            }
-            this.state = 'rPending'
-            return null
-        }
-
-        // f/F/t/T prefix after count
-        if (key === 'f' || key === 'F' || key === 't' || key === 'T') {
-            if (!isInHand(key, this.availableCommands)) {
-                return this.emitInvalid(this.buffer)
-            }
-            this.state = 'fPending'
-            return null
-        }
-
-        // Simple motion with count
-        if (SIMPLE_MOTIONS.has(key)) {
+        // {count}G is the ONLY allowed count command
+        if (key === 'G') {
             const raw = this.buffer
-            if (!isInHand(key, this.availableCommands)) {
+            if (!isInHand('G', this.availableCommands)) {
                 return this.emitInvalid(raw)
             }
             return this.emit(
-                { raw, motion: key as Motion, count: this.countPrefix, valid: true },
-                1,
-            )
-        }
-
-        // Instant with count
-        if (INSTANT_COMMANDS.has(key)) {
-            const raw = this.buffer
-            if (!isInHand(key, this.availableCommands)) {
-                return this.emitInvalid(raw)
-            }
-            return this.emit(
-                { raw, count: this.countPrefix, valid: true },
+                { raw, motion: 'G' as Motion, count: this.countPrefix, valid: true },
                 1,
             )
         }
@@ -427,17 +396,16 @@ export class CommandParser {
             return this.emit({ raw: 'Esc', valid: true }, 0)
         }
 
+        // Everything else after count is invalid
         return this.emitInvalid(this.buffer)
     }
 
     private handleOperatorPending(key: string): ParseResult | null {
         this.buffer += key
 
-        // Digit after operator (e.g. d3w)
+        // Digit after operator (e.g. d3w) — count is forbidden
         if (isDigit(key)) {
-            this.countAfterOp = parseInt(key, 10)
-            this.state = 'opNumberPrefix'
-            return null
+            return this.emitInvalid(this.buffer)
         }
 
         // Same operator doubled (dd, cc, yy)

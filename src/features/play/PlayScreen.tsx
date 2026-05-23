@@ -87,7 +87,7 @@ function PlayScreenInner({
     // Sound effects for commands
     useEffect(() => {
         if (play.lastInvalid) playError()
-    }, [play.lastInvalid, play.lastExecutedRaw])
+    }, [play.lastInvalid, play.commandSeq])
 
     useEffect(() => {
         if (play.lastExecutedRaw && !play.lastInvalid) {
@@ -97,7 +97,7 @@ function PlayScreenInner({
                 playTick()
             }
         }
-    }, [play.lastExecutedRaw, play.lastInvalid, play.editorState.mode])
+    }, [play.lastExecutedRaw, play.lastInvalid, play.editorState.mode, play.commandSeq])
 
     // Keyboard handler
     const onKeyDown = useCallback(
@@ -108,6 +108,11 @@ function PlayScreenInner({
             if (e.code === 'Space' && play.editorState.mode !== 'insert') {
                 e.preventDefault()
                 setSpaceHeld(true)
+                return
+            }
+
+            // Ignore bare modifier keys (Shift, Alt, etc.) — do NOT preventDefault
+            if (e.key === 'Shift' || e.key === 'Alt' || e.key === 'Control' || e.key === 'Meta') {
                 return
             }
 
@@ -133,7 +138,7 @@ function PlayScreenInner({
                 }
                 if (colonBuffer === ':q!' && e.key === 'Enter') {
                     setColonBuffer('')
-                    navigate('/tree')
+                    navigate('/tree', { state: { nodeId: stage.nodeId } })
                     return
                 }
                 if (colonBuffer) {
@@ -144,7 +149,7 @@ function PlayScreenInner({
 
             // Esc in normal mode with no pending parser input → exit stage
             if (key === 'Esc' && play.editorState.mode === 'normal' && !play.parserBuffer) {
-                navigate('/tree')
+                navigate('/tree', { state: { nodeId: stage.nodeId } })
                 return
             }
 
@@ -194,7 +199,7 @@ function PlayScreenInner({
                 <div className="play-left">
                     <button
                         className="quit-btn"
-                        onClick={() => navigate('/tree')}
+                        onClick={() => navigate('/tree', { state: { nodeId: stage.nodeId } })}
                         title="ツリーに戻る (Esc)"
                     >
                         ◀ :q!
@@ -359,6 +364,8 @@ function PlayScreenInner({
 function mapKeyEvent(e: KeyboardEvent): string | null {
     // Ctrl combos
     if (e.ctrlKey && e.key === 'r') return 'Ctrl+R'
+    if (e.ctrlKey && e.key === 'd') return 'Ctrl+d'
+    if (e.ctrlKey && e.key === 'u') return 'Ctrl+u'
 
     // Ignore other Ctrl/Meta combos
     if (e.ctrlKey || e.metaKey) return null

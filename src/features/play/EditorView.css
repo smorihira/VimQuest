@@ -122,9 +122,11 @@
 
 .goal-text {
     font-family: var(--font-code);
-    font-size: 13px;
-    line-height: 1.6;
+    font-size: 12px;
+    line-height: 1.5;
     color: rgba(255, 255, 255, 0.4);
+    max-height: 120px;
+    overflow-y: auto;
 }
 
 .goal-line {
@@ -136,6 +138,22 @@
     background: rgba(124, 124, 255, 0.5);
     color: #fff;
     border-radius: 2px;
+}
+
+.goal-hint {
+    font-weight: 400;
+    color: var(--text-dim, #666);
+    font-size: 9px;
+    letter-spacing: 0;
+}
+
+.goal-diff {
+    color: rgba(68, 221, 170, 0.7);
+    background: rgba(68, 221, 170, 0.05);
+}
+
+.goal-cursor-line {
+    background: rgba(124, 124, 255, 0.08);
 }
 
 /* ── Vision mode (Space hold) ──────────────────────── */
@@ -152,6 +170,8 @@
 
 .editor.vision-active .editor-content {
     animation: vision-flash 0.2s ease-out;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
 }
 
 .diff-line {
@@ -172,4 +192,14 @@
     100% {
         background: transparent;
     }
+}
+
+/* Viewport indicators */
+.viewport-indicator {
+    text-align: center;
+    font-family: var(--font-code);
+    font-size: 10px;
+    color: var(--text-dim, #666);
+    padding: 2px 0;
+    opacity: 0.6;
 }
