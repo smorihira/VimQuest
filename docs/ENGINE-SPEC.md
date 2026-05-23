@@ -138,6 +138,12 @@
 
 `u`、`Ctrl+R`、`Esc` は全ステージで常に使用可能。`availableCommands` に含める必要はなく、カード表示もしない。
 
+#### 基礎コマンド（BASE_COMMANDS）
+
+`h` `j` `k` `l` `w` `b` `e` `x` `i` `a` はグローバル定数 `BASE_COMMANDS` として定義。N01クリア後は全ステージで常時利用可能。手札パネルのbase行（小さなバッジ）で表示。`availableCommands` には含めない。
+
+N01ステージ中はBASE_COMMANDSは未解放。各ステージの `availableCommands` にbaseコマンドを含めて対応（エンジン側の変更不要）。
+
 #### オペレータの手札チェック
 
 オペレータキー（`d`/`c`/`y`/`>`/`<`）を押したとき、以下の順で手札チェックを行う:

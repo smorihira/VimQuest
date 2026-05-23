@@ -1,47 +1,97 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N01: 基本移動 (h/j/k/l)
- * ゲーム最初のノード。移動のみ。
- * Teach(T) + Practice(P) = 2ステージ
+ * N01: 基礎訓練 (h/j/k/l/w/b/e/x/i/a)
+ * ゲーム最初のノード。5ステージ構成のチュートリアルノード。
+ * 連続プレイ（ツリー非表示）。ライフ/☆評価なし。
  */
 
 export const N01_STAGES: Stage[] = [
-  // ── Teach: カーソルを右端へ移動 ──
-  // opt = 5 (lllll) → ☆3=5, ☆2=6, ☆1=8, life=11
+  // ── N01-1: 左右に動け ──
   {
-    id: 'N01-T',
+    id: 'N01-1',
     nodeId: 'N01',
-    type: 'teach',
-    title: '右へ進め',
+    type: 'tutorial',
+    title: '左右に動け',
     language: 'plaintext',
     initialText: 'hello!',
     goalText: 'hello!',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 6, 8],
-    availableCommands: ['h', 'j', 'k', 'l'],
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: ['h', 'l'],
     clearConditions: { cursor: { line: 0, col: 5 } },
     hints: [{ cost: 1, commands: ['l', 'l', 'l', 'l', 'l'] }],
     flavor: 'カーソルを ! の上まで移動せよ',
   },
 
-  // ── Practice: 2次元移動でターゲットに到達 ──
-  // opt = 5 (jjjll) → ☆3=5, ☆2=7, ☆1=9, life=11
+  // ── N01-2: 上下に動け ──
   {
-    id: 'N01-P',
+    id: 'N01-2',
     nodeId: 'N01',
-    type: 'practice',
-    title: '目標地点へ',
+    type: 'tutorial',
+    title: '上下に動け',
     language: 'plaintext',
-    initialText: 'abc\ndef\nghi\njkl',
-    goalText: 'abc\ndef\nghi\njkl',
+    initialText: 'first line\nsecond line\nthird line',
+    goalText: 'first line\nsecond line\nthird line',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 7, 9],
+    life: 999,
+    stars: [999, 999, 999],
     availableCommands: ['h', 'j', 'k', 'l'],
-    clearConditions: { cursor: { line: 3, col: 2 } },
-    hints: [{ cost: 1, commands: ['j', 'j', 'j', 'l', 'l'] }],
-    flavor: 'l の上にカーソルを運べ',
+    clearConditions: { cursor: { line: 2, col: 0 } },
+    hints: [{ cost: 1, commands: ['j', 'j'] }],
+    flavor: '3行目までカーソルを下ろせ',
+  },
+
+  // ── N01-3: 単語を飛べ ──
+  {
+    id: 'N01-3',
+    nodeId: 'N01',
+    type: 'tutorial',
+    title: '単語を飛べ',
+    language: 'plaintext',
+    initialText: 'the quick brown fox jumps',
+    goalText: 'the quick brown fox jumps',
+    initialCursor: { line: 0, col: 0 },
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e'],
+    clearConditions: { cursor: { line: 0, col: 20 } },
+    hints: [{ cost: 1, commands: ['w', 'w', 'w', 'w'] }],
+    flavor: 'w で単語ジャンプ。jumps まで進め',
+  },
+
+  // ── N01-4: 文字を消せ ──
+  {
+    id: 'N01-4',
+    nodeId: 'N01',
+    type: 'tutorial',
+    title: '文字を消せ',
+    language: 'plaintext',
+    initialText: 'hellllo world',
+    goalText: 'hello world',
+    initialCursor: { line: 0, col: 3 },
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'x'],
+    hints: [{ cost: 1, commands: ['x', 'x'] }],
+    flavor: '余分な l を x で消せ',
+  },
+
+  // ── N01-5: 文字を書け ──
+  {
+    id: 'N01-5',
+    nodeId: 'N01',
+    type: 'tutorial',
+    title: '文字を書け',
+    language: 'plaintext',
+    initialText: 'hllo worl',
+    goalText: 'hello world',
+    initialCursor: { line: 0, col: 1 },
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'x', 'i', 'a'],
+    hints: [{ cost: 1, commands: ['i', 'e', 'Esc', 'w', 'e', 'a', 'd', 'Esc'] }],
+    flavor: 'i と a で足りない文字を補え',
   },
 ]

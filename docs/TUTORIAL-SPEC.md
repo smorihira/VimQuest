@@ -11,6 +11,10 @@
 
 武器（新コマンド）取得時に発動する**スキップ可能なステップバイステップチュートリアル**。ナビゲーターキャラクターが1手ずつ指示し、指示以外のキー入力は受け付けない完全誘導型。
 
+チュートリアルには2種類がある:
+- **N01ステージ別チュートリアル**: N01の5ステージそれぞれに紐づくチュートリアル。N01連続プレイ中、各ステージの前に自動表示
+- **ノード別チュートリアル**: Weapon Get後に発動する従来型（N18, N29, N37）
+
 ### 1.1 目的
 
 - 新コマンドの使い方を「体で覚える」体験を提供
@@ -29,13 +33,29 @@
 
 ## 2. 画面フロー
 
+### 2.1 ノード別チュートリアル（N18, N29, N37）
+
 ```
 ノードの全ステージクリア
     → [Weapon Get画面]          ← 新武器の名前・キー表示（TRY ITなし）
     → [チュートリアル]           ← 本仕様（スキップ可能）
     → [ツリー画面]              ← 次のノード/ステージ選択
-    → [Teachステージ]           ← 初の自力プレイ
 ```
+
+### 2.2 N01ステージ別チュートリアル
+
+```
+Landing
+    → [N01-1チュートリアル] → [N01-1ステージ]
+    → [N01-2チュートリアル] → [N01-2ステージ]
+    → [N01-3チュートリアル] → [N01-3ステージ]
+    → [N01-4チュートリアル] → [N01-4ステージ]
+    → [N01-5チュートリアル] → [N01-5ステージ]
+    → [ツリー画面（初表示）]
+```
+
+N01はツリー非表示で連続プレイ。各ステージの前にステージ別チュートリアルが自動発動。
+Weapon Get画面はなし（N01にはWeaponの概念がない）。
 
 - チュートリアル対象ノード: WeaponのTRY ITを省略し、チュートリアルが代替。完了/スキップ後にツリー画面へ
 - チュートリアルが存在しないノード: Weapon Get（TRY ITあり）後に直接ツリー画面へ
@@ -44,14 +64,22 @@
 
 ## 3. 対象ノード
 
-### 3.1 チュートリアル付きノード（7ノード）
+### 3.1 チュートリアル付きノード
+
+#### N01 ステージ別チュートリアル（5件）
+
+| ステージ  | 新概念                       | ステップ数目安 | 特記事項                     |
+| --------- | ---------------------------- | -------------- | ------------------------------ |
+| **N01-1** | 基本移動（h/l）              | 6-8            | ゲーム最初の操作体験           |
+| **N01-2** | 上下移動（j/k）              | 5-6            | 上下移動の導入                 |
+| **N01-3** | 単語移動（w/b/e）            | 5-6            | 文字単位→単語単位の飛躍         |
+| **N01-4** | 初の編集（x）+ undo        | 6-8            | undo（u）導入を含む            |
+| **N01-5** | Insertモード（i/a）         | 6-8            | モード概念の導入、Esc復帰      |
+
+#### ノード別チュートリアル（3件）
 
 | ノード  | 新概念                      | ステップ数目安 | 特記事項                    |
-| ------- | --------------------------- | -------------- | --------------------------- |
-| **N01** | 基本移動（h/j/k/l）         | 6-8            | ゲーム最初の操作体験        |
-| **N02** | 初の編集（x）+ undo         | 6-8            | undo（u）導入を含む         |
-| **N03** | Insertモード（i/a）         | 6-8            | モード概念の導入、Esc復帰   |
-| **N08** | 単語移動（w/b/e）           | 5-6            | 文字単位→単語単位の飛躍     |
+| ------- | --------------------------- | -------------- | ----------------------------- |
 | **N18** | オペレータ+モーション（dw） | 5-7            | Vim文法の核心（d + motion） |
 | **N29** | TextObj（iw/aw）            | 5-6            | テキストオブジェクト概念    |
 | **N37** | Visualモード（v/V）         | 5-7            | 3つ目のモード導入           |
@@ -99,11 +127,12 @@ interface Tutorial {
 | **説明のみ** | `null`      | 省略                | 「覚えておけ」→ 任意キーで次へ            |
 | **自由練習** | `'Enter'`   | `['h','j','k','l']` | 「自由に動け。終わったらEnter」           |
 
-### 4.3 具体例: N02チュートリアル（undo導入）
+### 4.3 具体例: N01-4チュートリアル（x + undo導入）
 
 ```typescript
-export const N02_TUTORIAL: Tutorial = {
-  nodeId: 'N02',
+export const N01_4_TUTORIAL: Tutorial = {
+  stageId: 'N01-4',  // N01ステージ別チュートリアル
+  nodeId: 'N01',
   initialSetup: {
     text: 'hello world',
     cursor: { line: 0, col: 0 },
@@ -204,7 +233,7 @@ export const N02_TUTORIAL: Tutorial = {
 | 操作方法       | `Esc` キー or 画面隅「Skip」ボタン     |
 | スキップ後     | ツリー画面へ遷移                       |
 | 確認ダイアログ | なし（即スキップ）                     |
-
+> N01ステージ別チュートリアルもスキップ可能。スキップするとそのステージのプレイに直接進む（ステージ自体はスキップ不可）。
 ---
 
 ## 8. 永続化
@@ -236,36 +265,53 @@ tutorialStatus: Record<string, 'completed' | 'skipped'>
 data/
 ├── stages/           # ステージデータ（既存）
 │   └── ...
-└── tutorials/        # チュートリアルデータ（新規）
-    ├── N01.ts
-    ├── N02.ts
-    ├── N03.ts
-    ├── N08.ts
-    ├── N18.ts
+└── tutorials/        # チュートリアルデータ
+    ├── N01-1.ts      # N01ステージ別チュートリアル（5件）
+    ├── N01-2.ts
+    ├── N01-3.ts
+    ├── N01-4.ts
+    ├── N01-5.ts
+    ├── N18.ts        # ノード別チュートリアル（3件）
     ├── N29.ts
     ├── N37.ts
-    └── index.ts      # nodeId → Tutorial マッピング
+    └── index.ts      # getTutorial(stageId, nodeId) マッピング
 ```
 
 ### 9.2 index.ts
 
 ```typescript
-import { N01_TUTORIAL } from './N01'
-import { N02_TUTORIAL } from './N02'
-// ...
+import { N01_1_TUTORIAL } from './N01-1'
+import { N01_2_TUTORIAL } from './N01-2'
+import { N01_3_TUTORIAL } from './N01-3'
+import { N01_4_TUTORIAL } from './N01-4'
+import { N01_5_TUTORIAL } from './N01-5'
+import { N18_TUTORIAL } from './N18'
+import { N29_TUTORIAL } from './N29'
+import { N37_TUTORIAL } from './N37'
 
-export const TUTORIALS: Record<string, Tutorial> = {
-  N01: N01_TUTORIAL,
-  N02: N02_TUTORIAL,
-  N03: N03_TUTORIAL,
-  N08: N08_TUTORIAL,
+// N01ステージ別チュートリアル: stageId で検索
+const STAGE_TUTORIALS: Record<string, Tutorial> = {
+  'N01-1': N01_1_TUTORIAL,
+  'N01-2': N01_2_TUTORIAL,
+  'N01-3': N01_3_TUTORIAL,
+  'N01-4': N01_4_TUTORIAL,
+  'N01-5': N01_5_TUTORIAL,
+}
+
+// ノード別チュートリアル: nodeId で検索
+const NODE_TUTORIALS: Record<string, Tutorial> = {
   N18: N18_TUTORIAL,
   N29: N29_TUTORIAL,
   N37: N37_TUTORIAL,
 }
 
-export function hasTutorial(nodeId: string): boolean {
-  return nodeId in TUTORIALS
+/** stageId優先 → nodeIdフォールバック */
+export function getTutorial(stageId: string, nodeId: string): Tutorial | undefined {
+  return STAGE_TUTORIALS[stageId] ?? NODE_TUTORIALS[nodeId]
+}
+
+export function hasTutorial(stageId: string, nodeId: string): boolean {
+  return getTutorial(stageId, nodeId) !== undefined
 }
 ```
 
@@ -279,9 +325,9 @@ export function hasTutorial(nodeId: string): boolean {
 | T2  | ステップ構造   | message + expectedKey + acceptedKeys + editorSetup + wrongKeyMessage |
 | T3  | ナビゲーターUI | キャラ付き下部バー（HAND非表示にして差替え）                         |
 | T4  | 誤入力の扱い   | 無視 + ナビが期待キー再表示。固定メッセージ                          |
-| T5  | undo教育       | N02で導入。x消しすぎ→u復元                                           |
-| T6  | スキップ       | 全体スキップ。Esc + Skipボタン                                       |
-| T7  | 対象ノード     | 新概念7ノード（N01,02,03,08,18,29,37）                               |
+| T5  | undo教育       | N01-4で導入。x消しすぎ→u復元                                           |
+| T6  | スキップ       | 全体スキップ。Esc + Skipボタン。N01ステージ別もスキップ可       |
+| T7  | 対象ノード     | N01ステージ別×5 + ノード別×3（N18,N29,N37）= 合計8件     |
 | T8  | Teachとの関係  | 両方残す。チュートリアル=練習、Teach=実戦                            |
-| T9  | データ形式     | data/tutorials/ 専用ディレクトリ。TutorialStep型                     |
+| T9  | データ形式     | data/tutorials/ 専用ディレクトリ。getTutorial(stageId,nodeId)      |
 | T10 | 永続化         | GameProgressにtutorialStatus追加。completed/skippedのみ              |

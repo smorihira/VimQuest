@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { ALL_STAGES } from '../data/stages'
+import { BASE_COMMANDS } from '../data/constants'
 import { CommandParser } from './commandParser'
 import { executeCommand, finalizeInsertSession } from './commandExecutor'
 import { createEditorState } from '../types/editor'
@@ -38,7 +39,7 @@ function simulateHintCommands(stage: Stage): EditorState {
     stage.availableCommands,
     undefined,
     stage.visualCommands,
-    stage.baseCommands,
+    stage.nodeId !== 'N01' ? (BASE_COMMANDS as unknown as string[]) : undefined,
   )
 
   // Track insert mode for proper insert session handling

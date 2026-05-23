@@ -18,7 +18,6 @@ export const N13_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    baseCommands: ['h', 'l', 'w', 'b', 'e', 'x'],
     availableCommands: ['gj', 'gk'],
     clearConditions: { cursor: { line: 2, col: 0 } },
     hints: [{ cost: 1, commands: ['gj', 'gj'] }],

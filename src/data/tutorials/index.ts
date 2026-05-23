@@ -1,20 +1,29 @@
 import type { Tutorial } from '../../types/tutorial'
-import { N01_TUTORIAL } from './N01'
-import { N02_TUTORIAL } from './N02'
+import {
+    N01_1_TUTORIAL,
+    N01_2_TUTORIAL,
+    N01_3_TUTORIAL,
+    N01_4_TUTORIAL,
+    N01_5_TUTORIAL,
+} from './N01'
 
-/** All tutorials keyed by node ID */
-export const TUTORIALS: Record<string, Tutorial> = {
-  N01: N01_TUTORIAL,
-  N02: N02_TUTORIAL,
-  // N03, N08, N18, N29, N37 will be added later
+/** All tutorials keyed by stage ID or node ID */
+const TUTORIALS: Record<string, Tutorial> = {
+    'N01-1': N01_1_TUTORIAL,
+    'N01-2': N01_2_TUTORIAL,
+    'N01-3': N01_3_TUTORIAL,
+    'N01-4': N01_4_TUTORIAL,
+    'N01-5': N01_5_TUTORIAL,
+    // N18, N29, N37 will be added later
 }
 
-/** Check if a node has a tutorial */
-export function hasTutorial(nodeId: string): boolean {
-  return nodeId in TUTORIALS
+/** Check if a stage or node has a tutorial (stageId first, then nodeId fallback) */
+export function hasTutorial(stageId: string, nodeId?: string): boolean {
+    if (stageId in TUTORIALS) return true
+    return nodeId !== undefined && nodeId in TUTORIALS
 }
 
-/** Get tutorial for a node */
-export function getTutorial(nodeId: string): Tutorial | undefined {
-  return TUTORIALS[nodeId]
+/** Get tutorial for a stage or node (stageId first, then nodeId fallback) */
+export function getTutorial(stageId: string, nodeId?: string): Tutorial | undefined {
+    return TUTORIALS[stageId] ?? (nodeId !== undefined ? TUTORIALS[nodeId] : undefined)
 }

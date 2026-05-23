@@ -18,7 +18,6 @@ export const N04_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 3 },
     life: 7,
     stars: [1, 2, 4],
-    baseCommands: ['h', 'j', 'k', 'l', 'x', 'i', 'a'],
     availableCommands: ['I', 'A'],
     hints: [{ cost: 1, commands: ['I', '// ', 'Esc'] }],
     flavor: 'I で行頭に移動して // を挿入せよ',

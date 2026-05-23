@@ -1,181 +1,196 @@
 /* TutorialScreen styles */
 
 .tutorial-screen {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    transition: background 0.5s ease;
+}
+
+.tutorial-screen.insert-mode {
+    background: var(--bg-insert, #2e1a1a);
 }
 
 /* Top Bar */
 .tutorial-top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
-  height: 56px;
-  flex-shrink: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+    height: 56px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .tutorial-top-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .tutorial-badge {
-  font-family: var(--font-code);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  color: var(--star);
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid rgba(255, 215, 0, 0.2);
-  padding: 3px 10px;
-  border-radius: 4px;
+    font-family: var(--font-code);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--star);
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    padding: 3px 10px;
+    border-radius: 4px;
 }
 
 .tutorial-title {
-  font-size: 14px;
-  color: var(--text-dim);
+    font-size: 14px;
+    color: var(--text-dim);
 }
 
 .tutorial-mode {
-  font-family: var(--font-code);
-  font-size: 11px;
-  padding: 2px 10px;
-  border-radius: 3px;
-  background: rgba(124, 124, 255, 0.2);
-  color: var(--accent);
-  letter-spacing: 2px;
+    font-family: var(--font-code);
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 3px;
+    background: rgba(124, 124, 255, 0.2);
+    color: var(--accent);
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+}
+
+.tutorial-mode.insert {
+    background: rgba(221, 68, 68, 0.2);
+    color: var(--danger);
 }
 
 /* Step progress */
 .step-progress {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .step-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
 .step-dot.done {
-  background: var(--success);
+    background: var(--success);
 }
 
 .step-dot.current {
-  background: var(--accent);
-  box-shadow: 0 0 8px rgba(124, 124, 255, 0.5);
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(124, 124, 255, 0.5);
 }
 
 .step-label {
-  font-family: var(--font-code);
-  font-size: 12px;
-  color: var(--text-dim);
-  margin-left: 8px;
+    font-family: var(--font-code);
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-left: 8px;
 }
 
 /* Editor area */
 .tutorial-editor-area {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  padding: 24px 48px;
-  overflow: hidden;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    padding: 24px 48px;
+    overflow: hidden;
 }
 
 /* Navigator bar */
 .navigator-bar {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 24px;
-  background: rgba(255, 255, 255, 0.03);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  min-height: 80px;
-  position: relative;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 24px;
+    background: rgba(255, 255, 255, 0.03);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    min-height: 80px;
+    position: relative;
 }
 
 .navigator-bar.wrong {
-  background: rgba(221, 68, 68, 0.06);
-  border-top-color: rgba(221, 68, 68, 0.15);
+    background: rgba(221, 68, 68, 0.06);
+    border-top-color: rgba(221, 68, 68, 0.15);
 }
 
 .navigator-bar.wrong .navi-message {
-  color: var(--danger);
+    color: var(--danger);
 }
 
 .skip-btn {
-  position: absolute;
-  top: 8px;
-  right: 16px;
-  font-family: var(--font-code);
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.2);
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  padding: 3px 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+    position: absolute;
+    top: 8px;
+    right: 16px;
+    font-family: var(--font-code);
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.2);
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .skip-btn:hover {
-  color: rgba(255, 255, 255, 0.5);
-  border-color: rgba(255, 255, 255, 0.2);
+    color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .navi-icon {
-  font-size: 32px;
-  flex-shrink: 0;
+    font-size: 32px;
+    flex-shrink: 0;
 }
 
 .navi-content {
-  flex: 1;
+    flex: 1;
 }
 
 .navi-name {
-  font-size: 11px;
-  color: var(--accent);
-  letter-spacing: 1px;
-  margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
 }
 
 .navi-message {
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--text-primary);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic UI', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
 }
 
 .navi-key-hint {
-  margin-top: 8px;
+    margin-top: 8px;
 }
 
 .navi-key-hint kbd {
-  font-family: var(--font-code);
-  font-size: 14px;
-  color: var(--accent);
-  background: rgba(124, 124, 255, 0.1);
-  border: 1px solid rgba(124, 124, 255, 0.2);
-  border-radius: 4px;
-  padding: 4px 12px;
+    font-family: var(--font-code);
+    font-size: 14px;
+    color: var(--accent);
+    background: rgba(124, 124, 255, 0.1);
+    border: 1px solid rgba(124, 124, 255, 0.2);
+    border-radius: 4px;
+    padding: 4px 12px;
 }
 
 .tutorial-error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  font-family: var(--font-code);
-  color: var(--danger);
-  font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: var(--font-code);
+    color: var(--danger);
+    font-size: 18px;
 }

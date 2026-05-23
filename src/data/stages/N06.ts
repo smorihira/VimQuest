@@ -19,7 +19,6 @@ export const N06_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    baseCommands: ['h', 'j', 'k', 'l', 'x'],
     availableCommands: ['r'],
     hints: [{ cost: 1, commands: ['l', 're'] }],
     flavor: 'a を e に置き換えろ。x で消して i で打ち直す？ r なら一発だ',

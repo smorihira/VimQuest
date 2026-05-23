@@ -4,7 +4,7 @@ import type { CursorPosition } from './editor'
 export type Language = 'plaintext' | 'css' | 'html' | 'json' | 'javascript' | 'python' | 'markdown'
 
 /** Stage difficulty type */
-export type StageType = 'teach' | 'practice' | 'challenge'
+export type StageType = 'tutorial' | 'teach' | 'practice' | 'challenge'
 
 /** Star rating */
 export type StarRating = 0 | 1 | 2 | 3
@@ -49,8 +49,6 @@ export interface Stage {
   stars: [number, number, number]
   /** Available commands (hand cards — shown prominently) */
   availableCommands: string[]
-  /** Base commands (always usable, shown in compact "BASE" row) */
-  baseCommands?: string[]
   /** Visual-mode-only commands (shown only in visual mode) */
   visualCommands?: string[]
   /** Extended clear conditions (text match is always required) */

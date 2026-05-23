@@ -44,7 +44,10 @@ export interface PlayActions {
   useHint: () => void
 }
 
-export function usePlayEngine(stage: Stage): PlayState & PlayActions {
+export function usePlayEngine(
+  stage: Stage,
+  baseCommands?: readonly string[],
+): PlayState & PlayActions {
   const [editorState, setEditorState] = useState<EditorState>(() =>
     createEditorState(stage.initialText, stage.initialCursor),
   )
@@ -68,7 +71,12 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
 
   // Parser instance (stable across renders, recreated on reset)
   const parserRef = useRef<CommandParser>(
-    new CommandParser(stage.availableCommands, undefined, stage.visualCommands, stage.baseCommands),
+    new CommandParser(
+      stage.availableCommands,
+      undefined,
+      stage.visualCommands,
+      baseCommands as string[] | undefined,
+    ),
   )
 
   const life = stage.life

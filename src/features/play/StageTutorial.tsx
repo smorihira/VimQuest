@@ -1,45 +1,27 @@
 /**
- * TutorialScreen — guided step-by-step tutorial for a node.
- * Shows navigator messages and waits for correct key input.
+ * StageTutorial — inline tutorial shown before stage play.
+ * Reuses TutorialScreen's step-by-step dialogue pattern.
  */
 
 import { useState, useCallback, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router'
-import { useSetAtom } from 'jotai'
-import { getTutorial } from '../../data/tutorials'
-import { getStagesByNode } from '../../data/stages'
-import { gameProgressAtom } from '../../store/atoms'
+import type { Tutorial, TutorialStep } from '../../types/tutorial'
+import type { Stage } from '../../types/stage'
+import type { EditorState } from '../../types/editor'
+import type { TutorialStatus } from '../../types/game'
 import { createEditorState } from '../../types/editor'
 import { executeCommand } from '../../engine/commandExecutor'
 import { parseKeys } from '../../engine/commandParser'
-import type { EditorState } from '../../types/editor'
-import type { TutorialStep } from '../../types/tutorial'
-import { EditorView } from '../play/EditorView'
+import { EditorView } from './EditorView'
 import { playTick } from '../../engine/sound'
-import './TutorialScreen.css'
+import '../tutorial/TutorialScreen.css'
 
-export function TutorialScreen() {
-    const { nodeId } = useParams<{ nodeId: string }>()
-    const navigate = useNavigate()
-    const tutorial = nodeId ? getTutorial(nodeId) : undefined
-    const setProgress = useSetAtom(gameProgressAtom)
-
-    if (!tutorial) {
-        return <div className="tutorial-error">Tutorial not found: {nodeId}</div>
-    }
-
-    return <TutorialInner tutorial={tutorial} navigate={navigate} setProgress={setProgress} />
+interface Props {
+    tutorial: Tutorial
+    stage: Stage
+    onComplete: (status: TutorialStatus) => void
 }
 
-function TutorialInner({
-    tutorial,
-    navigate,
-    setProgress,
-}: {
-    tutorial: NonNullable<ReturnType<typeof getTutorial>>
-    navigate: ReturnType<typeof useNavigate>
-    setProgress: ReturnType<typeof useSetAtom<typeof gameProgressAtom>>
-}) {
+export function StageTutorial({ tutorial, stage, onComplete }: Props) {
     const [stepIdx, setStepIdx] = useState(0)
     const [editorState, setEditorState] = useState<EditorState>(() =>
         createEditorState(tutorial.initialSetup.text, tutorial.initialSetup.cursor),
@@ -47,31 +29,9 @@ function TutorialInner({
     const [wrongMessage, setWrongMessage] = useState<string | null>(null)
 
     const step = tutorial.steps[stepIdx] as TutorialStep | undefined
-    const isComplete = stepIdx >= tutorial.steps.length
-
-    const complete = useCallback(
-        (status: 'completed' | 'skipped') => {
-            setProgress((prev) => ({
-                ...prev,
-                tutorialStatus: {
-                    ...prev.tutorialStatus,
-                    [tutorial.nodeId]: status,
-                },
-            }))
-
-            const stages = getStagesByNode(tutorial.nodeId)
-            if (stages.length > 0) {
-                navigate(`/play/${stages[0].id}`)
-            } else {
-                navigate('/tree')
-            }
-        },
-        [tutorial.nodeId, navigate, setProgress],
-    )
 
     const handleKey = useCallback(
         (e: KeyboardEvent) => {
-            if (isComplete) return
             e.preventDefault()
 
             const key = mapKey(e)
@@ -80,7 +40,7 @@ function TutorialInner({
             // Skip with Esc — but not if the current step expects Esc
             if (key === 'Esc' && step?.expectedKey !== 'Esc') {
                 playTick()
-                complete('skipped')
+                onComplete('skipped')
                 return
             }
 
@@ -88,11 +48,11 @@ function TutorialInner({
 
             playTick()
 
-            // Info step (expectedKey === null) — any key advances to next step
+            // Info step (expectedKey === null) — any key advances
             if (step.expectedKey === null) {
                 const nextIdx = stepIdx + 1
                 if (nextIdx >= tutorial.steps.length) {
-                    complete('completed')
+                    onComplete('completed')
                 } else {
                     setStepIdx(nextIdx)
                 }
@@ -106,21 +66,26 @@ function TutorialInner({
 
             if (accepted.includes(key)) {
                 setWrongMessage(null)
-                // Apply key to editor via parser → executor
-                const parsed = parseKeys([key])
-                if (parsed) {
-                    const next = executeCommand(editorState, parsed.command)
+                // Apply key to editor
+                if (editorState.mode === 'insert') {
+                    // In insert mode, bypass parser and directly execute as text/Esc
+                    const next = executeCommand(editorState, { raw: key, valid: true })
                     setEditorState(next)
+                } else {
+                    const parsed = parseKeys([key])
+                    if (parsed) {
+                        const next = executeCommand(editorState, parsed.command)
+                        setEditorState(next)
+                    }
                 }
 
                 // Advance if it's the expected key
                 if (key === step.expectedKey) {
                     const nextIdx = stepIdx + 1
                     if (nextIdx >= tutorial.steps.length) {
-                        complete('completed')
+                        onComplete('completed')
                     } else {
                         setStepIdx(nextIdx)
-                        // Apply editor setup if next step has one
                         const nextStep = tutorial.steps[nextIdx]
                         if (nextStep?.editorSetup) {
                             setEditorState(
@@ -130,11 +95,10 @@ function TutorialInner({
                     }
                 }
             } else {
-                // Wrong key
                 setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
             }
         },
-        [step, stepIdx, editorState, isComplete, complete, tutorial],
+        [step, stepIdx, editorState, onComplete, tutorial],
     )
 
     useEffect(() => {
@@ -142,13 +106,17 @@ function TutorialInner({
         return () => window.removeEventListener('keydown', handleKey)
     }, [handleKey])
 
+    const modeClass = editorState.mode === 'insert' ? ' insert-mode' : ''
+
     return (
-        <div className="tutorial-screen">
+        <div className={`tutorial-screen${modeClass}`}>
             {/* Top Bar */}
             <div className="tutorial-top-bar">
                 <div className="tutorial-top-left">
                     <span className="tutorial-badge">TUTORIAL</span>
-                    <span className="tutorial-title">{tutorial.nodeId}</span>
+                    <span className="tutorial-title">
+                        {stage.id}: {stage.title}
+                    </span>
                 </div>
 
                 <div className="step-progress">
@@ -163,7 +131,9 @@ function TutorialInner({
                     </span>
                 </div>
 
-                <span className="tutorial-mode">NORMAL</span>
+                <span className={`tutorial-mode${editorState.mode === 'insert' ? ' insert' : ''}`}>
+                    {editorState.mode.toUpperCase()}
+                </span>
             </div>
 
             {/* Editor */}
@@ -177,7 +147,7 @@ function TutorialInner({
                     className="skip-btn"
                     onClick={() => {
                         playTick()
-                        complete('skipped')
+                        onComplete('skipped')
                     }}
                     title="Esc でスキップ"
                 >

@@ -20,8 +20,7 @@ export const N34_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 9,
     stars: [3, 4, 6],
-    baseCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'i', 'a', 'f', 't', '0', '$', 'x'],
-    availableCommands: ['ciw', 's', '.'],
+    availableCommands: ['ciw', 's', '.', 'f', 't', '0', '$'],
     hints: [{ cost: 1, commands: ['ciw', 'yes', 'Esc', 'w', '.', 'w', '.'] }],
     flavor: 'ciw で最初の no を yes に変え、. で残りも一発だ',
   },
@@ -40,8 +39,7 @@ export const N34_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 12,
     stars: [6, 8, 10],
-    baseCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'i', 'a', 'f', 't', '0', '$', '^', 'x'],
-    availableCommands: ['ciw', 's', '.'],
+    availableCommands: ['ciw', 's', '.', 'f', 't', '0', '$', '^'],
     hints: [
       {
         cost: 1,
@@ -76,8 +74,7 @@ export const N34_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 18,
     stars: [10, 13, 16],
-    baseCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'i', 'a', 'f', 't', '0', '$', '^', 'x'],
-    availableCommands: ['ciw', 's', 'S', 'C', '.'],
+    availableCommands: ['ciw', 's', 'S', 'C', '.', 'f', 't', '0', '$', '^'],
     hints: [
       {
         cost: 1,

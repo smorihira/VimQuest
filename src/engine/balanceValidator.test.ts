@@ -15,96 +15,98 @@ import type { StageType } from '../types/stage'
 
 /** Expected offsets per stage type */
 const FORMULA: Record<StageType, { s2: number; s1: number; life: number }> = {
-  teach: { s2: 1, s1: 3, life: 6 },
-  practice: { s2: 2, s1: 4, life: 6 },
-  challenge: { s2: 3, s1: 6, life: 8 },
+    tutorial: { s2: 0, s1: 0, life: 0 }, // not used — tutorial stages are skipped below
+    teach: { s2: 1, s1: 3, life: 6 },
+    practice: { s2: 2, s1: 4, life: 6 },
+    challenge: { s2: 3, s1: 6, life: 8 },
 }
 
 const allStages = Object.values(ALL_STAGES)
 
 describe('Stage data integrity', () => {
-  it('has at least 59 stages', () => {
-    expect(allStages.length).toBeGreaterThanOrEqual(59)
-  })
+    it('has at least 54 stages', () => {
+        expect(allStages.length).toBeGreaterThanOrEqual(54)
+    })
 
-  it('all stage IDs are unique', () => {
-    const ids = allStages.map((s) => s.id)
-    expect(new Set(ids).size).toBe(ids.length)
-  })
+    it('all stage IDs are unique', () => {
+        const ids = allStages.map((s) => s.id)
+        expect(new Set(ids).size).toBe(ids.length)
+    })
 
-  it('every stage references a valid node', () => {
-    for (const stage of allStages) {
-      expect(SKILL_NODE_MAP[stage.nodeId], `stage ${stage.id} → node ${stage.nodeId}`).toBeDefined()
-    }
-  })
+    it('every stage references a valid node', () => {
+        for (const stage of allStages) {
+            expect(SKILL_NODE_MAP[stage.nodeId], `stage ${stage.id} → node ${stage.nodeId}`).toBeDefined()
+        }
+    })
 
-  it('every node has its declared stageCount', () => {
-    for (const node of SKILL_NODES) {
-      const nodeStages = allStages.filter((s) => s.nodeId === node.id)
-      expect(nodeStages.length, `node ${node.id} expected ${node.stageCount} stages`).toBe(
-        node.stageCount,
-      )
-    }
-  })
+    it('every node has its declared stageCount', () => {
+        for (const node of SKILL_NODES) {
+            const nodeStages = allStages.filter((s) => s.nodeId === node.id)
+            expect(nodeStages.length, `node ${node.id} expected ${node.stageCount} stages`).toBe(
+                node.stageCount,
+            )
+        }
+    })
 })
 
 describe('Star / Life formula compliance', () => {
-  for (const stage of allStages) {
-    const opt = stage.stars[0]
-    const f = FORMULA[stage.type]
+    for (const stage of allStages) {
+        // tutorial stages have no star/life formula
+        if (stage.type === 'tutorial') continue
+        const opt = stage.stars[0]
+        const f = FORMULA[stage.type]
 
-    describe(`${stage.id} (${stage.type}, opt=${opt})`, () => {
-      it('stars are in ascending order [☆3 ≤ ☆2 ≤ ☆1]', () => {
-        expect(stage.stars[0]).toBeLessThanOrEqual(stage.stars[1])
-        expect(stage.stars[1]).toBeLessThanOrEqual(stage.stars[2])
-      })
+        describe(`${stage.id} (${stage.type}, opt=${opt})`, () => {
+            it('stars are in ascending order [☆3 ≤ ☆2 ≤ ☆1]', () => {
+                expect(stage.stars[0]).toBeLessThanOrEqual(stage.stars[1])
+                expect(stage.stars[1]).toBeLessThanOrEqual(stage.stars[2])
+            })
 
-      it(`☆2 = opt + ${f.s2}`, () => {
-        expect(stage.stars[1], `☆2`).toBe(opt + f.s2)
-      })
+            it(`☆2 = opt + ${f.s2}`, () => {
+                expect(stage.stars[1], `☆2`).toBe(opt + f.s2)
+            })
 
-      it(`☆1 = opt + ${f.s1}`, () => {
-        expect(stage.stars[2], `☆1`).toBe(opt + f.s1)
-      })
+            it(`☆1 = opt + ${f.s1}`, () => {
+                expect(stage.stars[2], `☆1`).toBe(opt + f.s1)
+            })
 
-      it(`life = opt + ${f.life}`, () => {
-        expect(stage.life, `life`).toBe(opt + f.life)
-      })
+            it(`life = opt + ${f.life}`, () => {
+                expect(stage.life, `life`).toBe(opt + f.life)
+            })
 
-      it('life > ☆1 threshold', () => {
-        expect(stage.life).toBeGreaterThan(stage.stars[2])
-      })
-    })
-  }
+            it('life > ☆1 threshold', () => {
+                expect(stage.life).toBeGreaterThan(stage.stars[2])
+            })
+        })
+    }
 })
 
 describe('Stage content sanity', () => {
-  for (const stage of allStages) {
-    describe(stage.id, () => {
-      it('has non-empty initialText', () => {
-        expect(stage.initialText.length).toBeGreaterThan(0)
-      })
+    for (const stage of allStages) {
+        describe(stage.id, () => {
+            it('has non-empty initialText', () => {
+                expect(stage.initialText.length).toBeGreaterThan(0)
+            })
 
-      it('has non-empty goalText', () => {
-        expect(stage.goalText.length).toBeGreaterThan(0)
-      })
+            it('has non-empty goalText', () => {
+                expect(stage.goalText.length).toBeGreaterThan(0)
+            })
 
-      it('has at least one hint', () => {
-        expect(stage.hints.length).toBeGreaterThanOrEqual(1)
-      })
+            it('has at least one hint', () => {
+                expect(stage.hints.length).toBeGreaterThanOrEqual(1)
+            })
 
-      it('has non-empty flavor', () => {
-        expect(stage.flavor.length).toBeGreaterThan(0)
-      })
+            it('has non-empty flavor', () => {
+                expect(stage.flavor.length).toBeGreaterThan(0)
+            })
 
-      it('has at least 2 available commands', () => {
-        const totalCommands = (stage.baseCommands?.length ?? 0) + stage.availableCommands.length
-        expect(totalCommands).toBeGreaterThanOrEqual(2)
-      })
+            it('has at least 1 available command', () => {
+                expect(stage.availableCommands.length).toBeGreaterThanOrEqual(1)
+            })
 
-      it('opt ≥ 1', () => {
-        expect(stage.stars[0]).toBeGreaterThanOrEqual(1)
-      })
-    })
-  }
+            it('opt ≥ 1', () => {
+                expect(stage.stars[0]).toBeGreaterThanOrEqual(1)
+            })
+        })
+    }
 })
