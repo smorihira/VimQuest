@@ -126,6 +126,9 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
         }
       }
 
+      // Sync parser with current editor mode (needed for visual mode d/x/y/c handling)
+      parser.setEditorMode(editorState.mode)
+
       const parseResult = parser.feed(key)
       setParserBuffer(parser.getState() === 'idle' ? '' : parser.getDisplayBuffer())
 
@@ -188,6 +191,16 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
         return
       }
 
+      // ── Visual change (c): delete selection + enter insert ──
+      if (raw === 'c' && editorState.mode === 'visual') {
+        const next = executeCommand(editorState, parseResult.command)
+        insertEntryRef.current = editorState
+        insertCharCount.current = 0
+        insertCommandRef.current = 'c'
+        setEditorState(next)
+        return
+      }
+
       // ── Leaving insert mode (Esc): compute session damage ──
       if (raw === 'Esc' && editorState.mode === 'insert') {
         let next = executeCommand(editorState, parseResult.command)
@@ -218,6 +231,13 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
         if (isStageClear(next, stage)) {
           setStatus('clear')
         }
+        return
+      }
+
+      // ── Esc in visual mode: exit visual (free) ──
+      if (raw === 'Esc' && editorState.mode === 'visual') {
+        const next = executeCommand(editorState, parseResult.command)
+        setEditorState(next)
         return
       }
 

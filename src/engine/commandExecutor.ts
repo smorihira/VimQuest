@@ -1703,6 +1703,22 @@ function executeCommandInner(state: EditorState, cmd: Command): EditorState {
     if (raw === 'y') {
       if (!state.visualStart) return { ...state, mode: 'normal' }
       const ls = lines(state.text)
+
+      // Visual line (V) — yank entire lines
+      if (state.visualType === 'line') {
+        const startLine = Math.min(state.visualStart.line, state.cursor.line)
+        const endLine = Math.max(state.visualStart.line, state.cursor.line)
+        const yanked = ls.slice(startLine, endLine + 1).join('\n') + '\n'
+        return {
+          ...state,
+          mode: 'normal',
+          visualStart: undefined,
+          visualType: undefined,
+          cursor: { line: startLine, col: 0 },
+          registers: { ...state.registers, '': yanked },
+        }
+      }
+
       let fromOffset = 0
       for (let i = 0; i < state.visualStart.line; i++) fromOffset += ls[i].length + 1
       fromOffset += state.visualStart.col
@@ -1720,6 +1736,92 @@ function executeCommandInner(state: EditorState, cmd: Command): EditorState {
       }
     }
 
+    // c — change visual selection (delete + enter insert)
+    if (raw === 'c') {
+      if (!state.visualStart) return { ...state, mode: 'normal' }
+
+      const startLine = Math.min(state.visualStart.line, state.cursor.line)
+      const endLine = Math.max(state.visualStart.line, state.cursor.line)
+
+      // Visual line (V) — delete lines and enter insert on empty line
+      if (state.visualType === 'line') {
+        const ls = lines(state.text)
+        const deleted = ls.slice(startLine, endLine + 1).join('\n') + '\n'
+        const newLines = [...ls.slice(0, startLine), '', ...ls.slice(endLine + 1)]
+        const newText = join(newLines)
+        const result = pushUndo(state, newText, { line: startLine, col: 0 }, 'insert', 1)
+        return {
+          ...result,
+          mode: 'insert',
+          visualStart: undefined,
+          visualType: undefined,
+          registers: { ...result.registers, '': deleted },
+        }
+      }
+
+      // Visual char (v) — delete range and enter insert
+      const {
+        text: newText,
+        cursor: newCursor,
+        deleted,
+      } = deleteRange(state.text, state.visualStart, state.cursor, true)
+      const result = pushUndo(state, newText, newCursor, 'insert', 1)
+      return {
+        ...result,
+        mode: 'insert',
+        visualStart: undefined,
+        visualType: undefined,
+        registers: { ...result.registers, '': deleted },
+      }
+    }
+
+    // > / < — indent/dedent visual selection
+    if (raw === '>' || raw === '<') {
+      if (!state.visualStart) return { ...state, mode: 'normal' }
+      const startLine = Math.min(state.visualStart.line, state.cursor.line)
+      const endLine = Math.max(state.visualStart.line, state.cursor.line)
+      const ls = lines(state.text)
+      const newLines = ls.map((line, i) => {
+        if (i >= startLine && i <= endLine) {
+          if (raw === '>') return '  ' + line
+          // Dedent: remove up to 2 leading spaces
+          return line.replace(/^ {1,2}/, '')
+        }
+        return line
+      })
+      const newText = join(newLines)
+      const result = pushUndo(state, newText, { line: startLine, col: 0 }, 'normal', 1)
+      return { ...result, mode: 'normal', visualStart: undefined, visualType: undefined }
+    }
+
+    // v/V — toggle or switch visual mode
+    if (raw === 'v') {
+      if (state.visualType === 'char') {
+        // v in char visual → exit visual
+        return { ...state, mode: 'normal', visualStart: undefined, visualType: undefined }
+      }
+      // V/block visual → switch to char visual
+      return { ...state, visualType: 'char' }
+    }
+    if (raw === 'V') {
+      if (state.visualType === 'line') {
+        // V in line visual → exit visual
+        return { ...state, mode: 'normal', visualStart: undefined, visualType: undefined }
+      }
+      // char/block visual → switch to line visual
+      const ls = lines(state.text)
+      return {
+        ...state,
+        visualType: 'line',
+        visualStart: { line: state.visualStart!.line, col: 0 },
+        cursor: {
+          line: state.cursor.line,
+          col: Math.max(0, ls[state.cursor.line].length - 1),
+        },
+      }
+    }
+
+    // All other commands are not valid in visual mode — ignore
     return state
   }
 

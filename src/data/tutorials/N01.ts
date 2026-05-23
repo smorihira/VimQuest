@@ -5,44 +5,44 @@ import type { Tutorial } from '../../types/tutorial'
  * ゲーム最初のチュートリアル。4方向の移動を体験。
  */
 export const N01_TUTORIAL: Tutorial = {
-    nodeId: 'N01',
-    initialSetup: {
-        text: 'hello\nworld',
-        cursor: { line: 0, col: 0 },
+  nodeId: 'N01',
+  initialSetup: {
+    text: 'hello\nworld',
+    cursor: { line: 0, col: 0 },
+  },
+  steps: [
+    {
+      message: 'Vimでは h j k l で移動する。まずは l を押して右に動いてみろ',
+      expectedKey: 'l',
     },
-    steps: [
-        {
-            message: 'Vimでは h j k l で移動する。まずは l を押して右に動いてみろ',
-            expectedKey: 'l',
-        },
-        {
-            message: 'いいぞ。もう一度 l だ',
-            expectedKey: 'l',
-        },
-        {
-            message: '今度は h で左に戻ってみろ',
-            expectedKey: 'h',
-        },
-        {
-            message: '次は j で下の行へ移動だ',
-            expectedKey: 'j',
-        },
-        {
-            message: 'k で上の行に戻れ',
-            expectedKey: 'k',
-        },
-        {
-            message: '自由に動いてみろ。終わったら Enter で次へ',
-            expectedKey: 'Enter',
-            acceptedKeys: ['h', 'j', 'k', 'l'],
-        },
-        {
-            message: '💡 困ったら右下のキューブを押せ。答え（ヒント）が再生される。ただし ☆1 確定だ',
-            expectedKey: null,
-        },
-        {
-            message: '💡 左上の :q! でツリーに戻れる（Escでも可）。:r を押せばリトライだ',
-            expectedKey: null,
-        },
-    ],
+    {
+      message: 'いいぞ。もう一度 l だ',
+      expectedKey: 'l',
+    },
+    {
+      message: '今度は h で左に戻ってみろ',
+      expectedKey: 'h',
+    },
+    {
+      message: '次は j で下の行へ移動だ',
+      expectedKey: 'j',
+    },
+    {
+      message: 'k で上の行に戻れ',
+      expectedKey: 'k',
+    },
+    {
+      message: '自由に動いてみろ。終わったら Enter で次へ',
+      expectedKey: 'Enter',
+      acceptedKeys: ['h', 'j', 'k', 'l'],
+    },
+    {
+      message: '💡 困ったら右下のキューブを押せ。答え（ヒント）が再生される。ただし ☆1 確定だ',
+      expectedKey: null,
+    },
+    {
+      message: '💡 左上の :q! でツリーに戻れる（Escでも可）。:r を押せばリトライだ',
+      expectedKey: null,
+    },
+  ],
 }
