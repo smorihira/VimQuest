@@ -415,10 +415,10 @@ Insert系コマンドのダメージ = 1（進入コスト） + floor((max(charC
 
 **キー名:**
 
-| キー           | 用途                    |
-| -------------- | ----------------------- |
-| `vq-progress`  | ゲーム進捗（ステージ結果、ノード解放等） |
-| `vq-muted`     | ミュート設定（`'true'`/`'false'`）       |
+| キー          | 用途                                     |
+| ------------- | ---------------------------------------- |
+| `vq-progress` | ゲーム進捗（ステージ結果、ノード解放等） |
+| `vq-muted`    | ミュート設定（`'true'`/`'false'`）       |
 
 ### 7.2 エラーハンドリング
 
@@ -569,31 +569,31 @@ Web Audio API によるシンセサイザー方式。音声ファイルを使わ
 
 ### 9.2 サウンド一覧
 
-| 関数           | トリガー                          | 波形       | 周波数          | 持続時間 |
-| -------------- | --------------------------------- | ---------- | --------------- | -------- |
-| `playTick()`   | 有効なコマンド実行                | square     | 800Hz           | 0.05s    |
-| `playType()`   | Insertモード文字入力              | sine       | 600Hz           | 0.03s    |
-| `playError()`  | 無効なキー入力                    | sawtooth   | 150Hz           | 0.12s    |
-| `playStar()`   | リザルト画面の星点灯              | sine(dual) | 1200Hz + 1600Hz | 0.15s    |
-| `playClear()`  | ステージクリア                    | sine       | 523→659→784Hz   | 0.45s    |
-| `playLock()`   | ロック中ノードクリック            | triangle   | 100Hz           | 0.1s     |
-| `playGameOver()`| ライフ0                          | sawtooth   | 80Hz            | 0.4s     |
+| 関数             | トリガー               | 波形       | 周波数          | 持続時間 |
+| ---------------- | ---------------------- | ---------- | --------------- | -------- |
+| `playTick()`     | 有効なコマンド実行     | square     | 800Hz           | 0.05s    |
+| `playType()`     | Insertモード文字入力   | sine       | 600Hz           | 0.03s    |
+| `playError()`    | 無効なキー入力         | sawtooth   | 150Hz           | 0.12s    |
+| `playStar()`     | リザルト画面の星点灯   | sine(dual) | 1200Hz + 1600Hz | 0.15s    |
+| `playClear()`    | ステージクリア         | sine       | 523→659→784Hz   | 0.45s    |
+| `playLock()`     | ロック中ノードクリック | triangle   | 100Hz           | 0.1s     |
+| `playGameOver()` | ライフ0                | sawtooth   | 80Hz            | 0.4s     |
 
 ### 9.3 トリガー詳細
 
-| 画面          | 操作                    | サウンド       |
-| ------------- | ----------------------- | -------------- |
-| Play          | 有効コマンド入力        | `playTick()`   |
-| Play          | Insert文字入力          | `playType()`   |
-| Play          | 無効キー入力            | `playError()`  |
-| Play          | `:q!` ボタン / Esc退出  | `playTick()`   |
-| Play          | `:r` リトライ           | `playTick()`   |
-| Play          | ステージクリア          | `playClear()`  |
-| Play          | ライフ0                 | `playGameOver()`|
-| Result        | 星点灯演出              | `playStar()`   |
-| Skill Tree    | ロック中ノードクリック  | `playLock()`   |
-| Tutorial      | 全キー入力              | `playTick()`   |
-| Tutorial      | Skipボタン              | `playTick()`   |
+| 画面       | 操作                   | サウンド         |
+| ---------- | ---------------------- | ---------------- |
+| Play       | 有効コマンド入力       | `playTick()`     |
+| Play       | Insert文字入力         | `playType()`     |
+| Play       | 無効キー入力           | `playError()`    |
+| Play       | `:q!` ボタン / Esc退出 | `playTick()`     |
+| Play       | `:r` リトライ          | `playTick()`     |
+| Play       | ステージクリア         | `playClear()`    |
+| Play       | ライフ0                | `playGameOver()` |
+| Result     | 星点灯演出             | `playStar()`     |
+| Skill Tree | ロック中ノードクリック | `playLock()`     |
+| Tutorial   | 全キー入力             | `playTick()`     |
+| Tutorial   | Skipボタン             | `playTick()`     |
 
 ### 9.4 ミュート
 

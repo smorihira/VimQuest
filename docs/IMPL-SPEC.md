@@ -381,13 +381,13 @@ export interface Hint {
 
 `.github/workflows/ci.yml` で定義。push / PR 時に自動実行。
 
-| ステップ       | コマンド              | 説明                     |
-| -------------- | --------------------- | ------------------------ |
-| Typecheck      | `tsc --noEmit`        | TypeScript型チェック     |
-| Lint           | `eslint .`            | ESLint静的解析           |
-| Format check   | `prettier --check .`  | Prettier書式チェック     |
-| Test           | `vitest run`          | 全テスト実行             |
-| Build          | `vite build`          | プロダクションビルド     |
+| ステップ     | コマンド             | 説明                 |
+| ------------ | -------------------- | -------------------- |
+| Typecheck    | `tsc --noEmit`       | TypeScript型チェック |
+| Lint         | `eslint .`           | ESLint静的解析       |
+| Format check | `prettier --check .` | Prettier書式チェック |
+| Test         | `vitest run`         | 全テスト実行         |
+| Build        | `vite build`         | プロダクションビルド |
 
 全ステップが順次実行され、いずれかが失敗するとCIは失敗となる。
 
