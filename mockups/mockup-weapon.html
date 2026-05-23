@@ -20,6 +20,45 @@
             --text-primary: #e0e0e0;
             --text-dim: #888;
             --star-gold: #ffd700;
+            --success: #44ddaa;
+        }
+
+        /* Pattern toggle */
+        .pattern-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .pattern-toggle button {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            padding: 6px 14px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pattern-toggle button.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .pattern-label {
+            position: fixed;
+            top: 52px;
+            right: 16px;
+            font-size: 11px;
+            color: var(--text-dim);
+            z-index: 100;
+            text-align: right;
         }
 
         body {
@@ -235,6 +274,50 @@
             font-size: 14px;
             color: var(--accent);
         }
+
+        /* Pattern B: Tutorial button */
+        .tutorial-section {
+            margin-bottom: 32px;
+            animation: fadeIn 1.5s ease;
+        }
+
+        .tutorial-preview-msg {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        .tutorial-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            padding: 14px 36px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 20px rgba(124, 124, 255, 0.3);
+        }
+
+        .tutorial-btn:hover {
+            background: #9a9aff;
+            box-shadow: 0 0 30px rgba(124, 124, 255, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .tutorial-btn .arrow {
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .tutorial-btn:hover .arrow {
+            transform: translateX(4px);
+        }
     </style>
 </head>
 
@@ -280,18 +363,61 @@
             </div>
         </div>
 
-        <div class="try-section">
-            <div class="try-label">▸ TRY IT</div>
-            <div class="try-prompt">
-                The <span class="try-target">quick</span> brown fox
-                <div class="try-hint">↑ "quick" にカーソルを合わせて dw を押してみよう</div>
+        <!-- Pattern A: TRY IT (33 nodes) -->
+        <div id="pattern-a">
+            <div class="try-section">
+                <div class="try-label">▸ TRY IT</div>
+                <div class="try-prompt">
+                    The <span class="try-target">quick</span> brown fox
+                    <div class="try-hint">↑ "quick" にカーソルを合わせて dw を押してみよう</div>
+                </div>
+            </div>
+
+            <div class="key-prompt">
+                <kbd>dw</kbd> を押して体験しよう
             </div>
         </div>
 
-        <div class="key-prompt">
-            <kbd>dw</kbd> を押して体験しよう
+        <!-- Pattern B: Tutorial button (7 tutorial nodes) -->
+        <div id="pattern-b" style="display: none;">
+            <div class="tutorial-section">
+                <div class="tutorial-preview-msg">ステップごとに使い方を練習しましょう</div>
+                <button class="tutorial-btn">
+                    練習してみる <span class="arrow">→</span>
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- Pattern toggle UI -->
+    <div class="pattern-toggle">
+        <button id="btn-a" class="active" onclick="showPattern('a')">A: TRY IT</button>
+        <button id="btn-b" onclick="showPattern('b')">B: Tutorial</button>
+    </div>
+    <div class="pattern-label" id="pattern-desc">33ノード — TRY ITで1回体験</div>
+
+    <script>
+        function showPattern(p) {
+            const a = document.getElementById('pattern-a');
+            const b = document.getElementById('pattern-b');
+            const btnA = document.getElementById('btn-a');
+            const btnB = document.getElementById('btn-b');
+            const desc = document.getElementById('pattern-desc');
+            if (p === 'a') {
+                a.style.display = 'block';
+                b.style.display = 'none';
+                btnA.classList.add('active');
+                btnB.classList.remove('active');
+                desc.textContent = '33ノード — TRY ITで1回体験';
+            } else {
+                a.style.display = 'none';
+                b.style.display = 'block';
+                btnA.classList.remove('active');
+                btnB.classList.add('active');
+                desc.textContent = '7チュートリアルノード — TRY IT省略';
+            }
+        }
+    </script>
 
 </body>
 

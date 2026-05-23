@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VimQuest - Tutorial</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #1a1a2e;
+            --editor-bg: #0f0f1a;
+            --accent: #7c7cff;
+            --text-primary: #e0e0e0;
+            --text-dim: #888;
+            --star-gold: #ffd700;
+            --success: #44ddaa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ===== Top Bar ===== */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            height: 56px;
+            flex-shrink: 0;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .tutorial-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 3px;
+            background: rgba(124, 124, 255, 0.2);
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .tutorial-title {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .tutorial-title .cmd {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .mode-indicator {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 3px;
+            background: rgba(124, 124, 255, 0.2);
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        /* Step progress */
+        .step-progress {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12);
+            transition: all 0.3s;
+        }
+
+        .step-dot.done {
+            background: var(--success);
+            box-shadow: 0 0 6px rgba(68, 221, 170, 0.4);
+        }
+
+        .step-dot.current {
+            background: var(--accent);
+            box-shadow: 0 0 8px rgba(124, 124, 255, 0.5);
+            width: 10px;
+            height: 10px;
+        }
+
+        .step-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-left: 4px;
+        }
+
+        /* ===== Editor Area ===== */
+        .editor-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            padding: 8px 48px 16px;
+            overflow: hidden;
+        }
+
+        .editor {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--editor-bg);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 18px;
+            line-height: 1.8;
+            overflow: auto;
+            box-shadow: 0 4px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-header {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 12px;
+            color: var(--text-dim);
+            gap: 8px;
+        }
+
+        .editor-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .editor-dot.red {
+            background: #ff5f57;
+        }
+
+        .editor-dot.yellow {
+            background: #ffbd2e;
+        }
+
+        .editor-dot.green {
+            background: #28c840;
+        }
+
+        .editor-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+
+        .editor-line {
+            display: flex;
+            padding: 0 16px;
+        }
+
+        .line-number {
+            color: rgba(255, 255, 255, 0.15);
+            width: 40px;
+            text-align: right;
+            padding-right: 16px;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .line-content {
+            flex: 1;
+            white-space: pre;
+            font-size: 22px;
+            letter-spacing: 1px;
+        }
+
+        .cursor-block {
+            background: rgba(124, 124, 255, 0.6);
+            color: #fff;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Key hint overlay on editor */
+        .key-hint-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .key-hint-overlay kbd {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 80px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* ===== Navigator Bar ===== */
+        .navigator-bar {
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 16px 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .skip-btn {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.2);
+            background: none;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .skip-btn:hover {
+            color: rgba(255, 255, 255, 0.5);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .navigator-bar {
+            position: relative;
+        }
+
+        .navi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: rgba(124, 124, 255, 0.15);
+            border: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .navi-content {
+            flex: 1;
+        }
+
+        .navi-name {
+            font-size: 11px;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .navi-message {
+            font-size: 15px;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        .navi-message .key-highlight {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(124, 124, 255, 0.15);
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(124, 124, 255, 0.3);
+        }
+
+        .navi-sub {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+
+        /* Step states for demo */
+        .demo-controls {
+            position: fixed;
+            bottom: 120px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 100;
+        }
+
+        .demo-controls button {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .demo-controls button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .demo-label {
+            position: fixed;
+            bottom: 106px;
+            right: 16px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.2);
+            z-index: 100;
+        }
+
+        /* Wrong key flash */
+        .navigator-bar.wrong {
+            animation: wrongFlash 0.3s ease;
+        }
+
+        @keyframes wrongFlash {
+
+            0%,
+            100% {
+                background: rgba(0, 0, 0, 0.3);
+            }
+
+            50% {
+                background: rgba(221, 68, 68, 0.1);
+            }
+        }
+
+        /* Success state */
+        .navi-message.success {
+            color: var(--success);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-left">
+            <span class="tutorial-badge">TUTORIAL</span>
+            <span class="tutorial-title"><span class="cmd">x</span> — 文字削除 + undo</span>
+        </div>
+
+        <div class="step-progress">
+            <div class="step-dot done" id="dot-0"></div>
+            <div class="step-dot done" id="dot-1"></div>
+            <div class="step-dot current" id="dot-2"></div>
+            <div class="step-dot" id="dot-3"></div>
+            <div class="step-dot" id="dot-4"></div>
+            <span class="step-label" id="step-counter">3 / 5</span>
+        </div>
+
+        <span class="mode-indicator">NORMAL</span>
+    </div>
+
+    <!-- Editor -->
+    <div class="editor-area">
+        <div class="editor" style="position: relative;">
+            <div class="editor-header">
+                <span class="editor-dot red"></span>
+                <span class="editor-dot yellow"></span>
+                <span class="editor-dot green"></span>
+                <span>tutorial</span>
+            </div>
+            <div class="editor-content">
+                <div class="editor-line">
+                    <span class="line-number">1</span>
+                    <span class="line-content" id="editor-text"><span class="cursor-block" id="cursor-char">l</span>lo
+                        world</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigator Bar -->
+    <div class="navigator-bar" id="navigator">
+        <button class="skip-btn" title="Esc でスキップ">Skip ▸</button>
+        <div class="navi-icon">🗡</div>
+        <div class="navi-content">
+            <div class="navi-name">ナビゲーター</div>
+            <div class="navi-message" id="navi-msg">おっと、消しすぎたな。大丈夫、<span class="key-highlight">u</span>を押せば元に戻せる</div>
+            <div class="navi-sub" id="navi-sub"></div>
+        </div>
+    </div>
+
+    <!-- Demo controls -->
+    <div class="demo-label">DEMO</div>
+    <div class="demo-controls">
+        <button onclick="showStep(0)">Step 1: x 指示</button>
+        <button onclick="showStep(1)">Step 2: x 再実行</button>
+        <button onclick="showStep(2)">Step 3: u 導入</button>
+        <button onclick="showStep(3)">Step 4: u 再実行</button>
+        <button onclick="showStep(4)">Step 5: 完了</button>
+        <button onclick="showWrong()">誤入力デモ</button>
+    </div>
+
+    <script>
+        const steps = [
+            {
+                message: '<span class="key-highlight">x</span>は目の前の文字を消す武器だ。押してみろ',
+                sub: '',
+                editorText: '<span class="cursor-block">h</span>ello world',
+                dots: [2, 0, 0, 0, 0], // 2=current, 1=done, 0=future
+                counter: '1 / 5',
+            },
+            {
+                message: 'もう一度。<span class="key-highlight">x</span>で文字を消せ',
+                sub: '',
+                editorText: '<span class="cursor-block">e</span>llo world',
+                dots: [1, 2, 0, 0, 0],
+                counter: '2 / 5',
+            },
+            {
+                message: 'おっと、消しすぎたな。大丈夫、<span class="key-highlight">u</span>を押せば元に戻せる',
+                sub: '',
+                editorText: '<span class="cursor-block">l</span>lo world',
+                dots: [1, 1, 2, 0, 0],
+                counter: '3 / 5',
+            },
+            {
+                message: 'もう一度<span class="key-highlight">u</span>だ。何回でも戻せるぞ',
+                sub: '',
+                editorText: '<span class="cursor-block">e</span>llo world',
+                dots: [1, 1, 1, 2, 0],
+                counter: '4 / 5',
+            },
+            {
+                message: '<span class="success">これがundo。いつでも使える安全網だ。覚えておけ</span>',
+                sub: '任意のキーで次へ',
+                editorText: '<span class="cursor-block">h</span>ello world',
+                dots: [1, 1, 1, 1, 2],
+                counter: '5 / 5',
+            },
+        ];
+
+        function showStep(i) {
+            const step = steps[i];
+            document.getElementById('navi-msg').innerHTML = step.message;
+            document.getElementById('navi-sub').textContent = step.sub;
+            document.getElementById('editor-text').innerHTML = step.editorText;
+            document.getElementById('step-counter').textContent = step.counter;
+
+            step.dots.forEach((state, idx) => {
+                const dot = document.getElementById('dot-' + idx);
+                dot.className = 'step-dot';
+                if (state === 1) dot.classList.add('done');
+                if (state === 2) dot.classList.add('current');
+            });
+
+            // Remove wrong state
+            document.getElementById('navigator').classList.remove('wrong');
+        }
+
+        function showWrong() {
+            document.getElementById('navi-msg').innerHTML = '<span class="key-highlight">u</span>を押すんだ';
+            document.getElementById('navi-sub').textContent = '';
+            const nav = document.getElementById('navigator');
+            nav.classList.remove('wrong');
+            void nav.offsetWidth; // reflow
+            nav.classList.add('wrong');
+        }
+    </script>
+
+</body>
+
+</html>

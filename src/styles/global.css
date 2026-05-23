@@ -1,0 +1,79 @@
+/* ===== CSS Variables (from UI-SPEC) ===== */
+:root {
+    /* Base */
+    --bg-normal: #1a1a2e;
+    --bg-insert: #2e1a1a;
+    --bg-visual: #2a1a3e;
+    --editor-bg: #0f0f1a;
+
+    /* Colors */
+    --accent: #7c7cff;
+    --success: #44ddaa;
+    --star-gold: #ffd700;
+    --danger: #dd4444;
+    --text-primary: #e0e0e0;
+    --text-dim: #888;
+
+    /* Card */
+    --card-bg: #222244;
+    --card-border: #4444aa;
+    --card-glow: #6666ff;
+
+    /* Life gauge */
+    --life-full: #44ddaa;
+    --life-mid: #ddaa44;
+    --life-low: #dd4444;
+
+    /* Typography */
+    --font-code: 'JetBrains Mono', monospace;
+    --font-ui: 'Inter', sans-serif;
+}
+
+/* ===== Reset ===== */
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-ui);
+    background: var(--bg-normal);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Selection ===== */
+::selection {
+    background: rgba(124, 124, 255, 0.3);
+    color: var(--text-primary);
+}
+
+/* ===== Scrollbar ===== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
