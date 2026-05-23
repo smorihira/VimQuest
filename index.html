@@ -14,6 +14,46 @@
 </head>
 
 <body>
+  <div id="loading-screen" style="
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #1a1a2e; color: #e0e0e0; font-family: 'JetBrains Mono', monospace;
+    transition: opacity 0.4s ease;
+  ">
+    <div style="
+      width: 40px; height: 40px; margin-bottom: 24px;
+      transform-style: preserve-3d;
+      animation: loading-spin 2s linear infinite;
+    ">
+      <div style="
+        position: absolute; width: 40px; height: 40px;
+        border: 2px solid rgba(124,124,255,0.4);
+        background: rgba(124,124,255,0.1);
+        transform: rotateY(0deg) translateZ(20px);
+      "></div>
+      <div style="
+        position: absolute; width: 40px; height: 40px;
+        border: 2px solid rgba(124,124,255,0.4);
+        background: rgba(124,124,255,0.1);
+        transform: rotateY(90deg) translateZ(20px);
+      "></div>
+    </div>
+    <div style="font-size: 20px; letter-spacing: 4px; color: #7c7cff;">
+      <span style="color: #44ddaa;">Vim</span> Quest
+    </div>
+    <div style="font-size: 11px; color: #666; margin-top: 8px;">Loading…</div>
+  </div>
+  <style>
+    @keyframes loading-spin {
+      from {
+        transform: rotateX(30deg) rotateY(0deg);
+      }
+
+      to {
+        transform: rotateX(30deg) rotateY(360deg);
+      }
+    }
+  </style>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

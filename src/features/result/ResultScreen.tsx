@@ -9,13 +9,15 @@ import { useAtom } from 'jotai'
 import { getStage, getStagesByNode } from '../../data/stages'
 import { calculateStars, applyHintPenalty } from '../../engine/damageCalculator'
 import { gameProgressAtom } from '../../store/atoms'
-import { SKILL_NODES } from '../../data/skillTree'
+import { SKILL_NODES, getSkillNode } from '../../data/skillTree'
 import type { StarRating } from '../../types/stage'
+import type { SpellEntry } from '../play/usePlayEngine'
 import './ResultScreen.css'
 
 interface LocationState {
     damage: number
     usedHint: boolean
+    spells?: SpellEntry[]
 }
 
 export function ResultScreen() {
@@ -26,7 +28,8 @@ export function ResultScreen() {
     const saved = useRef(false)
     const stage = stageId ? getStage(stageId) : undefined
 
-    const state = (location.state as LocationState) ?? { damage: 0, usedHint: false }
+    const state = (location.state as LocationState) ?? { damage: 0, usedHint: false, spells: [] }
+    const spells = state.spells ?? []
     const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
     const stars = stage ? applyHintPenalty(rawStars, state.usedHint) : (0 as StarRating)
 
@@ -148,6 +151,28 @@ export function ResultScreen() {
                     </div>
                 </div>
 
+                {/* YOUR SPELL */}
+                {spells.length > 0 && (
+                    <div className="spell-section">
+                        <div className="spell-label">YOUR SPELL</div>
+                        <div className="spell-list">
+                            {spells.map((s, i) => {
+                                const learningCmds = getSkillNode(stage.nodeId)?.commands ?? []
+                                const baseCmd = s.command.replace(/…Esc$/, '')
+                                const isLearning = learningCmds.includes(baseCmd)
+                                const isDim = s.command.includes('Esc') || s.damage === 0
+                                const colorClass = isLearning ? 'spell-learning' : isDim ? 'spell-dim' : 'spell-accent'
+                                return (
+                                    <div key={i} className={`spell-item ${colorClass}`}>
+                                        <div className="spell-cmd">{s.command}</div>
+                                        <div className="spell-dmg">-{s.damage}</div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </div>
+                )}
+
                 {/* Stats */}
                 <div className="stats">
                     <div className="stat">
@@ -161,10 +186,15 @@ export function ResultScreen() {
                         <div className="stat-label">LIFE</div>
                     </div>
                     <div className="stat">
-                        <div className="stat-value">
-                            ☆{stars === 3 ? '3' : stars === 2 ? '2' : '1'} / ☆3
+                        <div className="stat-value best-value">
+                            {progress.stageResults[stage.id]?.bestDamage ?? state.damage}
                         </div>
-                        <div className="stat-label">RATING</div>
+                        <div className="stat-label">BEST</div>
+                        {progress.stageResults[stage.id] &&
+                            state.damage <= progress.stageResults[stage.id].bestDamage &&
+                            state.damage < (progress.stageResults[stage.id].bestDamage) && (
+                                <div className="new-best">NEW BEST!</div>
+                            )}
                     </div>
                 </div>
 

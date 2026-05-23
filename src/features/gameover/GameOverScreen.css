@@ -49,6 +49,82 @@
     margin-bottom: 32px;
 }
 
+/* Operation Log */
+.oplog-section {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.oplog-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.oplog-list {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 12px 16px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.oplog-entry {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+    font-family: var(--font-code);
+    font-size: 13px;
+}
+
+.oplog-entry.waste {
+    color: var(--danger, #dd4444);
+}
+
+.oplog-cmd {
+    flex: 1;
+    font-weight: 700;
+}
+
+.oplog-count {
+    font-weight: 400;
+    opacity: 0.6;
+    font-size: 11px;
+}
+
+.oplog-dmg {
+    font-size: 12px;
+    opacity: 0.6;
+    min-width: 30px;
+    text-align: right;
+}
+
+.oplog-waste-tag {
+    font-size: 10px;
+    background: rgba(221, 68, 68, 0.2);
+    color: var(--danger, #dd4444);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+}
+
+.oplog-summary {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 8px;
+    padding: 8px 0;
+}
+
+.oplog-over {
+    color: var(--danger, #dd4444);
+    font-weight: 700;
+}
+
 /* Suggestion */
 .suggestion {
     background: rgba(124, 124, 255, 0.06);

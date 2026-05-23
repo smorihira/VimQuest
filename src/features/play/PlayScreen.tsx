@@ -3,11 +3,15 @@
  * Manages keyboard input, displays editor + HUD + hand cards.
  */
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { getStage } from '../../data/stages'
 import { usePlayEngine } from './usePlayEngine'
 import { EditorView } from './EditorView'
+import { NavigatorCube } from './NavigatorCube'
+import { HintOverlay } from './HintOverlay'
+import { playTick, playError, playClear, playGameOver, playType } from '../../engine/sound'
+import { isMuted, setMuted } from '../../engine/sound'
 import './PlayScreen.css'
 
 export function PlayScreen() {
@@ -34,35 +38,109 @@ function PlayScreenInner({
     navigate: ReturnType<typeof useNavigate>
 }) {
     const play = usePlayEngine(stage)
+    const [spaceHeld, setSpaceHeld] = useState(false)
+    const [muted, setMutedState] = useState(isMuted())
+    const [showHint, setShowHint] = useState(false)
+    const [focused, setFocused] = useState(true)
+    const [colonBuffer, setColonBuffer] = useState('')
+
+    // Focus loss detection
+    useEffect(() => {
+        const onBlur = () => setFocused(false)
+        const onFocus = () => setFocused(true)
+        window.addEventListener('blur', onBlur)
+        window.addEventListener('focus', onFocus)
+        return () => {
+            window.removeEventListener('blur', onBlur)
+            window.removeEventListener('focus', onFocus)
+        }
+    }, [])
+
+    const toggleMute = useCallback(() => {
+        const next = !muted
+        setMutedState(next)
+        setMuted(next)
+    }, [muted])
 
     // Navigate on clear/dead
     useEffect(() => {
         if (play.status === 'clear') {
+            playClear()
             const timer = setTimeout(() => {
                 navigate(`/result/${stage.id}`, {
-                    state: { damage: play.damage, usedHint: play.usedHint },
+                    state: { damage: play.damage, usedHint: play.usedHint, spells: play.spells },
                 })
             }, 600)
             return () => clearTimeout(timer)
         }
         if (play.status === 'dead') {
+            playGameOver()
             const timer = setTimeout(() => {
-                navigate(`/gameover/${stage.id}`)
+                navigate(`/gameover/${stage.id}`, {
+                    state: { damage: play.damage, spells: play.spells },
+                })
             }, 600)
             return () => clearTimeout(timer)
         }
     }, [play.status, stage.id, play.damage, play.usedHint, navigate])
+
+    // Sound effects for commands
+    useEffect(() => {
+        if (play.lastInvalid) playError()
+    }, [play.lastInvalid, play.lastExecutedRaw])
+
+    useEffect(() => {
+        if (play.lastExecutedRaw && !play.lastInvalid) {
+            if (play.editorState.mode === 'insert') {
+                playType()
+            } else {
+                playTick()
+            }
+        }
+    }, [play.lastExecutedRaw, play.lastInvalid, play.editorState.mode])
 
     // Keyboard handler
     const onKeyDown = useCallback(
         (e: KeyboardEvent) => {
             if (play.status !== 'playing') return
 
+            // Space vision: hold Space in normal/visual mode to see goal
+            if (e.code === 'Space' && play.editorState.mode !== 'insert') {
+                e.preventDefault()
+                setSpaceHeld(true)
+                return
+            }
+
             e.preventDefault()
 
             // Map key events to our key strings
             const key = mapKeyEvent(e)
             if (!key) return
+
+            // :q! easter egg — track colon-command buffer in normal mode
+            if (play.editorState.mode === 'normal') {
+                if (key === ':') {
+                    setColonBuffer(':')
+                    return
+                }
+                if (colonBuffer === ':' && key === 'q') {
+                    setColonBuffer(':q')
+                    return
+                }
+                if (colonBuffer === ':q' && key === '!') {
+                    setColonBuffer(':q!')
+                    return
+                }
+                if (colonBuffer === ':q!' && e.key === 'Enter') {
+                    setColonBuffer('')
+                    navigate('/tree')
+                    return
+                }
+                if (colonBuffer) {
+                    setColonBuffer('')
+                    // Don't swallow the key — fall through to handleKey
+                }
+            }
 
             // Esc in normal mode with no pending parser input → exit stage
             if (key === 'Esc' && play.editorState.mode === 'normal' && !play.parserBuffer) {
@@ -72,13 +150,26 @@ function PlayScreenInner({
 
             play.handleKey(key)
         },
-        [play, navigate],
+        [play, navigate, colonBuffer],
+    )
+
+    const onKeyUp = useCallback(
+        (e: KeyboardEvent) => {
+            if (e.code === 'Space') {
+                setSpaceHeld(false)
+            }
+        },
+        [],
     )
 
     useEffect(() => {
         window.addEventListener('keydown', onKeyDown)
-        return () => window.removeEventListener('keydown', onKeyDown)
-    }, [onKeyDown])
+        window.addEventListener('keyup', onKeyUp)
+        return () => {
+            window.removeEventListener('keydown', onKeyDown)
+            window.removeEventListener('keyup', onKeyUp)
+        }
+    }, [onKeyDown, onKeyUp])
 
     const modeClass =
         play.editorState.mode === 'insert'
@@ -107,6 +198,13 @@ function PlayScreenInner({
                         title="ツリーに戻る (Esc)"
                     >
                         ◀ :q!
+                    </button>
+                    <button
+                        className="mute-btn"
+                        onClick={toggleMute}
+                        title={muted ? '音声ON' : '音声OFF'}
+                    >
+                        {muted ? '🔇' : '🔊'}
                     </button>
                     <div className="life-gauge">
                         <span className="life-icon">♥</span>
@@ -161,19 +259,45 @@ function PlayScreenInner({
                     state={play.editorState}
                     goalText={stage.goalText}
                     goalCursor={stage.clearConditions?.cursor}
+                    showGoal={spaceHeld}
+                    language={stage.language}
                 />
             </div>
 
             {/* Hand Cards */}
             <div className="play-card-panel">
-                <div className="card-label">HAND</div>
-                <div className="card-row">
-                    {stage.availableCommands.map((cmd) => (
-                        <div key={cmd} className={`card ${getCardClass(cmd)}`}>
-                            {cmd}
-                        </div>
-                    ))}
+                <div className="card-label">
+                    {play.editorState.mode === 'insert' ? 'INSERT' : 'HAND'}
                 </div>
+                {play.editorState.mode === 'insert' ? (
+                    <div className="insert-info">
+                        <span className="insert-chars">入力中…</span>
+                        <span className="insert-esc">Esc で確定</span>
+                    </div>
+                ) : (
+                    <div className="card-row">
+                        {stage.availableCommands.map((cmd) => {
+                            const pendingOp = getPendingOperator(play.parserBuffer)
+                            const isOperator = ['d', 'c', 'y', '>', '<'].includes(cmd)
+                            const isTarget = !isOperator && !['u', 'Esc', '.'].includes(cmd)
+                            const isPending = pendingOp === cmd
+                            const isDisabled = pendingOp && isOperator && cmd !== pendingOp
+                            const isMerged = play.lastExecutedRaw.length > 1 && play.lastExecutedRaw.startsWith(cmd) && isOperator
+
+                            let cardState = ''
+                            if (isPending) cardState = ' card-pending'
+                            else if (pendingOp && isTarget) cardState = ' card-target'
+                            else if (isDisabled) cardState = ' card-disabled'
+                            if (isMerged) cardState += ' card-merged'
+
+                            return (
+                                <div key={cmd} className={`card ${getCardClass(cmd)}${cardState}`}>
+                                    {isMerged ? play.lastExecutedRaw : cmd}
+                                </div>
+                            )
+                        })}
+                    </div>
+                )}
                 {play.parserBuffer && (
                     <div className="parser-buffer">
                         {play.parserBuffer}_
@@ -194,6 +318,37 @@ function PlayScreenInner({
             )}
             {play.lastInvalid && (
                 <div className="invalid-flash" />
+            )}
+
+            {/* Navigator Cube */}
+            <NavigatorCube
+                lifePercent={play.lifePercent}
+                lastInvalid={play.lastInvalid}
+                lastExecutedRaw={play.lastExecutedRaw}
+                onClick={() => {
+                    play.useHint()
+                    setShowHint(true)
+                }}
+            />
+
+            {/* Hint Overlay */}
+            {showHint && stage.hints.length > 0 && (
+                <HintOverlay
+                    stage={stage}
+                    onClose={() => setShowHint(false)}
+                />
+            )}
+
+            {/* :q! command line indicator */}
+            {colonBuffer && (
+                <div className="colon-cmd">{colonBuffer}<span className="colon-cursor">█</span></div>
+            )}
+
+            {/* Focus Loss Overlay */}
+            {!focused && play.status === 'playing' && (
+                <div className="focus-overlay" onClick={() => window.focus()}>
+                    <div className="focus-overlay-text">クリックして再開</div>
+                </div>
             )}
         </div>
     )
@@ -224,6 +379,14 @@ function mapKeyEvent(e: KeyboardEvent): string | null {
 }
 
 // ─── Card styling ───────────────────────────────────────────────────
+
+function getPendingOperator(buffer: string): string | null {
+    if (!buffer) return null
+    // Strip leading count
+    const stripped = buffer.replace(/^\d+/, '')
+    if (['d', 'c', 'y', '>', '<'].includes(stripped)) return stripped
+    return null
+}
 
 function getCardClass(cmd: string): string {
     if (['d', 'c', 'y'].includes(cmd[0]) && cmd.length >= 2) return 'verb'

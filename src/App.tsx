@@ -6,19 +6,22 @@ import { LandingScreen } from './features/landing/LandingScreen'
 import { SkillTreeScreen } from './features/skillTree/SkillTreeScreen'
 import { WeaponGetScreen } from './features/weaponGet/WeaponGetScreen'
 import { TutorialScreen } from './features/tutorial/TutorialScreen'
+import { DeviceGate } from './features/deviceGate/DeviceGate'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LandingScreen />} />
-      <Route path="/play/:stageId" element={<PlayScreen />} />
-      <Route path="/result/:stageId" element={<ResultScreen />} />
-      <Route path="/gameover/:stageId" element={<GameOverScreen />} />
-      <Route path="/tree" element={<SkillTreeScreen />} />
-      <Route path="/weapon/:nodeId" element={<WeaponGetScreen />} />
-      <Route path="/tutorial/:nodeId" element={<TutorialScreen />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <DeviceGate>
+      <Routes>
+        <Route path="/" element={<LandingScreen />} />
+        <Route path="/play/:stageId" element={<PlayScreen />} />
+        <Route path="/result/:stageId" element={<ResultScreen />} />
+        <Route path="/gameover/:stageId" element={<GameOverScreen />} />
+        <Route path="/tree" element={<SkillTreeScreen />} />
+        <Route path="/weapon/:nodeId" element={<WeaponGetScreen />} />
+        <Route path="/tutorial/:nodeId" element={<TutorialScreen />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </DeviceGate>
   )
 }
 

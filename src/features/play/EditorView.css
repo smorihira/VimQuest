@@ -137,3 +137,39 @@
     color: #fff;
     border-radius: 2px;
 }
+
+/* ── Vision mode (Space hold) ──────────────────────── */
+
+.editor.vision-active {
+    border-color: rgba(68, 221, 170, 0.3);
+    box-shadow: 0 4px 32px rgba(68, 221, 170, 0.15);
+}
+
+.editor.vision-active .editor-filename {
+    color: var(--success, #44ddaa);
+    font-weight: 700;
+}
+
+.editor.vision-active .editor-content {
+    animation: vision-flash 0.2s ease-out;
+}
+
+.diff-line {
+    background: rgba(68, 221, 170, 0.06);
+}
+
+.diff-char {
+    background: rgba(68, 221, 170, 0.25);
+    color: var(--success, #44ddaa);
+    border-radius: 2px;
+}
+
+@keyframes vision-flash {
+    0% {
+        background: rgba(68, 221, 170, 0.12);
+    }
+
+    100% {
+        background: transparent;
+    }
+}

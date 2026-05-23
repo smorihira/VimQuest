@@ -1,16 +1,47 @@
 /**
  * GameOverScreen — shown when player runs out of life.
- * Displays damage summary and retry/tree navigation.
+ * Displays operation log with waste highlighting, damage summary, and hint.
  */
 
-import { useParams, useNavigate } from 'react-router'
+import { useParams, useNavigate, useLocation } from 'react-router'
 import { getStage } from '../../data/stages'
+import type { SpellEntry } from '../play/usePlayEngine'
 import './GameOverScreen.css'
+
+interface LocationState {
+    damage?: number
+    spells?: SpellEntry[]
+}
+
+interface CollapsedEntry {
+    command: string
+    damage: number
+    count: number
+}
+
+function collapseSpells(spells: SpellEntry[]): CollapsedEntry[] {
+    const result: CollapsedEntry[] = []
+    for (const s of spells) {
+        const last = result[result.length - 1]
+        if (last && last.command === s.command) {
+            last.count++
+            last.damage += s.damage
+        } else {
+            result.push({ command: s.command, damage: s.damage, count: 1 })
+        }
+    }
+    return result
+}
 
 export function GameOverScreen() {
     const { stageId } = useParams<{ stageId: string }>()
     const navigate = useNavigate()
+    const location = useLocation()
     const stage = stageId ? getStage(stageId) : undefined
+
+    const state = (location.state as LocationState) ?? {}
+    const spells = state.spells ?? []
+    const totalDamage = state.damage ?? 0
 
     if (!stage) {
         return (
@@ -19,6 +50,10 @@ export function GameOverScreen() {
             </div>
         )
     }
+
+    const collapsed = collapseSpells(spells)
+    const overAmount = totalDamage - stage.life
+    const optimalDamage = stage.stars[0]
 
     return (
         <div className="gameover-screen">
@@ -29,7 +64,34 @@ export function GameOverScreen() {
                     {stage.id} — {stage.title}
                 </div>
 
-                {/* Suggestion from hints */}
+                {/* Operation Log */}
+                {collapsed.length > 0 && (
+                    <div className="oplog-section">
+                        <div className="oplog-label">OPERATION LOG</div>
+                        <div className="oplog-list">
+                            {collapsed.map((entry, i) => {
+                                const isWaste = entry.damage > optimalDamage * 0.5 && entry.count > 3
+                                return (
+                                    <div key={i} className={`oplog-entry${isWaste ? ' waste' : ''}`}>
+                                        <span className="oplog-cmd">
+                                            {entry.command}
+                                            {entry.count > 1 && <span className="oplog-count"> ×{entry.count}</span>}
+                                        </span>
+                                        <span className="oplog-dmg">-{entry.damage}</span>
+                                        {isWaste && (
+                                            <span className="oplog-waste-tag">{entry.damage}浪費</span>
+                                        )}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className="oplog-summary">
+                            合計ダメージ: {totalDamage} / ライフ: {stage.life} → <span className="oplog-over">{overAmount}オーバー</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* Hint */}
                 {stage.hints.length > 0 && (
                     <div className="suggestion">
                         <div className="suggestion-label">💡 HINT</div>
@@ -44,18 +106,6 @@ export function GameOverScreen() {
                         </div>
                     </div>
                 )}
-
-                {/* Stats */}
-                <div className="gameover-stats">
-                    <div className="stat">
-                        <div className="stat-value">{stage.life}</div>
-                        <div className="stat-label">LIFE</div>
-                    </div>
-                    <div className="stat">
-                        <div className="stat-value">{stage.stars[0]}</div>
-                        <div className="stat-label">☆3 目標</div>
-                    </div>
-                </div>
 
                 {/* Actions */}
                 <div className="actions">

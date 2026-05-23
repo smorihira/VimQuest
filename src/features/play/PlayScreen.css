@@ -50,6 +50,20 @@
     border-color: rgba(255, 255, 255, 0.2);
 }
 
+.mute-btn {
+    font-size: 14px;
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    padding: 4px 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mute-btn:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
 .life-gauge {
     display: flex;
     align-items: center;
@@ -190,13 +204,81 @@
     color: var(--text-primary);
     min-width: 48px;
     text-align: center;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
 }
 
 .card:hover {
     border-color: var(--card-glow, #6666ff);
     box-shadow: 0 0 12px rgba(102, 102, 255, 0.3);
     transform: translateY(-2px);
+}
+
+/* Card states for operator-pending */
+.card.card-pending {
+    border-color: #ff6666;
+    box-shadow: 0 0 16px rgba(255, 102, 102, 0.4);
+    transform: translateY(-4px) scale(1.05);
+    animation: card-pulse 0.8s ease infinite;
+}
+
+.card.card-target {
+    border-color: rgba(124, 124, 255, 0.6);
+    box-shadow: 0 0 8px rgba(124, 124, 255, 0.2);
+}
+
+.card.card-disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.card.card-merged {
+    animation: card-merge 0.4s ease;
+    border-color: var(--success, #44ddaa);
+    box-shadow: 0 0 16px rgba(68, 221, 170, 0.4);
+}
+
+@keyframes card-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 16px rgba(255, 102, 102, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 24px rgba(255, 102, 102, 0.6);
+    }
+}
+
+@keyframes card-merge {
+    0% {
+        transform: scale(1.2);
+    }
+
+    50% {
+        transform: scale(0.95);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Insert mode info */
+.insert-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--font-code);
+    font-size: 13px;
+}
+
+.insert-chars {
+    color: var(--text-primary);
+}
+
+.insert-esc {
+    color: var(--text-dim);
+    font-size: 11px;
 }
 
 .card.verb {
@@ -309,4 +391,50 @@
     font-family: var(--font-code);
     color: var(--danger);
     font-size: 18px;
+}
+
+/* Focus loss overlay */
+.focus-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 150;
+    cursor: pointer;
+}
+
+.focus-overlay-text {
+    font-family: var(--font-code);
+    font-size: 20px;
+    color: #e0e0e0;
+    padding: 16px 32px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(26, 26, 46, 0.9);
+}
+
+/* :q! command line */
+.colon-cmd {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111;
+    color: #e0e0e0;
+    font-family: var(--font-code);
+    font-size: 14px;
+    padding: 4px 12px;
+    z-index: 100;
+}
+
+.colon-cursor {
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% {
+        opacity: 0;
+    }
 }

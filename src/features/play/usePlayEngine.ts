@@ -18,6 +18,11 @@ import type { StarRating } from '../../types/stage'
 
 export type PlayStatus = 'playing' | 'clear' | 'dead'
 
+export interface SpellEntry {
+    command: string
+    damage: number
+}
+
 export interface PlayState {
     editorState: EditorState
     damage: number
@@ -28,6 +33,8 @@ export interface PlayState {
     parserBuffer: string
     usedHint: boolean
     lastInvalid: boolean
+    spells: SpellEntry[]
+    lastExecutedRaw: string
 }
 
 export interface PlayActions {
@@ -45,11 +52,17 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
     const [status, setStatus] = useState<PlayStatus>('playing')
     const [parserBuffer, setParserBuffer] = useState('')
     const [lastInvalid, setLastInvalid] = useState(false)
+    const [lastExecutedRaw, setLastExecutedRaw] = useState('')
 
     // Ref for insert-mode entry snapshot (for finalizeInsertSession)
     const insertEntryRef = useRef<EditorState | null>(null)
     // Net character count during current insert session
     const insertCharCount = useRef(0)
+    // Command that started the current insert session
+    const insertCommandRef = useRef<string>('')
+
+    // Spell (command history) tracking
+    const [spells, setSpells] = useState<SpellEntry[]>([])
 
     // Parser instance (stable across renders, recreated on reset)
     const parserRef = useRef<CommandParser>(
@@ -124,12 +137,14 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
             }
 
             const raw = parseResult.command.raw
+            setLastExecutedRaw(raw)
 
             // ── Undo: restore damage from undone operation ──
             if (raw === 'u') {
                 if (editorState.undoStack.length > 0) {
                     const op = editorState.undoStack[editorState.undoStack.length - 1]
                     setDamage((prev) => Math.max(0, prev - op.damage))
+                    setSpells((prev) => prev.slice(0, -1))
                 }
                 const next = executeCommand(editorState, parseResult.command)
                 setEditorState(next)
@@ -145,6 +160,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
                     const op = editorState.redoStack[editorState.redoStack.length - 1]
                     const newDamage = damage + op.damage
                     setDamage(newDamage)
+                    setSpells((prev) => [...prev, { command: 'Ctrl+R', damage: op.damage }])
                     if (newDamage >= life) {
                         setStatus('dead')
                         return
@@ -163,6 +179,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
                 const next = executeCommand(editorState, parseResult.command)
                 insertEntryRef.current = editorState
                 insertCharCount.current = 0
+                insertCommandRef.current = raw
                 setEditorState(next)
                 return
             }
@@ -183,6 +200,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
                             : Math.ceil(charCount / 5)
                     const newDamage = damage + insertDamage
                     setDamage(newDamage)
+                    setSpells((prev) => [...prev, { command: insertCommandRef.current + '…Esc', damage: insertDamage }])
                     if (newDamage >= life) {
                         setStatus('dead')
                         return
@@ -215,6 +233,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
 
             const newDamage = damage + parseResult.damage
             setDamage(newDamage)
+            setSpells((prev) => [...prev, { command: raw, damage: parseResult.damage }])
 
             if (newDamage >= life) {
                 setStatus('dead')
@@ -238,9 +257,12 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
         setStatus('playing')
         setParserBuffer('')
         setLastInvalid(false)
+        setLastExecutedRaw('')
         insertEntryRef.current = null
         insertCharCount.current = 0
+        insertCommandRef.current = ''
         parserRef.current = new CommandParser(stage.availableCommands)
+        setSpells([])
     }, [stage])
 
     const useHint = useCallback(() => {
@@ -257,6 +279,8 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
         parserBuffer,
         usedHint,
         lastInvalid,
+        spells,
+        lastExecutedRaw,
         handleKey,
         reset,
         useHint,
