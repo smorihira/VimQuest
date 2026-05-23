@@ -1,97 +1,97 @@
 /* NavigatorCube styles */
 
 .navigator-cube {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    width: 48px;
-    height: 48px;
-    cursor: pointer;
-    z-index: 50;
-    perspective: 200px;
-    transition: opacity 0.3s ease;
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 50;
+  perspective: 200px;
+  transition: opacity 0.3s ease;
 }
 
 .navigator-cube:hover {
-    transform: scale(1.15);
+  transform: scale(1.15);
 }
 
 .cube-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cube {
-    width: 28px;
-    height: 28px;
-    position: relative;
-    transform-style: preserve-3d;
-    animation: cube-spin 8s linear infinite;
+  width: 28px;
+  height: 28px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: cube-spin 8s linear infinite;
 }
 
 .navigator-cube.slow .cube {
-    animation-duration: 14s;
+  animation-duration: 14s;
 }
 
 .navigator-cube.very-slow .cube {
-    animation-duration: 22s;
+  animation-duration: 22s;
 }
 
 .navigator-cube.dark {
-    opacity: 0.4;
+  opacity: 0.4;
 }
 
 /* Cube reactions */
 .navigator-cube.glow .cube {
-    filter: brightness(1.6) drop-shadow(0 0 8px rgba(124, 124, 255, 0.6));
+  filter: brightness(1.6) drop-shadow(0 0 8px rgba(124, 124, 255, 0.6));
 }
 
 .navigator-cube.dim .cube {
-    filter: brightness(0.4);
+  filter: brightness(0.4);
 }
 
 @keyframes cube-spin {
-    0% {
-        transform: rotateX(20deg) rotateY(0deg);
-    }
+  0% {
+    transform: rotateX(20deg) rotateY(0deg);
+  }
 
-    100% {
-        transform: rotateX(20deg) rotateY(360deg);
-    }
+  100% {
+    transform: rotateX(20deg) rotateY(360deg);
+  }
 }
 
 .face {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    border: 1px solid rgba(124, 124, 255, 0.4);
-    background: rgba(124, 124, 255, 0.08);
-    backdrop-filter: blur(2px);
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(124, 124, 255, 0.4);
+  background: rgba(124, 124, 255, 0.08);
+  backdrop-filter: blur(2px);
 }
 
 .face.front {
-    transform: translateZ(14px);
+  transform: translateZ(14px);
 }
 
 .face.back {
-    transform: rotateY(180deg) translateZ(14px);
+  transform: rotateY(180deg) translateZ(14px);
 }
 
 .face.left {
-    transform: rotateY(-90deg) translateZ(14px);
+  transform: rotateY(-90deg) translateZ(14px);
 }
 
 .face.right {
-    transform: rotateY(90deg) translateZ(14px);
+  transform: rotateY(90deg) translateZ(14px);
 }
 
 .face.top {
-    transform: rotateX(90deg) translateZ(14px);
+  transform: rotateX(90deg) translateZ(14px);
 }
 
 .face.bottom {
-    transform: rotateX(-90deg) translateZ(14px);
+  transform: rotateX(-90deg) translateZ(14px);
 }

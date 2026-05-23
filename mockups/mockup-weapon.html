@@ -1,424 +1,416 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VimQuest - New Weapon</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #1a1a2e;
+        --accent: #7c7cff;
+        --text-primary: #e0e0e0;
+        --text-dim: #888;
+        --star-gold: #ffd700;
+        --success: #44ddaa;
+      }
+
+      /* Pattern toggle */
+      .pattern-toggle {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        display: flex;
+        gap: 8px;
+        z-index: 100;
+      }
+
+      .pattern-toggle button {
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        padding: 6px 14px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-dim);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .pattern-toggle button.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      .pattern-label {
+        position: fixed;
+        top: 52px;
+        right: 16px;
+        font-size: 11px;
+        color: var(--text-dim);
+        z-index: 100;
+        text-align: right;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .weapon-container {
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      /* Particles background */
+      .particles {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .particle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) scale(0);
+          opacity: 0;
         }
 
-        :root {
-            --bg: #1a1a2e;
-            --accent: #7c7cff;
-            --text-primary: #e0e0e0;
-            --text-dim: #888;
-            --star-gold: #ffd700;
-            --success: #44ddaa;
+        50% {
+          opacity: 1;
         }
 
-        /* Pattern toggle */
-        .pattern-toggle {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            display: flex;
-            gap: 8px;
-            z-index: 100;
+        100% {
+          transform: translateY(-20vh) scale(1);
+          opacity: 0;
+        }
+      }
+
+      /* Label */
+      .weapon-label {
+        font-size: 12px;
+        color: var(--star-gold);
+        letter-spacing: 4px;
+        margin-bottom: 24px;
+        animation: fadeIn 1s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
         }
 
-        .pattern-toggle button {
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            padding: 6px 14px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-dim);
-            cursor: pointer;
-            transition: all 0.2s;
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Card reveal */
+      .weapon-card {
+        background: rgba(124, 124, 255, 0.08);
+        border: 2px solid var(--accent);
+        border-radius: 16px;
+        padding: 40px 32px;
+        margin-bottom: 32px;
+        animation: cardAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 0 40px rgba(124, 124, 255, 0.15);
+      }
+
+      @keyframes cardAppear {
+        0% {
+          transform: scale(0) rotateY(180deg);
+          opacity: 0;
         }
 
-        .pattern-toggle button.active {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
+        100% {
+          transform: scale(1) rotateY(0deg);
+          opacity: 1;
         }
+      }
 
-        .pattern-label {
-            position: fixed;
-            top: 52px;
-            right: 16px;
-            font-size: 11px;
-            color: var(--text-dim);
-            z-index: 100;
-            text-align: right;
-        }
+      .weapon-cmd {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 64px;
+        font-weight: 700;
+        color: var(--accent);
+        text-shadow: 0 0 24px rgba(124, 124, 255, 0.4);
+        margin-bottom: 8px;
+      }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+      .weapon-name {
+        font-size: 18px;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
 
-        .weapon-container {
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-        }
+      .weapon-name-en {
+        font-size: 13px;
+        color: var(--text-dim);
+        font-family: 'JetBrains Mono', monospace;
+      }
 
-        /* Particles background */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
+      /* Explanation */
+      .weapon-explain {
+        margin-bottom: 32px;
+        text-align: left;
+        animation: fadeIn 1.2s ease;
+      }
 
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: float 3s ease-in-out infinite;
-        }
+      .explain-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 8px;
+        margin-bottom: 8px;
+      }
 
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) scale(0);
-                opacity: 0;
-            }
+      .explain-before {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        color: var(--text-dim);
+        text-decoration: line-through;
+        min-width: 120px;
+      }
 
-            50% {
-                opacity: 1;
-            }
+      .explain-arrow {
+        color: var(--accent);
+        font-size: 16px;
+      }
 
-            100% {
-                transform: translateY(-20vh) scale(1);
-                opacity: 0;
-            }
-        }
+      .explain-after {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        color: var(--accent);
+        font-weight: 700;
+      }
 
-        /* Label */
-        .weapon-label {
-            font-size: 12px;
-            color: var(--star-gold);
-            letter-spacing: 4px;
-            margin-bottom: 24px;
-            animation: fadeIn 1s ease;
-        }
+      .explain-desc {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-left: auto;
+      }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
+      /* Try it prompt */
+      .try-section {
+        margin-bottom: 32px;
+        animation: fadeIn 1.5s ease;
+      }
 
-            to {
-                opacity: 1;
-            }
-        }
+      .try-label {
+        font-size: 12px;
+        color: var(--star-gold);
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+      }
 
-        /* Card reveal */
-        .weapon-card {
-            background: rgba(124, 124, 255, 0.08);
-            border: 2px solid var(--accent);
-            border-radius: 16px;
-            padding: 40px 32px;
-            margin-bottom: 32px;
-            animation: cardAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 40px rgba(124, 124, 255, 0.15);
-        }
+      .try-prompt {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        padding: 20px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+        line-height: 1.6;
+      }
 
-        @keyframes cardAppear {
-            0% {
-                transform: scale(0) rotateY(180deg);
-                opacity: 0;
-            }
+      .try-target {
+        color: var(--star-gold);
+        background: rgba(255, 215, 0, 0.1);
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
 
-            100% {
-                transform: scale(1) rotateY(0deg);
-                opacity: 1;
-            }
-        }
+      .try-hint {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-top: 8px;
+        font-family: 'Inter', sans-serif;
+      }
 
-        .weapon-cmd {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 64px;
-            font-weight: 700;
-            color: var(--accent);
-            text-shadow: 0 0 24px rgba(124, 124, 255, 0.4);
-            margin-bottom: 8px;
-        }
+      /* Key prompt */
+      .key-prompt {
+        animation: fadeIn 2s ease;
+        font-size: 13px;
+        color: var(--text-dim);
+      }
 
-        .weapon-name {
-            font-size: 18px;
-            color: var(--text-primary);
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
+      .key-prompt kbd {
+        font-family: 'JetBrains Mono', monospace;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        color: var(--accent);
+      }
 
-        .weapon-name-en {
-            font-size: 13px;
-            color: var(--text-dim);
-            font-family: 'JetBrains Mono', monospace;
-        }
+      /* Pattern B: Tutorial button */
+      .tutorial-section {
+        margin-bottom: 32px;
+        animation: fadeIn 1.5s ease;
+      }
 
-        /* Explanation */
-        .weapon-explain {
-            margin-bottom: 32px;
-            text-align: left;
-            animation: fadeIn 1.2s ease;
-        }
+      .tutorial-preview-msg {
+        font-size: 14px;
+        color: var(--text-dim);
+        margin-bottom: 20px;
+      }
 
-        .explain-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 12px 16px;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
+      .tutorial-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        background: var(--accent);
+        border: none;
+        border-radius: 8px;
+        padding: 14px 36px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 0 20px rgba(124, 124, 255, 0.3);
+      }
 
-        .explain-before {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            color: var(--text-dim);
-            text-decoration: line-through;
-            min-width: 120px;
-        }
+      .tutorial-btn:hover {
+        background: #9a9aff;
+        box-shadow: 0 0 30px rgba(124, 124, 255, 0.5);
+        transform: translateY(-1px);
+      }
 
-        .explain-arrow {
-            color: var(--accent);
-            font-size: 16px;
-        }
+      .tutorial-btn .arrow {
+        font-size: 18px;
+        transition: transform 0.2s;
+      }
 
-        .explain-after {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            color: var(--accent);
-            font-weight: 700;
-        }
-
-        .explain-desc {
-            font-size: 12px;
-            color: var(--text-dim);
-            margin-left: auto;
-        }
-
-        /* Try it prompt */
-        .try-section {
-            margin-bottom: 32px;
-            animation: fadeIn 1.5s ease;
-        }
-
-        .try-label {
-            font-size: 12px;
-            color: var(--star-gold);
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-        }
-
-        .try-prompt {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px;
-            padding: 20px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 18px;
-            line-height: 1.6;
-        }
-
-        .try-target {
-            color: var(--star-gold);
-            background: rgba(255, 215, 0, 0.1);
-            padding: 2px 6px;
-            border-radius: 3px;
-        }
-
-        .try-hint {
-            font-size: 12px;
-            color: var(--text-dim);
-            margin-top: 8px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        /* Key prompt */
-        .key-prompt {
-            animation: fadeIn 2s ease;
-            font-size: 13px;
-            color: var(--text-dim);
-        }
-
-        .key-prompt kbd {
-            font-family: 'JetBrains Mono', monospace;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            color: var(--accent);
-        }
-
-        /* Pattern B: Tutorial button */
-        .tutorial-section {
-            margin-bottom: 32px;
-            animation: fadeIn 1.5s ease;
-        }
-
-        .tutorial-preview-msg {
-            font-size: 14px;
-            color: var(--text-dim);
-            margin-bottom: 20px;
-        }
-
-        .tutorial-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 16px;
-            font-weight: 600;
-            color: #fff;
-            background: var(--accent);
-            border: none;
-            border-radius: 8px;
-            padding: 14px 36px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 0 20px rgba(124, 124, 255, 0.3);
-        }
-
-        .tutorial-btn:hover {
-            background: #9a9aff;
-            box-shadow: 0 0 30px rgba(124, 124, 255, 0.5);
-            transform: translateY(-1px);
-        }
-
-        .tutorial-btn .arrow {
-            font-size: 18px;
-            transition: transform 0.2s;
-        }
-
-        .tutorial-btn:hover .arrow {
-            transform: translateX(4px);
-        }
+      .tutorial-btn:hover .arrow {
+        transform: translateX(4px);
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <!-- Particles -->
     <div class="particles">
-        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
-        <div class="particle" style="left: 20%; animation-delay: 0.5s;"></div>
-        <div class="particle" style="left: 30%; animation-delay: 1s;"></div>
-        <div class="particle" style="left: 40%; animation-delay: 0.3s;"></div>
-        <div class="particle" style="left: 50%; animation-delay: 0.8s;"></div>
-        <div class="particle" style="left: 60%; animation-delay: 1.2s;"></div>
-        <div class="particle" style="left: 70%; animation-delay: 0.6s;"></div>
-        <div class="particle" style="left: 80%; animation-delay: 1.5s;"></div>
-        <div class="particle" style="left: 90%; animation-delay: 0.2s;"></div>
-        <div class="particle" style="left: 15%; animation-delay: 1.8s;"></div>
-        <div class="particle" style="left: 45%; animation-delay: 2s;"></div>
-        <div class="particle" style="left: 75%; animation-delay: 0.9s;"></div>
+      <div class="particle" style="left: 10%; animation-delay: 0s"></div>
+      <div class="particle" style="left: 20%; animation-delay: 0.5s"></div>
+      <div class="particle" style="left: 30%; animation-delay: 1s"></div>
+      <div class="particle" style="left: 40%; animation-delay: 0.3s"></div>
+      <div class="particle" style="left: 50%; animation-delay: 0.8s"></div>
+      <div class="particle" style="left: 60%; animation-delay: 1.2s"></div>
+      <div class="particle" style="left: 70%; animation-delay: 0.6s"></div>
+      <div class="particle" style="left: 80%; animation-delay: 1.5s"></div>
+      <div class="particle" style="left: 90%; animation-delay: 0.2s"></div>
+      <div class="particle" style="left: 15%; animation-delay: 1.8s"></div>
+      <div class="particle" style="left: 45%; animation-delay: 2s"></div>
+      <div class="particle" style="left: 75%; animation-delay: 0.9s"></div>
     </div>
 
     <div class="weapon-container">
-        <div class="weapon-label">★ N E W W E A P O N ★</div>
+      <div class="weapon-label">★ N E W W E A P O N ★</div>
 
-        <div class="weapon-card">
-            <div class="weapon-cmd">dw</div>
-            <div class="weapon-name">単語削除</div>
-            <div class="weapon-name-en">delete word</div>
+      <div class="weapon-card">
+        <div class="weapon-cmd">dw</div>
+        <div class="weapon-name">単語削除</div>
+        <div class="weapon-name-en">delete word</div>
+      </div>
+
+      <div class="weapon-explain">
+        <div class="explain-row">
+          <span class="explain-before">x x x x x</span>
+          <span class="explain-arrow">→</span>
+          <span class="explain-after">dw</span>
+          <span class="explain-desc">5ダメージ → 1ダメージ</span>
+        </div>
+        <div class="explain-row">
+          <span class="explain-before">d + w</span>
+          <span class="explain-arrow">=</span>
+          <span class="explain-after">delete + word</span>
+          <span class="explain-desc">動詞 + 対象の合成</span>
+        </div>
+      </div>
+
+      <!-- Pattern A: TRY IT (33 nodes) -->
+      <div id="pattern-a">
+        <div class="try-section">
+          <div class="try-label">▸ TRY IT</div>
+          <div class="try-prompt">
+            The <span class="try-target">quick</span> brown fox
+            <div class="try-hint">↑ "quick" にカーソルを合わせて dw を押してみよう</div>
+          </div>
         </div>
 
-        <div class="weapon-explain">
-            <div class="explain-row">
-                <span class="explain-before">x x x x x</span>
-                <span class="explain-arrow">→</span>
-                <span class="explain-after">dw</span>
-                <span class="explain-desc">5ダメージ → 1ダメージ</span>
-            </div>
-            <div class="explain-row">
-                <span class="explain-before">d + w</span>
-                <span class="explain-arrow">=</span>
-                <span class="explain-after">delete + word</span>
-                <span class="explain-desc">動詞 + 対象の合成</span>
-            </div>
-        </div>
+        <div class="key-prompt"><kbd>dw</kbd> を押して体験しよう</div>
+      </div>
 
-        <!-- Pattern A: TRY IT (33 nodes) -->
-        <div id="pattern-a">
-            <div class="try-section">
-                <div class="try-label">▸ TRY IT</div>
-                <div class="try-prompt">
-                    The <span class="try-target">quick</span> brown fox
-                    <div class="try-hint">↑ "quick" にカーソルを合わせて dw を押してみよう</div>
-                </div>
-            </div>
-
-            <div class="key-prompt">
-                <kbd>dw</kbd> を押して体験しよう
-            </div>
+      <!-- Pattern B: Tutorial button (7 tutorial nodes) -->
+      <div id="pattern-b" style="display: none">
+        <div class="tutorial-section">
+          <div class="tutorial-preview-msg">ステップごとに使い方を練習しましょう</div>
+          <button class="tutorial-btn">練習してみる <span class="arrow">→</span></button>
         </div>
-
-        <!-- Pattern B: Tutorial button (7 tutorial nodes) -->
-        <div id="pattern-b" style="display: none;">
-            <div class="tutorial-section">
-                <div class="tutorial-preview-msg">ステップごとに使い方を練習しましょう</div>
-                <button class="tutorial-btn">
-                    練習してみる <span class="arrow">→</span>
-                </button>
-            </div>
-        </div>
+      </div>
     </div>
 
     <!-- Pattern toggle UI -->
     <div class="pattern-toggle">
-        <button id="btn-a" class="active" onclick="showPattern('a')">A: TRY IT</button>
-        <button id="btn-b" onclick="showPattern('b')">B: Tutorial</button>
+      <button id="btn-a" class="active" onclick="showPattern('a')">A: TRY IT</button>
+      <button id="btn-b" onclick="showPattern('b')">B: Tutorial</button>
     </div>
     <div class="pattern-label" id="pattern-desc">33ノード — TRY ITで1回体験</div>
 
     <script>
-        function showPattern(p) {
-            const a = document.getElementById('pattern-a');
-            const b = document.getElementById('pattern-b');
-            const btnA = document.getElementById('btn-a');
-            const btnB = document.getElementById('btn-b');
-            const desc = document.getElementById('pattern-desc');
-            if (p === 'a') {
-                a.style.display = 'block';
-                b.style.display = 'none';
-                btnA.classList.add('active');
-                btnB.classList.remove('active');
-                desc.textContent = '33ノード — TRY ITで1回体験';
-            } else {
-                a.style.display = 'none';
-                b.style.display = 'block';
-                btnA.classList.remove('active');
-                btnB.classList.add('active');
-                desc.textContent = '7チュートリアルノード — TRY IT省略';
-            }
+      function showPattern(p) {
+        const a = document.getElementById('pattern-a')
+        const b = document.getElementById('pattern-b')
+        const btnA = document.getElementById('btn-a')
+        const btnB = document.getElementById('btn-b')
+        const desc = document.getElementById('pattern-desc')
+        if (p === 'a') {
+          a.style.display = 'block'
+          b.style.display = 'none'
+          btnA.classList.add('active')
+          btnB.classList.remove('active')
+          desc.textContent = '33ノード — TRY ITで1回体験'
+        } else {
+          a.style.display = 'none'
+          b.style.display = 'block'
+          btnA.classList.remove('active')
+          btnB.classList.add('active')
+          desc.textContent = '7チュートリアルノード — TRY IT省略'
         }
+      }
     </script>
-
-</body>
-
+  </body>
 </html>

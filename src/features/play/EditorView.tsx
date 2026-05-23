@@ -6,285 +6,319 @@
 import { useState, useEffect } from 'react'
 import type { EditorState, CursorPosition } from '../../types/editor'
 import type { Language } from '../../types/stage'
-import { tokenizeLine, isHighlighterReady, waitForHighlighter, type TokenInfo } from '../../engine/highlighter'
+import {
+  tokenizeLine,
+  isHighlighterReady,
+  waitForHighlighter,
+  type TokenInfo,
+} from '../../engine/highlighter'
 import './EditorView.css'
 
 interface EditorViewProps {
-    state: EditorState
-    goalText?: string
-    goalCursor?: CursorPosition
-    showGoal?: boolean
-    language?: Language
+  state: EditorState
+  goalText?: string
+  goalCursor?: CursorPosition
+  showGoal?: boolean
+  language?: Language
 }
 
 const VIEWPORT_HEIGHT = 16
 
 export function EditorView({ state, goalText, goalCursor, showGoal, language }: EditorViewProps) {
-    const [hlReady, setHlReady] = useState(isHighlighterReady())
+  const [hlReady, setHlReady] = useState(isHighlighterReady())
 
-    useEffect(() => {
-        if (!hlReady) {
-            waitForHighlighter().then(() => setHlReady(true))
-        }
-    }, [hlReady])
+  useEffect(() => {
+    if (!hlReady) {
+      waitForHighlighter().then(() => setHlReady(true))
+    }
+  }, [hlReady])
 
-    const lang = language ?? 'plaintext'
-    const currentLines = state.text.split('\n')
-    const goalLines = goalText?.split('\n')
+  const lang = language ?? 'plaintext'
+  const currentLines = state.text.split('\n')
+  const goalLines = goalText?.split('\n')
 
-    // In vision mode, show goal text with diff highlights
-    const displayLines = showGoal && goalLines ? goalLines : currentLines
+  // In vision mode, show goal text with diff highlights
+  const displayLines = showGoal && goalLines ? goalLines : currentLines
 
-    // Viewport: only show lines within the viewport range (for long texts)
-    // In vision mode (showGoal), disable viewport to show ALL goal lines
-    const useViewport = !showGoal && displayLines.length > VIEWPORT_HEIGHT
-    const vpTop = useViewport ? state.viewportTop : 0
-    const vpEnd = useViewport ? Math.min(vpTop + VIEWPORT_HEIGHT, displayLines.length) : displayLines.length
-    const visibleLines = displayLines.slice(vpTop, vpEnd)
+  // Viewport: only show lines within the viewport range (for long texts)
+  // In vision mode (showGoal), disable viewport to show ALL goal lines
+  const useViewport = !showGoal && displayLines.length > VIEWPORT_HEIGHT
+  const vpTop = useViewport ? state.viewportTop : 0
+  const vpEnd = useViewport
+    ? Math.min(vpTop + VIEWPORT_HEIGHT, displayLines.length)
+    : displayLines.length
+  const visibleLines = displayLines.slice(vpTop, vpEnd)
 
-    return (
-        <div className={`editor${showGoal ? ' vision-active' : ''}`}>
-            <div className="editor-header">
-                <span className="editor-dot red" />
-                <span className="editor-dot yellow" />
-                <span className="editor-dot green" />
-                <span className="editor-filename">
-                    {showGoal
-                        ? (goalCursor ? 'GOAL VISION — カーソル位置あり' : 'GOAL VISION (Space)')
-                        : 'buffer'}
-                </span>
+  return (
+    <div className={`editor${showGoal ? ' vision-active' : ''}`}>
+      <div className="editor-header">
+        <span className="editor-dot red" />
+        <span className="editor-dot yellow" />
+        <span className="editor-dot green" />
+        <span className="editor-filename">
+          {showGoal
+            ? goalCursor
+              ? 'GOAL VISION — カーソル位置あり'
+              : 'GOAL VISION (Space)'
+            : 'buffer'}
+        </span>
+      </div>
+      <div className="editor-content">
+        {useViewport && vpTop > 0 && (
+          <div className="viewport-indicator top">↑ {vpTop} lines above</div>
+        )}
+        {visibleLines.map((line, i) => {
+          const lineIdx = vpTop + i
+          const isCurrentLine = !showGoal && lineIdx === state.cursor.line
+          const isGoalCursorLine = showGoal && goalCursor && lineIdx === goalCursor.line
+          const currentLine = currentLines[lineIdx]
+          const goalLine = goalLines?.[lineIdx]
+          const isDiffLine = showGoal && currentLine !== goalLine
+
+          return (
+            <div
+              key={lineIdx}
+              className={`editor-line${isCurrentLine || isGoalCursorLine ? ' active-line' : ''}${isDiffLine ? ' diff-line' : ''}`}
+            >
+              <span className="line-number">{lineIdx + 1}</span>
+              <span className="line-content">
+                {showGoal && goalLines
+                  ? isGoalCursorLine
+                    ? renderGoalLineWithCursor(line, goalCursor!.col)
+                    : renderDiffLine(line, currentLine)
+                  : renderLineWithCursor(
+                      line,
+                      lineIdx,
+                      state,
+                      hlReady ? tokenizeLine(line, lang) : null,
+                    )}
+              </span>
             </div>
-            <div className="editor-content">
-                {useViewport && vpTop > 0 && (
-                    <div className="viewport-indicator top">↑ {vpTop} lines above</div>
-                )}
-                {visibleLines.map((line, i) => {
-                    const lineIdx = vpTop + i
-                    const isCurrentLine = !showGoal && lineIdx === state.cursor.line
-                    const isGoalCursorLine = showGoal && goalCursor && lineIdx === goalCursor.line
-                    const currentLine = currentLines[lineIdx]
-                    const goalLine = goalLines?.[lineIdx]
-                    const isDiffLine = showGoal && currentLine !== goalLine
-
-                    return (
-                        <div
-                            key={lineIdx}
-                            className={`editor-line${isCurrentLine || isGoalCursorLine ? ' active-line' : ''}${isDiffLine ? ' diff-line' : ''}`}
-                        >
-                            <span className="line-number">{lineIdx + 1}</span>
-                            <span className="line-content">
-                                {showGoal && goalLines
-                                    ? (isGoalCursorLine
-                                        ? renderGoalLineWithCursor(line, goalCursor!.col)
-                                        : renderDiffLine(line, currentLine))
-                                    : renderLineWithCursor(line, lineIdx, state, hlReady ? tokenizeLine(line, lang) : null)}
-                            </span>
-                        </div>
-                    )
-                })}
-                {useViewport && vpEnd < displayLines.length && (
-                    <div className="viewport-indicator bottom">↓ {displayLines.length - vpEnd} lines below</div>
-                )}
-            </div>
-            {goalText !== undefined && !showGoal && (
-                <div className="editor-goal">
-                    <div className="goal-label">
-                        {goalCursor ? 'GOAL カーソル位置' : 'GOAL'}
-                        <span className="goal-hint"> (Space長押しで重ね合わせ)</span>
-                    </div>
-                    <div className="goal-text">
-                        {goalText.split('\n').map((line, i) => {
-                            const isDiff = currentLines[i] !== line
-                            const isGoalCursor = goalCursor && goalCursor.line === i
-                            return (
-                                <div key={i} className={`goal-line${isDiff ? ' goal-diff' : ''}${isGoalCursor ? ' goal-cursor-line' : ''}`}>
-                                    {isGoalCursor
-                                        ? renderGoalLineWithCursor(line, goalCursor!.col)
-                                        : (line || '\u00A0')}
-                                </div>
-                            )
-                        })}
-                    </div>
+          )
+        })}
+        {useViewport && vpEnd < displayLines.length && (
+          <div className="viewport-indicator bottom">
+            ↓ {displayLines.length - vpEnd} lines below
+          </div>
+        )}
+      </div>
+      {goalText !== undefined && !showGoal && (
+        <div className="editor-goal">
+          <div className="goal-label">
+            {goalCursor ? 'GOAL カーソル位置' : 'GOAL'}
+            <span className="goal-hint"> (Space長押しで重ね合わせ)</span>
+          </div>
+          <div className="goal-text">
+            {goalText.split('\n').map((line, i) => {
+              const isDiff = currentLines[i] !== line
+              const isGoalCursor = goalCursor && goalCursor.line === i
+              return (
+                <div
+                  key={i}
+                  className={`goal-line${isDiff ? ' goal-diff' : ''}${isGoalCursor ? ' goal-cursor-line' : ''}`}
+                >
+                  {isGoalCursor
+                    ? renderGoalLineWithCursor(line, goalCursor!.col)
+                    : line || '\u00A0'}
                 </div>
-            )}
+              )
+            })}
+          </div>
         </div>
-    )
+      )}
+    </div>
+  )
 }
 
-function renderDiffLine(
-    goalLine: string,
-    currentLine: string | undefined,
-): React.ReactNode[] {
-    if (currentLine === undefined || currentLine === goalLine) {
-        return [<span key="text">{goalLine || '\u00A0'}</span>]
+function renderDiffLine(goalLine: string, currentLine: string | undefined): React.ReactNode[] {
+  if (currentLine === undefined || currentLine === goalLine) {
+    return [<span key="text">{goalLine || '\u00A0'}</span>]
+  }
+
+  // Character-level diff: highlight characters that differ
+  const result: React.ReactNode[] = []
+  let i = 0
+
+  while (i < goalLine.length) {
+    const isDiff = i >= currentLine.length || goalLine[i] !== currentLine[i]
+    if (isDiff) {
+      // Collect consecutive diff characters
+      let j = i
+      while (j < goalLine.length && (j >= currentLine.length || goalLine[j] !== currentLine[j])) {
+        j++
+      }
+      result.push(
+        <span key={`d${i}`} className="diff-char">
+          {goalLine.slice(i, j)}
+        </span>,
+      )
+      i = j
+    } else {
+      // Collect consecutive same characters
+      let j = i
+      while (j < goalLine.length && j < currentLine.length && goalLine[j] === currentLine[j]) {
+        j++
+      }
+      result.push(<span key={`s${i}`}>{goalLine.slice(i, j)}</span>)
+      i = j
     }
+  }
 
-    // Character-level diff: highlight characters that differ
-    const result: React.ReactNode[] = []
-    const maxLen = Math.max(goalLine.length, currentLine.length)
-    let i = 0
+  if (result.length === 0) {
+    result.push(<span key="empty">{'\u00A0'}</span>)
+  }
 
-    while (i < goalLine.length) {
-        const isDiff = i >= currentLine.length || goalLine[i] !== currentLine[i]
-        if (isDiff) {
-            // Collect consecutive diff characters
-            let j = i
-            while (j < goalLine.length && (j >= currentLine.length || goalLine[j] !== currentLine[j])) {
-                j++
-            }
-            result.push(
-                <span key={`d${i}`} className="diff-char">{goalLine.slice(i, j)}</span>
-            )
-            i = j
-        } else {
-            // Collect consecutive same characters
-            let j = i
-            while (j < goalLine.length && j < currentLine.length && goalLine[j] === currentLine[j]) {
-                j++
-            }
-            result.push(<span key={`s${i}`}>{goalLine.slice(i, j)}</span>)
-            i = j
-        }
-    }
-
-    if (result.length === 0) {
-        result.push(<span key="empty">{'\u00A0'}</span>)
-    }
-
-    return result
+  return result
 }
 
 function renderLineWithCursor(
-    line: string,
-    lineIdx: number,
-    state: EditorState,
-    tokens: TokenInfo[] | null,
+  line: string,
+  lineIdx: number,
+  state: EditorState,
+  tokens: TokenInfo[] | null,
 ): React.ReactNode[] {
-    const isCursorLine = lineIdx === state.cursor.line
+  const isCursorLine = lineIdx === state.cursor.line
 
-    // Non-cursor line: render with syntax highlighting if available
-    if (!isCursorLine) {
-        if (tokens && tokens.length > 0) {
-            return tokens.map((t, i) => (
-                <span key={i} style={t.color ? { color: t.color } : undefined}>
-                    {t.text}
-                </span>
-            ))
-        }
-        return [<span key="text">{line || '\u00A0'}</span>]
-    }
-
-    // Cursor line: overlay cursor on top of highlighted tokens
-    const col = state.cursor.col
-    const cursorClass = state.mode === 'insert' ? 'cursor-line' : 'cursor-block'
-
+  // Non-cursor line: render with syntax highlighting if available
+  if (!isCursorLine) {
     if (tokens && tokens.length > 0) {
-        return renderTokensWithCursor(tokens, col, cursorClass, state.mode === 'insert')
+      return tokens.map((t, i) => (
+        <span key={i} style={t.color ? { color: t.color } : undefined}>
+          {t.text}
+        </span>
+      ))
     }
+    return [<span key="text">{line || '\u00A0'}</span>]
+  }
 
-    // Fallback: no highlighting
-    const before = line.slice(0, col)
-    const cursorChar = line[col] ?? '\u00A0'
-    const after = line.slice(col + 1)
+  // Cursor line: overlay cursor on top of highlighted tokens
+  const col = state.cursor.col
+  const cursorClass = state.mode === 'insert' ? 'cursor-line' : 'cursor-block'
 
-    if (state.mode === 'insert') {
-        return [
-            <span key="before">{before}</span>,
-            <span key="cursor" className={cursorClass} />,
-            <span key="rest">{line.slice(col) || '\u00A0'}</span>,
-        ]
-    }
+  if (tokens && tokens.length > 0) {
+    return renderTokensWithCursor(tokens, col, cursorClass, state.mode === 'insert')
+  }
 
+  // Fallback: no highlighting
+  const before = line.slice(0, col)
+  const cursorChar = line[col] ?? '\u00A0'
+  const after = line.slice(col + 1)
+
+  if (state.mode === 'insert') {
     return [
-        <span key="before">{before}</span>,
-        <span key="cursor" className={cursorClass}>{cursorChar}</span>,
-        after ? <span key="after">{after}</span> : null,
-    ].filter(Boolean) as React.ReactNode[]
+      <span key="before">{before}</span>,
+      <span key="cursor" className={cursorClass} />,
+      <span key="rest">{line.slice(col) || '\u00A0'}</span>,
+    ]
+  }
+
+  return [
+    <span key="before">{before}</span>,
+    <span key="cursor" className={cursorClass}>
+      {cursorChar}
+    </span>,
+    after ? <span key="after">{after}</span> : null,
+  ].filter(Boolean) as React.ReactNode[]
 }
 
 function renderTokensWithCursor(
-    tokens: TokenInfo[],
-    cursorCol: number,
-    cursorClass: string,
-    isInsert: boolean,
+  tokens: TokenInfo[],
+  cursorCol: number,
+  cursorClass: string,
+  isInsert: boolean,
 ): React.ReactNode[] {
-    const result: React.ReactNode[] = []
-    let pos = 0
+  const result: React.ReactNode[] = []
+  let pos = 0
 
-    for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i]
-        const tokenStart = pos
-        const tokenEnd = pos + token.text.length
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i]
+    const tokenStart = pos
+    const tokenEnd = pos + token.text.length
 
-        if (cursorCol < tokenStart || cursorCol >= tokenEnd) {
-            // Cursor not in this token
-            result.push(
-                <span key={i} style={token.color ? { color: token.color } : undefined}>
-                    {token.text}
-                </span>
-            )
-        } else {
-            // Cursor is within this token — split it
-            const offsetInToken = cursorCol - tokenStart
-            const before = token.text.slice(0, offsetInToken)
-            const cursorChar = token.text[offsetInToken] ?? '\u00A0'
-            const after = token.text.slice(offsetInToken + 1)
-            const style = token.color ? { color: token.color } : undefined
+    if (cursorCol < tokenStart || cursorCol >= tokenEnd) {
+      // Cursor not in this token
+      result.push(
+        <span key={i} style={token.color ? { color: token.color } : undefined}>
+          {token.text}
+        </span>,
+      )
+    } else {
+      // Cursor is within this token — split it
+      const offsetInToken = cursorCol - tokenStart
+      const before = token.text.slice(0, offsetInToken)
+      const cursorChar = token.text[offsetInToken] ?? '\u00A0'
+      const after = token.text.slice(offsetInToken + 1)
+      const style = token.color ? { color: token.color } : undefined
 
-            if (before) {
-                result.push(<span key={`${i}b`} style={style}>{before}</span>)
-            }
+      if (before) {
+        result.push(
+          <span key={`${i}b`} style={style}>
+            {before}
+          </span>,
+        )
+      }
 
-            if (isInsert) {
-                result.push(<span key={`${i}c`} className={cursorClass} />)
-                const rest = token.text.slice(offsetInToken)
-                if (rest) {
-                    result.push(<span key={`${i}r`} style={style}>{rest}</span>)
-                }
-            } else {
-                result.push(
-                    <span key={`${i}c`} className={cursorClass}>{cursorChar}</span>
-                )
-                if (after) {
-                    result.push(<span key={`${i}a`} style={style}>{after}</span>)
-                }
-            }
+      if (isInsert) {
+        result.push(<span key={`${i}c`} className={cursorClass} />)
+        const rest = token.text.slice(offsetInToken)
+        if (rest) {
+          result.push(
+            <span key={`${i}r`} style={style}>
+              {rest}
+            </span>,
+          )
         }
-        pos = tokenEnd
-    }
-
-    // Cursor at end of line (past all tokens)
-    if (cursorCol >= pos) {
-        if (isInsert) {
-            result.push(<span key="end-cursor" className={cursorClass} />)
-            if (result.length === 1) {
-                result.push(<span key="nbsp">{'\u00A0'}</span>)
-            }
-        } else {
-            result.push(
-                <span key="end-cursor" className={cursorClass}>{'\u00A0'}</span>
-            )
+      } else {
+        result.push(
+          <span key={`${i}c`} className={cursorClass}>
+            {cursorChar}
+          </span>,
+        )
+        if (after) {
+          result.push(
+            <span key={`${i}a`} style={style}>
+              {after}
+            </span>,
+          )
         }
+      }
     }
+    pos = tokenEnd
+  }
 
-    if (result.length === 0) {
-        result.push(<span key="empty">{'\u00A0'}</span>)
+  // Cursor at end of line (past all tokens)
+  if (cursorCol >= pos) {
+    if (isInsert) {
+      result.push(<span key="end-cursor" className={cursorClass} />)
+      if (result.length === 1) {
+        result.push(<span key="nbsp">{'\u00A0'}</span>)
+      }
+    } else {
+      result.push(
+        <span key="end-cursor" className={cursorClass}>
+          {'\u00A0'}
+        </span>,
+      )
     }
+  }
 
-    return result
+  if (result.length === 0) {
+    result.push(<span key="empty">{'\u00A0'}</span>)
+  }
+
+  return result
 }
 
-function renderGoalLineWithCursor(
-    line: string,
-    col: number,
-): React.ReactNode[] {
-    const before = line.slice(0, col)
-    const cursorChar = line[col] ?? '\u00A0'
-    const after = line.slice(col + 1)
+function renderGoalLineWithCursor(line: string, col: number): React.ReactNode[] {
+  const before = line.slice(0, col)
+  const cursorChar = line[col] ?? '\u00A0'
+  const after = line.slice(col + 1)
 
-    return [
-        <span key="before">{before}</span>,
-        <span key="cursor" className="goal-cursor">{cursorChar}</span>,
-        after ? <span key="after">{after}</span> : null,
-    ].filter(Boolean) as React.ReactNode[]
+  return [
+    <span key="before">{before}</span>,
+    <span key="cursor" className="goal-cursor">
+      {cursorChar}
+    </span>,
+    after ? <span key="after">{after}</span> : null,
+  ].filter(Boolean) as React.ReactNode[]
 }

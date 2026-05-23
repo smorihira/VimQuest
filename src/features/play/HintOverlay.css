@@ -1,134 +1,134 @@
 /* HintOverlay styles */
 
 .hint-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-    animation: hint-fadeIn 0.2s ease;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  animation: hint-fadeIn 0.2s ease;
 }
 
 @keyframes hint-fadeIn {
-    from {
-        opacity: 0;
-    }
+  from {
+    opacity: 0;
+  }
 
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 
 .hint-panel {
-    background: var(--bg-primary, #1a1a2e);
-    border: 1px solid rgba(124, 124, 255, 0.3);
-    border-radius: 12px;
-    padding: 20px;
-    max-width: 700px;
-    width: 90%;
-    max-height: 80vh;
-    overflow: auto;
-    box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5);
+  background: var(--bg-primary, #1a1a2e);
+  border: 1px solid rgba(124, 124, 255, 0.3);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 700px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.5);
 }
 
 .hint-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 
 .hint-badge {
-    font-size: 11px;
-    color: var(--star, #ffd700);
-    letter-spacing: 2px;
-    font-weight: 700;
+  font-size: 11px;
+  color: var(--star, #ffd700);
+  letter-spacing: 2px;
+  font-weight: 700;
 }
 
 .hint-progress {
-    flex: 1;
-    font-family: var(--font-code);
-    font-size: 12px;
-    color: var(--text-dim);
+  flex: 1;
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--text-dim);
 }
 
 .hint-close {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
 }
 
 .hint-close:hover {
-    color: var(--text-primary);
+  color: var(--text-primary);
 }
 
 .hint-editor {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .hint-editor .editor {
-    max-width: 100%;
-    max-height: 300px;
+  max-width: 100%;
+  max-height: 300px;
 }
 
 .hint-commands {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 12px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
 }
 
 .hint-cmd {
-    font-family: var(--font-code);
-    font-size: 13px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-dim);
-    transition: all 0.3s ease;
+  font-family: var(--font-code);
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-dim);
+  transition: all 0.3s ease;
 }
 
 .hint-cmd.done {
-    color: var(--success, #44ddaa);
-    background: rgba(68, 221, 170, 0.1);
+  color: var(--success, #44ddaa);
+  background: rgba(68, 221, 170, 0.1);
 }
 
 .hint-cmd.current {
-    color: var(--star, #ffd700);
-    background: rgba(255, 215, 0, 0.15);
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+  color: var(--star, #ffd700);
+  background: rgba(255, 215, 0, 0.15);
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
 }
 
 .hint-current-label {
-    text-align: center;
-    font-family: var(--font-code);
-    font-size: 18px;
-    color: var(--star, #ffd700);
-    animation: hint-cmdFlash 0.3s ease;
+  text-align: center;
+  font-family: var(--font-code);
+  font-size: 18px;
+  color: var(--star, #ffd700);
+  animation: hint-cmdFlash 0.3s ease;
 }
 
 @keyframes hint-cmdFlash {
-    0% {
-        opacity: 0;
-        transform: translateY(4px);
-    }
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
 
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hint-complete {
-    text-align: center;
-    font-size: 14px;
-    color: var(--success, #44ddaa);
-    font-weight: 600;
-    padding: 8px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--success, #44ddaa);
+  font-weight: 600;
+  padding: 8px;
 }

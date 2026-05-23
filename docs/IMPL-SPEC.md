@@ -11,44 +11,44 @@
 
 ### 1.1 コア
 
-| 観点 | 技術 | バージョン目安 |
-|------|------|--------------|
-| 言語 | TypeScript | 5.x |
-| フレームワーク | React | 19.x |
-| ビルドツール | Vite | 6.x |
-| 状態管理 | Jotai | 2.x |
-| CSS | CSS Modules | — |
-| ルーティング | React Router | 7.x |
+| 観点           | 技術         | バージョン目安 |
+| -------------- | ------------ | -------------- |
+| 言語           | TypeScript   | 5.x            |
+| フレームワーク | React        | 19.x           |
+| ビルドツール   | Vite         | 6.x            |
+| 状態管理       | Jotai        | 2.x            |
+| CSS            | CSS Modules  | —              |
+| ルーティング   | React Router | 7.x            |
 
 ### 1.2 専用ライブラリ
 
-| 用途 | ライブラリ | 役割 |
-|------|-----------|------|
-| コマンドパーサー | XState v5 | ステートマシンによるキー入力解析 |
-| React統合 | @xstate/react | `useMachine` フック |
-| シンタックスHL | Shiki | VSCode同等精度のコードハイライト |
-| ツリーレイアウト | Dagre | DAG自動座標計算 |
-| ツリー描画 | SVG（React JSX） | DOM要素として描画、CSS/イベント対応 |
+| 用途             | ライブラリ       | 役割                                |
+| ---------------- | ---------------- | ----------------------------------- |
+| コマンドパーサー | XState v5        | ステートマシンによるキー入力解析    |
+| React統合        | @xstate/react    | `useMachine` フック                 |
+| シンタックスHL   | Shiki            | VSCode同等精度のコードハイライト    |
+| ツリーレイアウト | Dagre            | DAG自動座標計算                     |
+| ツリー描画       | SVG（React JSX） | DOM要素として描画、CSS/イベント対応 |
 
 ### 1.3 開発ツール
 
-| 用途 | ツール |
-|------|--------|
+| 用途             | ツール                              |
+| ---------------- | ----------------------------------- |
 | 状態遷移デバッグ | @statelyai/inspect（devDependency） |
-| リンター | ESLint |
-| フォーマッター | Prettier |
-| テスト | Vitest |
+| リンター         | ESLint                              |
+| フォーマッター   | Prettier                            |
+| テスト           | Vitest                              |
 
 ### 1.4 不採用とした技術
 
-| 技術 | 不採用理由 |
-|------|-----------|
-| Next.js / Remix | バックエンド不要のSPAに過剰 |
-| MUI / Radix UI | ゲーム固有UIに汎用コンポーネント不要 |
-| Tailwind CSS | 好みに合わない、ダークテーマ固定で不要 |
-| Redux / Zustand | Jotaiのアトミック型が本プロジェクトに適合 |
-| Canvas（ツリー） | DOMイベント/CSS非対応、40ノード程度ならSVGで十分 |
-| XState以外のパーサー | XState学習目的で採用 |
+| 技術                 | 不採用理由                                       |
+| -------------------- | ------------------------------------------------ |
+| Next.js / Remix      | バックエンド不要のSPAに過剰                      |
+| MUI / Radix UI       | ゲーム固有UIに汎用コンポーネント不要             |
+| Tailwind CSS         | 好みに合わない、ダークテーマ固定で不要           |
+| Redux / Zustand      | Jotaiのアトミック型が本プロジェクトに適合        |
+| Canvas（ツリー）     | DOMイベント/CSS非対応、40ノード程度ならSVGで十分 |
+| XState以外のパーサー | XState学習目的で採用                             |
 
 ---
 
@@ -140,13 +140,13 @@ src/
 
 ### 2.2 設計原則
 
-| 原則 | 内容 |
-|------|------|
-| ドメイン分離 | `types/` + `engine/` はReact非依存。単体テスト対象 |
+| 原則                | 内容                                                          |
+| ------------------- | ------------------------------------------------------------- |
+| ドメイン分離        | `types/` + `engine/` はReact非依存。単体テスト対象            |
 | Feature co-location | 画面固有のcomponents/hooks/stylesは `features/画面名/` に配置 |
-| 共有最小化 | `shared/` は2箇所以上で実際に使われるもののみ |
-| Hook = Container | カスタムフックがロジック担当、コンポーネントは描画のみ |
-| Layout不要 | 全画面フルスクリーン、共通ナビゲーションなし |
+| 共有最小化          | `shared/` は2箇所以上で実際に使われるもののみ                 |
+| Hook = Container    | カスタムフックがロジック担当、コンポーネントは描画のみ        |
+| Layout不要          | 全画面フルスクリーン、共通ナビゲーションなし                  |
 
 ---
 
@@ -170,35 +170,35 @@ src/
 
 ### 3.2 責務分離
 
-| レイヤー | ファイル | 責務 | React依存 |
-|---------|---------|------|----------|
-| イベント取得 | `useKeyboardInput.ts` | KeyboardEvent → XStateに送信 | ◯ |
-| コマンド解析 | `commandParser.ts` | キーシーケンス → Command型 | ✕ |
-| コマンド実行 | `commandExecutor.ts` | Command + EditorState → 新EditorState | ✕ |
-| ダメージ計算 | `damageCalculator.ts` | Command → ダメージ値 | ✕ |
-| クリア判定 | `clearChecker.ts` | EditorState + ClearConditions → 判定結果 | ✕ |
+| レイヤー     | ファイル              | 責務                                     | React依存 |
+| ------------ | --------------------- | ---------------------------------------- | --------- |
+| イベント取得 | `useKeyboardInput.ts` | KeyboardEvent → XStateに送信             | ◯         |
+| コマンド解析 | `commandParser.ts`    | キーシーケンス → Command型               | ✕         |
+| コマンド実行 | `commandExecutor.ts`  | Command + EditorState → 新EditorState    | ✕         |
+| ダメージ計算 | `damageCalculator.ts` | Command → ダメージ値                     | ✕         |
+| クリア判定   | `clearChecker.ts`     | EditorState + ClearConditions → 判定結果 | ✕         |
 
 ### 3.3 XState ステートマシン（Normalモード）
 
-| 状態 | 説明 | 遷移条件 |
-|------|------|---------|
-| `idle` | 待機中 | d/c/y → `operatorPending`, g → `gPending`, z → `zPending`, f/t → `charPending`, / → `searchInput`, r → `replacePending`, 単純コマンド → complete |
-| `operatorPending` | オペレータ入力済み、モーション待ち | motion → complete, i/a → `textobjPending`, f/t → `operatorCharPending`, 同キー(dd/cc) → complete |
-| `textobjPending` | オペレータ + i/a 入力済み、オブジェクト待ち | w/"/(/{ 等 → complete |
-| `gPending` | `g` 入力済み | g→gg, j→gj, k→gk, u→`guPending`, U→`gUPending` |
-| `guPending` / `gUPending` | `gu`/`gU` 入力済み、対象待ち | motion/textobj → complete |
-| `zPending` | `z` 入力済み | z/t/b → complete |
-| `charPending` | `f`/`t` 入力済み、対象文字待ち | {任意文字} → complete |
-| `operatorCharPending` | オペレータ+`f`/`t` 入力済み | {任意文字} → complete |
-| `searchInput` | `/` 入力済み、検索パターン入力中 | Enter → complete, Esc → cancel, 文字 → buffer蓄積 |
-| `replacePending` | `r` 入力済み、置換文字待ち | {任意文字} → complete |
+| 状態                      | 説明                                        | 遷移条件                                                                                                                                         |
+| ------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `idle`                    | 待機中                                      | d/c/y → `operatorPending`, g → `gPending`, z → `zPending`, f/t → `charPending`, / → `searchInput`, r → `replacePending`, 単純コマンド → complete |
+| `operatorPending`         | オペレータ入力済み、モーション待ち          | motion → complete, i/a → `textobjPending`, f/t → `operatorCharPending`, 同キー(dd/cc) → complete                                                 |
+| `textobjPending`          | オペレータ + i/a 入力済み、オブジェクト待ち | w/"/(/{ 等 → complete                                                                                                                            |
+| `gPending`                | `g` 入力済み                                | g→gg, j→gj, k→gk, u→`guPending`, U→`gUPending`                                                                                                   |
+| `guPending` / `gUPending` | `gu`/`gU` 入力済み、対象待ち                | motion/textobj → complete                                                                                                                        |
+| `zPending`                | `z` 入力済み                                | z/t/b → complete                                                                                                                                 |
+| `charPending`             | `f`/`t` 入力済み、対象文字待ち              | {任意文字} → complete                                                                                                                            |
+| `operatorCharPending`     | オペレータ+`f`/`t` 入力済み                 | {任意文字} → complete                                                                                                                            |
+| `searchInput`             | `/` 入力済み、検索パターン入力中            | Enter → complete, Esc → cancel, 文字 → buffer蓄積                                                                                                |
+| `replacePending`          | `r` 入力済み、置換文字待ち                  | {任意文字} → complete                                                                                                                            |
 
 ### 3.4 モード別処理
 
-| モード | 処理方針 |
-|--------|---------|
-| **Normal** | 上記ステートマシンで解析 |
-| **Insert** | 全キー入力をテキスト挿入として処理。Escのみモード遷移 |
+| モード     | 処理方針                                                 |
+| ---------- | -------------------------------------------------------- |
+| **Normal** | 上記ステートマシンで解析                                 |
+| **Insert** | 全キー入力をテキスト挿入として処理。Escのみモード遷移    |
 | **Visual** | Normal類似だが選択範囲を維持。オペレータは選択範囲に作用 |
 
 ### 3.5 手札制限
@@ -215,7 +215,7 @@ TypeScript定数としてノード別ファイルに定義:
 
 ```typescript
 // data/stages/N01.ts
-import { Stage } from '../../types/stage';
+import { Stage } from '../../types/stage'
 
 export const N01_STAGES: Stage[] = [
   {
@@ -234,7 +234,7 @@ export const N01_STAGES: Stage[] = [
     flavor: '右に移動して目標地点に到達せよ',
   },
   // N01-P ...
-];
+]
 ```
 
 ### 4.2 Stage型定義
@@ -242,38 +242,38 @@ export const N01_STAGES: Stage[] = [
 ```typescript
 // types/stage.ts
 export interface Stage {
-  id: string;                          // 'N01-T', 'N18-C' 等
-  nodeId: string;                      // スキルツリーノードID
-  type: 'teach' | 'practice' | 'challenge';
-  title: string;                       // ステージ名
-  language: 'plaintext' | 'css' | 'html' | 'json' | 'javascript' | 'python' | 'markdown';
-  initialText: string;                 // 初期テキスト
-  goalText: string;                    // ゴールテキスト
-  initialCursor: { line: number; col: number };
-  life: number;
-  stars: [number, number, number];     // [☆3閾値, ☆2閾値, ☆1閾値]
-  availableCommands: string[];         // 手札
+  id: string // 'N01-T', 'N18-C' 等
+  nodeId: string // スキルツリーノードID
+  type: 'teach' | 'practice' | 'challenge'
+  title: string // ステージ名
+  language: 'plaintext' | 'css' | 'html' | 'json' | 'javascript' | 'python' | 'markdown'
+  initialText: string // 初期テキスト
+  goalText: string // ゴールテキスト
+  initialCursor: { line: number; col: number }
+  life: number
+  stars: [number, number, number] // [☆3閾値, ☆2閾値, ☆1閾値]
+  availableCommands: string[] // 手札
   clearConditions?: {
-    cursor?: { line: number; col: number };
-    registers?: Record<string, string>;
-  };
-  hints: Hint[];
-  flavor: string;                      // フレーバーテキスト（ミッション説明）
+    cursor?: { line: number; col: number }
+    registers?: Record<string, string>
+  }
+  hints: Hint[]
+  flavor: string // フレーバーテキスト（ミッション説明）
 }
 
 export interface Hint {
-  cost: number;                        // ☆コスト（常に1）
-  commands: string[];                  // デモ用コマンド列
+  cost: number // ☆コスト（常に1）
+  commands: string[] // デモ用コマンド列
 }
 ```
 
 ### 4.3 開発順序
 
-| フェーズ | 内容 | ステージ数 |
-|---------|------|-----------|
+| フェーズ    | 内容                                     | ステージ数                 |
+| ----------- | ---------------------------------------- | -------------------------- |
 | **Phase 1** | エンジン開発。サンプルステージで動作確認 | 7（N01×2 + N02×2 + N18×3） |
-| **Phase 2** | 全59ステージ量産 | 残り52 |
-| **Phase 3** | バランス調整（opt値検証、ライフ調整） | — |
+| **Phase 2** | 全59ステージ量産                         | 残り52                     |
+| **Phase 3** | バランス調整（opt値検証、ライフ調整）    | —                          |
 
 ---
 
@@ -360,24 +360,24 @@ export interface Hint {
 
 ## 7. デプロイ
 
-| 項目 | 仕様 |
-|------|------|
-| ホスティング | Vercel |
-| ビルド出力 | 静的ファイル（`dist/`） |
+| 項目             | 仕様                      |
+| ---------------- | ------------------------- |
+| ホスティング     | Vercel                    |
+| ビルド出力       | 静的ファイル（`dist/`）   |
 | デプロイトリガー | git push（main ブランチ） |
-| プレビュー | PRごとに自動生成 |
-| カスタムドメイン | 対応（設定時に追加） |
-| ビルドコマンド | `vite build` |
-| 出力ディレクトリ | `dist` |
+| プレビュー       | PRごとに自動生成          |
+| カスタムドメイン | 対応（設定時に追加）      |
+| ビルドコマンド   | `vite build`              |
+| 出力ディレクトリ | `dist`                    |
 
 ---
 
 ## 付録A: 全決定事項一覧
 
-| ID | 項目 | 決定 |
-|----|------|------|
-| I1 | 技術スタック | TS + React + Vite + Jotai + CSS Modules + Shiki + Dagre/SVG + XState |
-| I2 | プロジェクト構成 | Feature-based。types/+engine/=ドメイン、features/=画面co-locate |
-| I3 | コマンドパーサー | XState v5ステートマシン。パーサー専念、エディタ状態はJotai |
-| I4 | ステージデータ | TS定数（ノード別）、エンジン先行（サンプル7→量産52） |
-| I5 | デプロイ | Vercel（無料、git pushデプロイ） |
+| ID  | 項目             | 決定                                                                 |
+| --- | ---------------- | -------------------------------------------------------------------- |
+| I1  | 技術スタック     | TS + React + Vite + Jotai + CSS Modules + Shiki + Dagre/SVG + XState |
+| I2  | プロジェクト構成 | Feature-based。types/+engine/=ドメイン、features/=画面co-locate      |
+| I3  | コマンドパーサー | XState v5ステートマシン。パーサー専念、エディタ状態はJotai           |
+| I4  | ステージデータ   | TS定数（ノード別）、エンジン先行（サンプル7→量産52）                 |
+| I5  | デプロイ         | Vercel（無料、git pushデプロイ）                                     |

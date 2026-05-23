@@ -1,235 +1,235 @@
 /* GameOverScreen styles */
 
 .gameover-screen {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .gameover-container {
-    text-align: center;
-    max-width: 600px;
-    width: 90%;
-    animation: gameover-fadeIn 0.8s ease;
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  animation: gameover-fadeIn 0.8s ease;
 }
 
 @keyframes gameover-fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .gameover-icon {
-    font-size: 48px;
-    margin-bottom: 8px;
-    opacity: 0.5;
+  font-size: 48px;
+  margin-bottom: 8px;
+  opacity: 0.5;
 }
 
 .gameover-label {
-    font-family: var(--font-code);
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--danger);
-    letter-spacing: 6px;
-    margin-bottom: 12px;
-    text-shadow: 0 0 20px rgba(221, 68, 68, 0.4);
+  font-family: var(--font-code);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--danger);
+  letter-spacing: 6px;
+  margin-bottom: 12px;
+  text-shadow: 0 0 20px rgba(221, 68, 68, 0.4);
 }
 
 .gameover-stage {
-    font-size: 16px;
-    color: var(--text-dim);
-    margin-bottom: 32px;
+  font-size: 16px;
+  color: var(--text-dim);
+  margin-bottom: 32px;
 }
 
 /* Operation Log */
 .oplog-section {
-    margin-bottom: 24px;
-    text-align: left;
+  margin-bottom: 24px;
+  text-align: left;
 }
 
 .oplog-label {
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-    text-align: center;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  text-align: center;
 }
 
 .oplog-list {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 8px;
-    padding: 12px 16px;
-    max-height: 200px;
-    overflow-y: auto;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 12px 16px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
 .oplog-entry {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 4px 0;
-    font-family: var(--font-code);
-    font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  font-family: var(--font-code);
+  font-size: 13px;
 }
 
 .oplog-entry.waste {
-    color: var(--danger, #dd4444);
+  color: var(--danger, #dd4444);
 }
 
 .oplog-cmd {
-    flex: 1;
-    font-weight: 700;
+  flex: 1;
+  font-weight: 700;
 }
 
 .oplog-count {
-    font-weight: 400;
-    opacity: 0.6;
-    font-size: 11px;
+  font-weight: 400;
+  opacity: 0.6;
+  font-size: 11px;
 }
 
 .oplog-dmg {
-    font-size: 12px;
-    opacity: 0.6;
-    min-width: 30px;
-    text-align: right;
+  font-size: 12px;
+  opacity: 0.6;
+  min-width: 30px;
+  text-align: right;
 }
 
 .oplog-waste-tag {
-    font-size: 10px;
-    background: rgba(221, 68, 68, 0.2);
-    color: var(--danger, #dd4444);
-    padding: 1px 6px;
-    border-radius: 3px;
-    font-weight: 600;
+  font-size: 10px;
+  background: rgba(221, 68, 68, 0.2);
+  color: var(--danger, #dd4444);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
 }
 
 .oplog-summary {
-    text-align: center;
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-top: 8px;
-    padding: 8px 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  padding: 8px 0;
 }
 
 .oplog-over {
-    color: var(--danger, #dd4444);
-    font-weight: 700;
+  color: var(--danger, #dd4444);
+  font-weight: 700;
 }
 
 /* Suggestion */
 .suggestion {
-    background: rgba(124, 124, 255, 0.06);
-    border: 1px solid rgba(124, 124, 255, 0.15);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 32px;
-    text-align: left;
+  background: rgba(124, 124, 255, 0.06);
+  border: 1px solid rgba(124, 124, 255, 0.15);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 32px;
+  text-align: left;
 }
 
 .suggestion-label {
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 1px;
-    margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
 }
 
 .suggestion-text {
-    font-size: 13px;
-    color: var(--text-dim);
-    line-height: 1.6;
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
 }
 
 .suggestion-commands {
-    font-family: var(--font-code);
-    color: var(--accent);
-    font-weight: 700;
+  font-family: var(--font-code);
+  color: var(--accent);
+  font-weight: 700;
 }
 
 /* Stats */
 .gameover-stats {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-bottom: 32px;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 32px;
 }
 
 .gameover-stats .stat {
-    text-align: center;
+  text-align: center;
 }
 
 .gameover-stats .stat-value {
-    font-family: var(--font-code);
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--text-primary);
+  font-family: var(--font-code);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .gameover-stats .stat-label {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 4px;
-    letter-spacing: 1px;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  letter-spacing: 1px;
 }
 
 /* Actions (shared with result) */
 .gameover-screen .actions {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
 }
 
 .gameover-screen .btn {
-    font-family: 'Inter', sans-serif;
-    padding: 12px 32px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+  padding: 12px 32px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
 }
 
 .gameover-screen .btn-primary {
-    background: var(--accent);
-    color: #fff;
+  background: var(--accent);
+  color: #fff;
 }
 
 .gameover-screen .btn-primary:hover {
-    background: #9a9aff;
-    box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
+  background: #9a9aff;
+  box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
 }
 
 .gameover-screen .btn-secondary {
-    background: transparent;
-    color: var(--text-dim);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .gameover-screen .btn-secondary:hover {
-    color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .gameover-screen .btn.focused {
-    outline: 2px solid var(--accent, #7c7cff);
-    outline-offset: 2px;
+  outline: 2px solid var(--accent, #7c7cff);
+  outline-offset: 2px;
 }
 
 .gameover-error {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    font-family: var(--font-code);
-    color: var(--danger);
-    font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: var(--font-code);
+  color: var(--danger);
+  font-size: 18px;
 }

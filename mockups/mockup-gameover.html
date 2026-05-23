@@ -1,277 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VimQuest - Game Over</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #1a1a2e;
+        --accent: #7c7cff;
+        --text-primary: #e0e0e0;
+        --text-dim: #888;
+        --danger: #dd4444;
+        --warning: #ddaa44;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      .gameover-container {
+        text-align: center;
+        max-width: 600px;
+        width: 90%;
+        animation: fadeIn 0.8s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
 
-        :root {
-            --bg: #1a1a2e;
-            --accent: #7c7cff;
-            --text-primary: #e0e0e0;
-            --text-dim: #888;
-            --danger: #dd4444;
-            --warning: #ddaa44;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
+      }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+      .gameover-icon {
+        font-size: 48px;
+        margin-bottom: 8px;
+        opacity: 0.5;
+      }
 
-        .gameover-container {
-            text-align: center;
-            max-width: 600px;
-            width: 90%;
-            animation: fadeIn 0.8s ease;
-        }
+      .gameover-label {
+        font-size: 14px;
+        color: var(--danger);
+        letter-spacing: 4px;
+        margin-bottom: 8px;
+      }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
+      .gameover-stage {
+        font-size: 16px;
+        color: var(--text-dim);
+        margin-bottom: 32px;
+      }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+      /* Operation Log */
+      .log-section {
+        margin-bottom: 32px;
+        text-align: left;
+      }
 
-        .gameover-icon {
-            font-size: 48px;
-            margin-bottom: 8px;
-            opacity: 0.5;
-        }
+      .log-label {
+        font-size: 11px;
+        color: var(--text-dim);
+        letter-spacing: 2px;
+        margin-bottom: 12px;
+        text-align: center;
+      }
 
-        .gameover-label {
-            font-size: 14px;
-            color: var(--danger);
-            letter-spacing: 4px;
-            margin-bottom: 8px;
-        }
+      .log {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 8px;
+        padding: 16px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        line-height: 2;
+      }
 
-        .gameover-stage {
-            font-size: 16px;
-            color: var(--text-dim);
-            margin-bottom: 32px;
-        }
+      .log-entry {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 4px 8px;
+        border-radius: 4px;
+      }
 
-        /* Operation Log */
-        .log-section {
-            margin-bottom: 32px;
-            text-align: left;
-        }
+      .log-entry.waste {
+        background: rgba(221, 68, 68, 0.1);
+        border-left: 3px solid var(--danger);
+      }
 
-        .log-label {
-            font-size: 11px;
-            color: var(--text-dim);
-            letter-spacing: 2px;
-            margin-bottom: 12px;
-            text-align: center;
-        }
+      .log-entry.ok {
+        opacity: 0.6;
+      }
 
-        .log {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 2;
-        }
+      .log-cmd {
+        color: var(--accent);
+        min-width: 60px;
+      }
 
-        .log-entry {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
+      .log-cost {
+        color: var(--danger);
+        font-size: 11px;
+        min-width: 20px;
+      }
 
-        .log-entry.waste {
-            background: rgba(221, 68, 68, 0.1);
-            border-left: 3px solid var(--danger);
-        }
+      .log-desc {
+        color: var(--text-dim);
+        font-family: 'Inter', sans-serif;
+        font-size: 12px;
+        flex: 1;
+      }
 
-        .log-entry.ok {
-            opacity: 0.6;
-        }
+      .log-waste-tag {
+        font-size: 10px;
+        color: var(--danger);
+        background: rgba(221, 68, 68, 0.15);
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-family: 'Inter', sans-serif;
+      }
 
-        .log-cmd {
-            color: var(--accent);
-            min-width: 60px;
-        }
+      /* Suggestion */
+      .suggestion {
+        background: rgba(124, 124, 255, 0.06);
+        border: 1px solid rgba(124, 124, 255, 0.15);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 32px;
+        text-align: left;
+      }
 
-        .log-cost {
-            color: var(--danger);
-            font-size: 11px;
-            min-width: 20px;
-        }
+      .suggestion-label {
+        font-size: 11px;
+        color: var(--accent);
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+      }
 
-        .log-desc {
-            color: var(--text-dim);
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            flex: 1;
-        }
+      .suggestion-text {
+        font-size: 13px;
+        color: var(--text-dim);
+        line-height: 1.6;
+      }
 
-        .log-waste-tag {
-            font-size: 10px;
-            color: var(--danger);
-            background: rgba(221, 68, 68, 0.15);
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-family: 'Inter', sans-serif;
-        }
+      .suggestion-text strong {
+        color: var(--accent);
+        font-family: 'JetBrains Mono', monospace;
+      }
 
-        /* Suggestion */
-        .suggestion {
-            background: rgba(124, 124, 255, 0.06);
-            border: 1px solid rgba(124, 124, 255, 0.15);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 32px;
-            text-align: left;
-        }
+      /* Actions */
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+      }
 
-        .suggestion-label {
-            font-size: 11px;
-            color: var(--accent);
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
+      .btn {
+        font-family: 'Inter', sans-serif;
+        padding: 12px 32px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s ease;
+      }
 
-        .suggestion-text {
-            font-size: 13px;
-            color: var(--text-dim);
-            line-height: 1.6;
-        }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+      }
 
-        .suggestion-text strong {
-            color: var(--accent);
-            font-family: 'JetBrains Mono', monospace;
-        }
+      .btn-primary:hover {
+        background: #9a9aff;
+        box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
+      }
 
-        /* Actions */
-        .actions {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-        }
+      .btn-secondary {
+        background: transparent;
+        color: var(--text-dim);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+      }
 
-        .btn {
-            font-family: 'Inter', sans-serif;
-            padding: 12px 32px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s ease;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: #9a9aff;
-            box-shadow: 0 0 16px rgba(124, 124, 255, 0.3);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-dim);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .btn-secondary:hover {
-            color: var(--text-primary);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
+      .btn-secondary:hover {
+        color: var(--text-primary);
+        border-color: rgba(255, 255, 255, 0.3);
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <div class="gameover-container">
-        <div class="gameover-icon">♥</div>
-        <div class="gameover-label">L I F E O V E R</div>
-        <div class="gameover-stage">Stage 12 — ci" で属性値を書き換えろ</div>
+      <div class="gameover-icon">♥</div>
+      <div class="gameover-label">L I F E O V E R</div>
+      <div class="gameover-stage">Stage 12 — ci" で属性値を書き換えろ</div>
 
-        <div class="log-section">
-            <div class="log-label">OPERATION LOG</div>
-            <div class="log">
-                <div class="log-entry ok">
-                    <span class="log-cmd">j</span>
-                    <span class="log-cost">-3</span>
-                    <span class="log-desc">1行下へ移動 ×3</span>
-                </div>
-                <div class="log-entry waste">
-                    <span class="log-cmd">f"</span>
-                    <span class="log-cost">-1</span>
-                    <span class="log-desc">" を検索</span>
-                </div>
-                <div class="log-entry waste">
-                    <span class="log-cmd">l</span>
-                    <span class="log-cost">-1</span>
-                    <span class="log-desc">1文字右へ移動</span>
-                </div>
-                <div class="log-entry waste">
-                    <span class="log-cmd">x</span>
-                    <span class="log-cost">-7</span>
-                    <span class="log-desc">1文字削除 ×7</span>
-                    <span class="log-waste-tag">7ライフ浪費</span>
-                </div>
-                <div class="log-entry waste">
-                    <span class="log-cmd">i</span>
-                    <span class="log-cost">-1</span>
-                    <span class="log-desc">インサートモード</span>
-                </div>
-                <div class="log-entry ok">
-                    <span class="log-cmd">#333333</span>
-                    <span class="log-cost">-1</span>
-                    <span class="log-desc">テキスト入力（7文字 → +1）</span>
-                </div>
-            </div>
-            <div
-                style="text-align: center; padding: 10px 0 0; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--danger); border-top: 1px solid rgba(255,255,255,0.06); margin-top: 8px;">
-                合計ダメージ: 14 / ライフ: 10 → <strong>4オーバー</strong>
-            </div>
+      <div class="log-section">
+        <div class="log-label">OPERATION LOG</div>
+        <div class="log">
+          <div class="log-entry ok">
+            <span class="log-cmd">j</span>
+            <span class="log-cost">-3</span>
+            <span class="log-desc">1行下へ移動 ×3</span>
+          </div>
+          <div class="log-entry waste">
+            <span class="log-cmd">f"</span>
+            <span class="log-cost">-1</span>
+            <span class="log-desc">" を検索</span>
+          </div>
+          <div class="log-entry waste">
+            <span class="log-cmd">l</span>
+            <span class="log-cost">-1</span>
+            <span class="log-desc">1文字右へ移動</span>
+          </div>
+          <div class="log-entry waste">
+            <span class="log-cmd">x</span>
+            <span class="log-cost">-7</span>
+            <span class="log-desc">1文字削除 ×7</span>
+            <span class="log-waste-tag">7ライフ浪費</span>
+          </div>
+          <div class="log-entry waste">
+            <span class="log-cmd">i</span>
+            <span class="log-cost">-1</span>
+            <span class="log-desc">インサートモード</span>
+          </div>
+          <div class="log-entry ok">
+            <span class="log-cmd">#333333</span>
+            <span class="log-cost">-1</span>
+            <span class="log-desc">テキスト入力（7文字 → +1）</span>
+          </div>
         </div>
+        <div
+          style="
+            text-align: center;
+            padding: 10px 0 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--danger);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 8px;
+          "
+        >
+          合計ダメージ: 14 / ライフ: 10 → <strong>4オーバー</strong>
+        </div>
+      </div>
 
-        <div class="suggestion">
-            <div class="suggestion-label">💡 HINT</div>
-            <div class="suggestion-text">
-                <strong>x</strong> を7回使って7ライフ消費しています。<br>
-                <strong>ci"</strong> なら1コマンドで "" 内を丸ごと変更できます。<br>
-                → <strong>3j</strong> → <strong>ci"</strong> → <strong>#333333</strong> → <strong>Esc</strong> ＝ 計3ダメージ
-            </div>
+      <div class="suggestion">
+        <div class="suggestion-label">💡 HINT</div>
+        <div class="suggestion-text">
+          <strong>x</strong> を7回使って7ライフ消費しています。<br />
+          <strong>ci"</strong> なら1コマンドで "" 内を丸ごと変更できます。<br />
+          → <strong>3j</strong> → <strong>ci"</strong> → <strong>#333333</strong> →
+          <strong>Esc</strong> ＝ 計3ダメージ
         </div>
+      </div>
 
-        <div class="actions">
-            <button class="btn btn-secondary">ツリーに戻る</button>
-            <button class="btn btn-primary">リトライ</button>
-        </div>
+      <div class="actions">
+        <button class="btn btn-secondary">ツリーに戻る</button>
+        <button class="btn btn-primary">リトライ</button>
+      </div>
     </div>
-
-</body>
-
+  </body>
 </html>

@@ -19,11 +19,11 @@
 
 ### 1.2 チュートリアルの位置づけ
 
-| 学習段階 | 仕組み | 内容 |
-|---------|--------|------|
-| **1. チュートリアル** | ガイド付き練習（本仕様） | ナビが1手ずつ指示。指示通り押すだけ |
-| **2. Teachステージ** | 自力プレイ（STAGE-SPEC準拠） | ガイドなし。新コマンド1回で解ける簡単なステージ |
-| **3. Practice/Challenge** | 応用（STAGE-SPEC準拠） | 複数箇所、複合操作 |
+| 学習段階                  | 仕組み                       | 内容                                            |
+| ------------------------- | ---------------------------- | ----------------------------------------------- |
+| **1. チュートリアル**     | ガイド付き練習（本仕様）     | ナビが1手ずつ指示。指示通り押すだけ             |
+| **2. Teachステージ**      | 自力プレイ（STAGE-SPEC準拠） | ガイドなし。新コマンド1回で解ける簡単なステージ |
+| **3. Practice/Challenge** | 応用（STAGE-SPEC準拠）       | 複数箇所、複合操作                              |
 
 ---
 
@@ -46,15 +46,15 @@
 
 ### 3.1 チュートリアル付きノード（7ノード）
 
-| ノード | 新概念 | ステップ数目安 | 特記事項 |
-|--------|--------|--------------|---------|
-| **N01** | 基本移動（h/j/k/l） | 6-8 | ゲーム最初の操作体験 |
-| **N02** | 初の編集（x）+ undo | 6-8 | undo（u）導入を含む |
-| **N03** | Insertモード（i/a） | 6-8 | モード概念の導入、Esc復帰 |
-| **N08** | 単語移動（w/b/e） | 5-6 | 文字単位→単語単位の飛躍 |
-| **N18** | オペレータ+モーション（dw） | 5-7 | Vim文法の核心（d + motion） |
-| **N29** | TextObj（iw/aw） | 5-6 | テキストオブジェクト概念 |
-| **N37** | Visualモード（v/V） | 5-7 | 3つ目のモード導入 |
+| ノード  | 新概念                      | ステップ数目安 | 特記事項                    |
+| ------- | --------------------------- | -------------- | --------------------------- |
+| **N01** | 基本移動（h/j/k/l）         | 6-8            | ゲーム最初の操作体験        |
+| **N02** | 初の編集（x）+ undo         | 6-8            | undo（u）導入を含む         |
+| **N03** | Insertモード（i/a）         | 6-8            | モード概念の導入、Esc復帰   |
+| **N08** | 単語移動（w/b/e）           | 5-6            | 文字単位→単語単位の飛躍     |
+| **N18** | オペレータ+モーション（dw） | 5-7            | Vim文法の核心（d + motion） |
+| **N29** | TextObj（iw/aw）            | 5-6            | テキストオブジェクト概念    |
+| **N37** | Visualモード（v/V）         | 5-7            | 3つ目のモード導入           |
 
 ### 3.2 チュートリアルなしノード（33ノード）
 
@@ -68,34 +68,36 @@
 
 ```typescript
 interface TutorialStep {
-  message: string;              // ナビゲーターのセリフ
-  expectedKey: string | null;   // 正解キー（null = 任意キーで次へ）
-  acceptedKeys?: string[];      // 受け付ける全キー（省略 = expectedKeyのみ）
-  editorSetup?: {               // ステップ開始時のエディタ状態（省略 = 前ステップ引き継ぎ）
-    text: string;
-    cursor: { line: number; col: number };
-  };
-  wrongKeyMessage?: string;     // 誤入力時メッセージ（省略 = デフォルト）
+  message: string // ナビゲーターのセリフ
+  expectedKey: string | null // 正解キー（null = 任意キーで次へ）
+  acceptedKeys?: string[] // 受け付ける全キー（省略 = expectedKeyのみ）
+  editorSetup?: {
+    // ステップ開始時のエディタ状態（省略 = 前ステップ引き継ぎ）
+    text: string
+    cursor: { line: number; col: number }
+  }
+  wrongKeyMessage?: string // 誤入力時メッセージ（省略 = デフォルト）
 }
 
 interface Tutorial {
-  nodeId: string;               // 対象ノードID
-  initialSetup: {               // チュートリアル全体の初期状態
-    text: string;
-    cursor: { line: number; col: number };
-  };
-  steps: TutorialStep[];        // ステップ配列
+  nodeId: string // 対象ノードID
+  initialSetup: {
+    // チュートリアル全体の初期状態
+    text: string
+    cursor: { line: number; col: number }
+  }
+  steps: TutorialStep[] // ステップ配列
 }
 ```
 
 ### 4.2 ステップ種別
 
-| 種別 | expectedKey | acceptedKeys | 用途 |
-|------|-------------|-------------|------|
-| **指示実行** | `'l'` | 省略 | 「lを押せ」→ l のみ受付 |
-| **複数許可** | `'l'` | `['h','j','k','l']` | 「移動してみろ」→ 移動キー全部OK、lで次へ |
-| **説明のみ** | `null` | 省略 | 「覚えておけ」→ 任意キーで次へ |
-| **自由練習** | `'Enter'` | `['h','j','k','l']` | 「自由に動け。終わったらEnter」 |
+| 種別         | expectedKey | acceptedKeys        | 用途                                      |
+| ------------ | ----------- | ------------------- | ----------------------------------------- |
+| **指示実行** | `'l'`       | 省略                | 「lを押せ」→ l のみ受付                   |
+| **複数許可** | `'l'`       | `['h','j','k','l']` | 「移動してみろ」→ 移動キー全部OK、lで次へ |
+| **説明のみ** | `null`      | 省略                | 「覚えておけ」→ 任意キーで次へ            |
+| **自由練習** | `'Enter'`   | `['h','j','k','l']` | 「自由に動け。終わったらEnter」           |
 
 ### 4.3 具体例: N02チュートリアル（undo導入）
 
@@ -125,10 +127,10 @@ export const N02_TUTORIAL: Tutorial = {
     },
     {
       message: 'これがundo。いつでも使える安全網だ。覚えておけ',
-      expectedKey: null,  // 任意キーで次へ
+      expectedKey: null, // 任意キーで次へ
     },
   ],
-};
+}
 ```
 
 ---
@@ -137,13 +139,13 @@ export const N02_TUTORIAL: Tutorial = {
 
 ### 5.1 表示仕様
 
-| 項目 | 仕様 |
-|------|------|
-| 表示位置 | 画面下部固定バー（通常プレイ時のHAND領域を差替え） |
-| レイアウト | RPG会話ウィンドウ風: 左にアイコン + 名前、右にセリフ |
+| 項目         | 仕様                                                 |
+| ------------ | ---------------------------------------------------- |
+| 表示位置     | 画面下部固定バー（通常プレイ時のHAND領域を差替え）   |
+| レイアウト   | RPG会話ウィンドウ風: 左にアイコン + 名前、右にセリフ |
 | キャラクター | アイコン（小さなドット絵 or シンプルアバター）+ 名前 |
-| HAND（手札） | チュートリアル中は非表示 |
-| 背景 | エディタ領域と同じダークテーマ（#1a1a2e系） |
+| HAND（手札） | チュートリアル中は非表示                             |
+| 背景         | エディタ領域と同じダークテーマ（#1a1a2e系）          |
 
 ### 5.2 チュートリアル中の画面構成
 
@@ -169,16 +171,17 @@ export const N02_TUTORIAL: Tutorial = {
 
 ### 6.1 キー入力ルール
 
-| 入力 | 挙動 |
-|------|------|
-| `expectedKey` | コマンド実行 → 次のステップへ |
+| 入力              | 挙動                               |
+| ----------------- | ---------------------------------- |
+| `expectedKey`     | コマンド実行 → 次のステップへ      |
 | `acceptedKeys` 内 | コマンド実行（ステップは進まない） |
-| それ以外のキー | 無視 + ナビが期待キーを再表示 |
-| `Esc`（スキップ） | チュートリアル全体を終了 |
+| それ以外のキー    | 無視 + ナビが期待キーを再表示      |
+| `Esc`（スキップ） | チュートリアル全体を終了           |
 
 ### 6.2 誤入力時の表示
 
 期待キーを固定メッセージで再表示:
+
 ```
 「{expectedKey}を押すんだ」
 ```
@@ -191,12 +194,12 @@ export const N02_TUTORIAL: Tutorial = {
 
 ## 7. スキップ機能
 
-| 項目 | 仕様 |
-|------|------|
-| 粒度 | チュートリアル全体（ステップ単位不可） |
-| 操作方法 | `Esc` キー or 画面隅「Skip」ボタン |
-| スキップ後 | ツリー画面へ遷移 |
-| 確認ダイアログ | なし（即スキップ） |
+| 項目           | 仕様                                   |
+| -------------- | -------------------------------------- |
+| 粒度           | チュートリアル全体（ステップ単位不可） |
+| 操作方法       | `Esc` キー or 画面隅「Skip」ボタン     |
+| スキップ後     | ツリー画面へ遷移                       |
+| 確認ダイアログ | なし（即スキップ）                     |
 
 ---
 
@@ -211,11 +214,11 @@ tutorialStatus: Record<string, 'completed' | 'skipped'>
 
 ### 8.2 挙動
 
-| 状態 | チュートリアル表示 |
-|------|-----------------|
-| 未記録（初回） | 表示する |
-| `'completed'` | 表示しない |
-| `'skipped'` | 表示しない |
+| 状態           | チュートリアル表示 |
+| -------------- | ------------------ |
+| 未記録（初回） | 表示する           |
+| `'completed'`  | 表示しない         |
+| `'skipped'`    | 表示しない         |
 
 途中状態の保存は不要（チュートリアルは短時間で完了するため）。
 
@@ -243,8 +246,8 @@ data/
 ### 9.2 index.ts
 
 ```typescript
-import { N01_TUTORIAL } from './N01';
-import { N02_TUTORIAL } from './N02';
+import { N01_TUTORIAL } from './N01'
+import { N02_TUTORIAL } from './N02'
 // ...
 
 export const TUTORIALS: Record<string, Tutorial> = {
@@ -255,10 +258,10 @@ export const TUTORIALS: Record<string, Tutorial> = {
   N18: N18_TUTORIAL,
   N29: N29_TUTORIAL,
   N37: N37_TUTORIAL,
-};
+}
 
 export function hasTutorial(nodeId: string): boolean {
-  return nodeId in TUTORIALS;
+  return nodeId in TUTORIALS
 }
 ```
 
@@ -266,15 +269,15 @@ export function hasTutorial(nodeId: string): boolean {
 
 ## 付録A: 全決定事項一覧
 
-| ID | 項目 | 決定 |
-|----|------|------|
-| T1 | 発動タイミング | Weapon Get直後。チュートリアル→ツリー→Teach |
-| T2 | ステップ構造 | message + expectedKey + acceptedKeys + editorSetup + wrongKeyMessage |
-| T3 | ナビゲーターUI | キャラ付き下部バー（HAND非表示にして差替え） |
-| T4 | 誤入力の扱い | 無視 + ナビが期待キー再表示。固定メッセージ |
-| T5 | undo教育 | N02で導入。x消しすぎ→u復元 |
-| T6 | スキップ | 全体スキップ。Esc + Skipボタン |
-| T7 | 対象ノード | 新概念7ノード（N01,02,03,08,18,29,37） |
-| T8 | Teachとの関係 | 両方残す。チュートリアル=練習、Teach=実戦 |
-| T9 | データ形式 | data/tutorials/ 専用ディレクトリ。TutorialStep型 |
-| T10 | 永続化 | GameProgressにtutorialStatus追加。completed/skippedのみ |
+| ID  | 項目           | 決定                                                                 |
+| --- | -------------- | -------------------------------------------------------------------- |
+| T1  | 発動タイミング | Weapon Get直後。チュートリアル→ツリー→Teach                          |
+| T2  | ステップ構造   | message + expectedKey + acceptedKeys + editorSetup + wrongKeyMessage |
+| T3  | ナビゲーターUI | キャラ付き下部バー（HAND非表示にして差替え）                         |
+| T4  | 誤入力の扱い   | 無視 + ナビが期待キー再表示。固定メッセージ                          |
+| T5  | undo教育       | N02で導入。x消しすぎ→u復元                                           |
+| T6  | スキップ       | 全体スキップ。Esc + Skipボタン                                       |
+| T7  | 対象ノード     | 新概念7ノード（N01,02,03,08,18,29,37）                               |
+| T8  | Teachとの関係  | 両方残す。チュートリアル=練習、Teach=実戦                            |
+| T9  | データ形式     | data/tutorials/ 専用ディレクトリ。TutorialStep型                     |
+| T10 | 永続化         | GameProgressにtutorialStatus追加。completed/skippedのみ              |

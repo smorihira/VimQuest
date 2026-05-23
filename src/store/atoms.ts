@@ -24,12 +24,12 @@ const gameProgressBaseAtom = atom<GameProgress>(loadProgress())
 
 /** Read/write atom with auto-persist */
 export const gameProgressAtom = atom(
-    (get) => get(gameProgressBaseAtom),
-    (_get, set, update: GameProgress | ((prev: GameProgress) => GameProgress)) => {
-        const next = typeof update === 'function' ? update(_get(gameProgressBaseAtom)) : update
-        set(gameProgressBaseAtom, next)
-        saveProgress(next)
-    },
+  (get) => get(gameProgressBaseAtom),
+  (_get, set, update: GameProgress | ((prev: GameProgress) => GameProgress)) => {
+    const next = typeof update === 'function' ? update(_get(gameProgressBaseAtom)) : update
+    set(gameProgressBaseAtom, next)
+    saveProgress(next)
+  },
 )
 
 // ─── Current Stage ──────────────────────────────────────────────────
@@ -61,32 +61,34 @@ export const parserBufferAtom = atom<string>('')
 
 /** Write-only atom: record a stage result */
 export const recordStageResultAtom = atom(
-    null,
-    (get, set, result: { stageId: string; stars: StarRating; damage: number; usedHint: boolean }) => {
-        set(gameProgressAtom, (prev) => {
-            const existing = prev.stageResults[result.stageId]
-            const newResult: StageResult = {
-                stageId: result.stageId,
-                bestStars: existing
-                    ? (Math.max(existing.bestStars, result.stars) as StarRating)
-                    : result.stars,
-                bestDamage: existing
-                    ? Math.min(existing.bestDamage, result.damage)
-                    : result.damage,
-                usedHint: existing ? existing.usedHint || result.usedHint : result.usedHint,
-            }
-            return {
-                ...prev,
-                stageResults: { ...prev.stageResults, [result.stageId]: newResult },
-            }
-        })
-    },
+  null,
+  (
+    _get,
+    set,
+    result: { stageId: string; stars: StarRating; damage: number; usedHint: boolean },
+  ) => {
+    set(gameProgressAtom, (prev) => {
+      const existing = prev.stageResults[result.stageId]
+      const newResult: StageResult = {
+        stageId: result.stageId,
+        bestStars: existing
+          ? (Math.max(existing.bestStars, result.stars) as StarRating)
+          : result.stars,
+        bestDamage: existing ? Math.min(existing.bestDamage, result.damage) : result.damage,
+        usedHint: existing ? existing.usedHint || result.usedHint : result.usedHint,
+      }
+      return {
+        ...prev,
+        stageResults: { ...prev.stageResults, [result.stageId]: newResult },
+      }
+    })
+  },
 )
 
 /** Write-only atom: unlock a node */
-export const unlockNodeAtom = atom(null, (get, set, nodeId: string) => {
-    set(gameProgressAtom, (prev) => {
-        if (prev.unlockedNodes.includes(nodeId)) return prev
-        return { ...prev, unlockedNodes: [...prev.unlockedNodes, nodeId] }
-    })
+export const unlockNodeAtom = atom(null, (_get, set, nodeId: string) => {
+  set(gameProgressAtom, (prev) => {
+    if (prev.unlockedNodes.includes(nodeId)) return prev
+    return { ...prev, unlockedNodes: [...prev.unlockedNodes, nodeId] }
+  })
 })

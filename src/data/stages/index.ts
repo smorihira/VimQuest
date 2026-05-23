@@ -41,27 +41,59 @@ import { N40_STAGES } from './N40'
 import { N41_STAGES } from './N41'
 
 const ALL_STAGE_ARRAYS: Stage[][] = [
-    N01_STAGES, N02_STAGES, N03_STAGES, N04_STAGES, N05_STAGES,
-    N06_STAGES, N07_STAGES, N08_STAGES, N09_STAGES, N10_STAGES,
-    N11_STAGES, N12_STAGES, N13_STAGES, N14_STAGES, N15_STAGES,
-    N16_STAGES, N17_STAGES, N18_STAGES, N19_STAGES, N20_STAGES,
-    N21_STAGES, N22_STAGES, N23_STAGES, N24_STAGES, N25_STAGES,
-    N26_STAGES, N27_STAGES, N29_STAGES, N30_STAGES, N31_STAGES,
-    N32_STAGES, N33_STAGES, N34_STAGES, N35_STAGES, N36_STAGES,
-    N37_STAGES, N38_STAGES, N39_STAGES, N40_STAGES, N41_STAGES,
+  N01_STAGES,
+  N02_STAGES,
+  N03_STAGES,
+  N04_STAGES,
+  N05_STAGES,
+  N06_STAGES,
+  N07_STAGES,
+  N08_STAGES,
+  N09_STAGES,
+  N10_STAGES,
+  N11_STAGES,
+  N12_STAGES,
+  N13_STAGES,
+  N14_STAGES,
+  N15_STAGES,
+  N16_STAGES,
+  N17_STAGES,
+  N18_STAGES,
+  N19_STAGES,
+  N20_STAGES,
+  N21_STAGES,
+  N22_STAGES,
+  N23_STAGES,
+  N24_STAGES,
+  N25_STAGES,
+  N26_STAGES,
+  N27_STAGES,
+  N29_STAGES,
+  N30_STAGES,
+  N31_STAGES,
+  N32_STAGES,
+  N33_STAGES,
+  N34_STAGES,
+  N35_STAGES,
+  N36_STAGES,
+  N37_STAGES,
+  N38_STAGES,
+  N39_STAGES,
+  N40_STAGES,
+  N41_STAGES,
 ]
 
 /** All stages keyed by stage ID */
 export const ALL_STAGES: Record<string, Stage> = Object.fromEntries(
-    ALL_STAGE_ARRAYS.flat().map((s) => [s.id, s]),
+  ALL_STAGE_ARRAYS.flat().map((s) => [s.id, s]),
 )
 
 /** Get all stages for a given node */
 export function getStagesByNode(nodeId: string): Stage[] {
-    return Object.values(ALL_STAGES).filter((s) => s.nodeId === nodeId)
+  return Object.values(ALL_STAGES).filter((s) => s.nodeId === nodeId)
 }
 
 /** Get a single stage by ID */
 export function getStage(stageId: string): Stage | undefined {
-    return ALL_STAGES[stageId]
+  return ALL_STAGES[stageId]
 }

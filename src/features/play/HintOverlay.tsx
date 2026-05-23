@@ -3,7 +3,7 @@
  * Shows commands being applied one by one from initial state.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import { createEditorState } from '../../types/editor'
@@ -13,130 +13,126 @@ import { EditorView } from './EditorView'
 import './HintOverlay.css'
 
 interface HintOverlayProps {
-    stage: Stage
-    onClose: () => void
+  stage: Stage
+  onClose: () => void
 }
 
 export function HintOverlay({ stage, onClose }: HintOverlayProps) {
-    const hint = stage.hints[0]
-    const commands = hint?.commands ?? []
-    const [step, setStep] = useState(-1)
-    const [editorState, setEditorState] = useState<EditorState>(() =>
-        createEditorState(stage.initialText, stage.initialCursor),
-    )
-    const [currentCmd, setCurrentCmd] = useState('')
+  const hint = stage.hints[0]
+  const commands = useMemo(() => hint?.commands ?? [], [hint])
+  const [step, setStep] = useState(-1)
+  const [editorState, setEditorState] = useState<EditorState>(() =>
+    createEditorState(stage.initialText, stage.initialCursor),
+  )
+  const [currentCmd, setCurrentCmd] = useState('')
 
-    const applyCommand = useCallback(
-        (cmdStr: string, state: EditorState): EditorState => {
-            // Handle insert-mode text (not a Vim command)
-            if (state.mode === 'insert' && cmdStr !== 'Esc') {
-                // Type each character
-                let s = state
-                for (const ch of cmdStr) {
-                    s = executeCommand(s, { raw: ch, valid: true })
-                }
-                return s
-            }
-
-            const parser = new CommandParser(stage.availableCommands)
-
-            // Multi-char commands like "Ctrl+d", "Esc" are fed as a single key
-            // Single-char sequences like "dw" are fed char-by-char
-            const keys = cmdStr.length > 1 && (cmdStr.includes('+') || cmdStr === 'Esc' || cmdStr === 'Enter' || cmdStr === 'Backspace')
-                ? [cmdStr]
-                : cmdStr.split('')
-
-            let s = state
-            for (const key of keys) {
-                const result = parser.feed(key)
-                if (result && result.command.valid) {
-                    s = executeCommand(s, result.command)
-                }
-            }
-
-            // Handle Esc for insert mode exit
-            if (cmdStr === 'Esc') {
-                s = executeCommand(s, { raw: 'Esc', valid: true })
-                s = finalizeInsertSession(s, state, 0)
-            }
-
-            return s
-        },
-        [stage.availableCommands],
-    )
-
-    // Auto-advance steps
-    useEffect(() => {
-        if (step >= commands.length) return
-
-        const timer = setTimeout(() => {
-            const nextStep = step + 1
-            if (nextStep < commands.length) {
-                const cmd = commands[nextStep]
-                setCurrentCmd(cmd)
-                setEditorState((prev) => applyCommand(cmd, prev))
-            }
-            setStep(nextStep)
-        }, step === -1 ? 500 : 800)
-
-        return () => clearTimeout(timer)
-    }, [step, commands, applyCommand])
-
-    // Close on Esc or click
-    useEffect(() => {
-        const handleKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' || e.code === 'Space') {
-                e.preventDefault()
-                onClose()
-            }
+  const applyCommand = useCallback(
+    (cmdStr: string, state: EditorState): EditorState => {
+      // Handle insert-mode text (not a Vim command)
+      if (state.mode === 'insert' && cmdStr !== 'Esc') {
+        // Type each character
+        let s = state
+        for (const ch of cmdStr) {
+          s = executeCommand(s, { raw: ch, valid: true })
         }
-        window.addEventListener('keydown', handleKey)
-        return () => window.removeEventListener('keydown', handleKey)
-    }, [onClose])
+        return s
+      }
 
-    const isComplete = step >= commands.length
+      const parser = new CommandParser(stage.availableCommands)
 
-    return (
-        <div className="hint-overlay" onClick={onClose}>
-            <div className="hint-panel" onClick={(e) => e.stopPropagation()}>
-                <div className="hint-header">
-                    <span className="hint-badge">HINT DEMO</span>
-                    <span className="hint-progress">
-                        {Math.min(step + 1, commands.length)} / {commands.length}
-                    </span>
-                    <button className="hint-close" onClick={onClose}>✕</button>
-                </div>
+      // Multi-char commands like "Ctrl+d", "Esc" are fed as a single key
+      // Single-char sequences like "dw" are fed char-by-char
+      const keys =
+        cmdStr.length > 1 &&
+        (cmdStr.includes('+') || cmdStr === 'Esc' || cmdStr === 'Enter' || cmdStr === 'Backspace')
+          ? [cmdStr]
+          : cmdStr.split('')
 
-                <div className="hint-editor">
-                    <EditorView
-                        state={editorState}
-                        language={stage.language}
-                    />
-                </div>
+      let s = state
+      for (const key of keys) {
+        const result = parser.feed(key)
+        if (result && result.command.valid) {
+          s = executeCommand(s, result.command)
+        }
+      }
 
-                <div className="hint-commands">
-                    {commands.map((cmd, i) => (
-                        <span
-                            key={i}
-                            className={`hint-cmd${i <= step ? ' done' : ''}${i === step ? ' current' : ''}`}
-                        >
-                            {cmd}
-                        </span>
-                    ))}
-                </div>
+      // Handle Esc for insert mode exit
+      if (cmdStr === 'Esc') {
+        s = executeCommand(s, { raw: 'Esc', valid: true })
+        s = finalizeInsertSession(s, state, 0)
+      }
 
-                {currentCmd && !isComplete && (
-                    <div className="hint-current-label">
-                        → {currentCmd}
-                    </div>
-                )}
+      return s
+    },
+    [stage.availableCommands],
+  )
 
-                {isComplete && (
-                    <div className="hint-complete">
-                        ☆3 達成！（{commands.length}ダメージ）
-                    </div>
-                )}
-            </div>
-        </div>
+  // Auto-advance steps
+  useEffect(() => {
+    if (step >= commands.length) return
+
+    const timer = setTimeout(
+      () => {
+        const nextStep = step + 1
+        if (nextStep < commands.length) {
+          const cmd = commands[nextStep]
+          setCurrentCmd(cmd)
+          setEditorState((prev) => applyCommand(cmd, prev))
+        }
+        setStep(nextStep)
+      },
+      step === -1 ? 500 : 800,
     )
+
+    return () => clearTimeout(timer)
+  }, [step, commands, applyCommand])
+
+  // Close on Esc or click
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' || e.code === 'Space') {
+        e.preventDefault()
+        onClose()
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [onClose])
+
+  const isComplete = step >= commands.length
+
+  return (
+    <div className="hint-overlay" onClick={onClose}>
+      <div className="hint-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="hint-header">
+          <span className="hint-badge">HINT DEMO</span>
+          <span className="hint-progress">
+            {Math.min(step + 1, commands.length)} / {commands.length}
+          </span>
+          <button className="hint-close" onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        <div className="hint-editor">
+          <EditorView state={editorState} language={stage.language} />
+        </div>
+
+        <div className="hint-commands">
+          {commands.map((cmd, i) => (
+            <span
+              key={i}
+              className={`hint-cmd${i <= step ? ' done' : ''}${i === step ? ' current' : ''}`}
+            >
+              {cmd}
+            </span>
+          ))}
+        </div>
+
+        {currentCmd && !isComplete && <div className="hint-current-label">→ {currentCmd}</div>}
+
+        {isComplete && <div className="hint-complete">☆3 達成！（{commands.length}ダメージ）</div>}
+      </div>
+    </div>
+  )
 }

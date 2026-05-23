@@ -1,29 +1,29 @@
 .device-gate {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    background: #1a1a2e;
-    color: #e0e0e0;
-    text-align: center;
-    padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  text-align: center;
+  padding: 24px;
 }
 
 .device-gate-icon {
-    font-size: 64px;
-    margin-bottom: 16px;
+  font-size: 64px;
+  margin-bottom: 16px;
 }
 
 .device-gate-title {
-    font-family: var(--font-code, monospace);
-    font-size: 24px;
-    color: #7c7cff;
-    margin-bottom: 16px;
+  font-family: var(--font-code, monospace);
+  font-size: 24px;
+  color: #7c7cff;
+  margin-bottom: 16px;
 }
 
 .device-gate-msg {
-    font-size: 14px;
-    line-height: 1.8;
-    color: #999;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #999;
 }

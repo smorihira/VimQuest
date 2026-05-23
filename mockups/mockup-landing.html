@@ -1,332 +1,328 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VimQuest</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg: #1a1a2e;
+        --accent: #7c7cff;
+        --text-primary: #e0e0e0;
+        --text-dim: #888;
+        --success: #44ddaa;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      /* Background animation */
+      .bg-code {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        color: rgba(124, 124, 255, 0.04);
+        line-height: 1.8;
+        padding: 20px;
+        pointer-events: none;
+        overflow: hidden;
+        white-space: pre;
+      }
+
+      /* Main content */
+      .landing {
+        text-align: center;
+        z-index: 1;
+        max-width: 700px;
+        width: 90%;
+      }
+
+      /* Logo */
+      .logo {
+        margin-bottom: 8px;
+      }
+
+      .logo-main {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 72px;
+        font-weight: 700;
+        letter-spacing: -2px;
+      }
+
+      .logo-vim {
+        color: var(--success);
+      }
+
+      .logo-quest {
+        color: var(--accent);
+      }
+
+      .logo-cursor {
+        display: inline-block;
+        width: 36px;
+        height: 60px;
+        background: rgba(124, 124, 255, 0.4);
+        margin-left: 4px;
+        vertical-align: middle;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
         }
 
-        :root {
-            --bg: #1a1a2e;
-            --accent: #7c7cff;
-            --text-primary: #e0e0e0;
-            --text-dim: #888;
-            --success: #44ddaa;
+        50% {
+          opacity: 0.3;
         }
+      }
 
-        body {
+      /* Tagline */
+      .tagline {
+        font-size: 16px;
+        color: var(--text-dim);
+        margin-bottom: 48px;
+        line-height: 1.6;
+      }
+
+      .tagline em {
+        color: var(--text-primary);
+        font-style: normal;
+        font-weight: 600;
+      }
+
+      /* Feature cards */
+      .features {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 48px;
+        justify-content: center;
+      }
+
+      .feature {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 20px;
+        width: 200px;
+        text-align: left;
+        transition: all 0.2s ease;
+      }
+
+      .feature:hover {
+        border-color: rgba(124, 124, 255, 0.3);
+        background: rgba(124, 124, 255, 0.05);
+      }
+
+      .feature-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+
+      .feature-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .feature-desc {
+        font-size: 12px;
+        color: var(--text-dim);
+        line-height: 1.5;
+      }
+
+      /* CTA */
+      .cta {
+        margin-bottom: 32px;
+      }
+
+      .btn-start {
+        font-family: 'Inter', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        padding: 16px 48px;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        letter-spacing: 1px;
+      }
+
+      .btn-start:hover {
+        background: #9a9aff;
+        box-shadow: 0 0 32px rgba(124, 124, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .cta-sub {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-top: 12px;
+      }
+
+      /* Demo preview */
+      .demo-preview {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        color: var(--text-dim);
+        margin-bottom: 48px;
+      }
+
+      .demo-preview .before {
+        margin-bottom: 4px;
+      }
+
+      .demo-preview .arrow {
+        color: var(--accent);
+        margin: 4px 0;
+      }
+
+      .demo-preview .cmd {
+        color: var(--accent);
+        font-weight: 700;
+        padding: 2px 8px;
+        background: rgba(124, 124, 255, 0.1);
+        border-radius: 4px;
+      }
+
+      .demo-preview .after {
+        color: var(--success);
+      }
+
+      /* Footer */
+      .footer {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.2);
+      }
+
+      .footer a {
+        color: rgba(255, 255, 255, 0.3);
+        text-decoration: none;
+      }
+
+      .footer a:hover {
+        color: var(--accent);
+      }
+
+      /* Requirements badge */
+      .requirements {
+        display: inline-flex;
+        gap: 12px;
+        font-size: 11px;
+        color: var(--text-dim);
+        margin-top: 8px;
+      }
+
+      .req-badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(255, 255, 255, 0.04);
+        padding: 4px 10px;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Background code -->
+    <div class="bg-code">
+      hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da(
+      viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd
+      d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe
+      0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p
+      "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw
+      ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft
+      ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
+      hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da(
+      viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd
+      d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe
+      0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p
+      "ayiw hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
+    </div>
+
+    <div class="landing">
+      <div class="logo">
+        <span class="logo-main"
+          ><span class="logo-vim">Vim</span><span class="logo-quest">Quest</span></span
+        ><span class="logo-cursor"></span>
+      </div>
+
+      <div class="tagline">
+        <em>ライフを管理</em>しながら解く、<em>Vim戦略パズル</em>。<br />
+        最短の手順を見つけ出し、テキストを目標の形に変えろ。
+      </div>
+
+      <div class="demo-preview">
+        <div class="before">color: "<span style="color: var(--text-primary)">#ff0000</span>";</div>
+        <div class="arrow">↓ <span class="cmd">ci"</span> → #333333 → Esc</div>
+        <div class="after">color: "#333333";</div>
+        <div
+          style="
             font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
-
-        /* Background animation */
-        .bg-code {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            color: rgba(124, 124, 255, 0.04);
-            line-height: 1.8;
-            padding: 20px;
-            pointer-events: none;
-            overflow: hidden;
-            white-space: pre;
-        }
-
-        /* Main content */
-        .landing {
-            text-align: center;
-            z-index: 1;
-            max-width: 700px;
-            width: 90%;
-        }
-
-        /* Logo */
-        .logo {
-            margin-bottom: 8px;
-        }
-
-        .logo-main {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 72px;
-            font-weight: 700;
-            letter-spacing: -2px;
-        }
-
-        .logo-vim {
-            color: var(--success);
-        }
-
-        .logo-quest {
-            color: var(--accent);
-        }
-
-        .logo-cursor {
-            display: inline-block;
-            width: 36px;
-            height: 60px;
-            background: rgba(124, 124, 255, 0.4);
-            margin-left: 4px;
-            vertical-align: middle;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.3;
-            }
-        }
-
-        /* Tagline */
-        .tagline {
-            font-size: 16px;
-            color: var(--text-dim);
-            margin-bottom: 48px;
-            line-height: 1.6;
-        }
-
-        .tagline em {
-            color: var(--text-primary);
-            font-style: normal;
-            font-weight: 600;
-        }
-
-        /* Feature cards */
-        .features {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 48px;
-            justify-content: center;
-        }
-
-        .feature {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 20px;
-            width: 200px;
-            text-align: left;
-            transition: all 0.2s ease;
-        }
-
-        .feature:hover {
-            border-color: rgba(124, 124, 255, 0.3);
-            background: rgba(124, 124, 255, 0.05);
-        }
-
-        .feature-icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-
-        .feature-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .feature-desc {
-            font-size: 12px;
-            color: var(--text-dim);
-            line-height: 1.5;
-        }
-
-        /* CTA */
-        .cta {
-            margin-bottom: 32px;
-        }
-
-        .btn-start {
-            font-family: 'Inter', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            padding: 16px 48px;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            letter-spacing: 1px;
-        }
-
-        .btn-start:hover {
-            background: #9a9aff;
-            box-shadow: 0 0 32px rgba(124, 124, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .cta-sub {
-            font-size: 12px;
-            color: var(--text-dim);
-            margin-top: 12px;
-        }
-
-        /* Demo preview */
-        .demo-preview {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            color: var(--text-dim);
-            margin-bottom: 48px;
-        }
-
-        .demo-preview .before {
-            margin-bottom: 4px;
-        }
-
-        .demo-preview .arrow {
-            color: var(--accent);
-            margin: 4px 0;
-        }
-
-        .demo-preview .cmd {
-            color: var(--accent);
-            font-weight: 700;
-            padding: 2px 8px;
-            background: rgba(124, 124, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        .demo-preview .after {
-            color: var(--success);
-        }
-
-        /* Footer */
-        .footer {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.2);
-        }
-
-        .footer a {
-            color: rgba(255, 255, 255, 0.3);
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            color: var(--accent);
-        }
-
-        /* Requirements badge */
-        .requirements {
-            display: inline-flex;
-            gap: 12px;
             font-size: 11px;
             color: var(--text-dim);
             margin-top: 8px;
-        }
-
-        .req-badge {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 4px 10px;
-            border-radius: 4px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- Background code -->
-    <div class="bg-code">hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw
-        hjkl wbe 0$ ft ;, dw dd d$ ciw ci" da( viw yiw p "ayiw</div>
-
-    <div class="landing">
-        <div class="logo">
-            <span class="logo-main"><span class="logo-vim">Vim</span><span class="logo-quest">Quest</span></span><span
-                class="logo-cursor"></span>
+          "
+        >
+          ci" = "" の中身を丸ごと変更。たった1コマンド。
         </div>
+      </div>
 
-        <div class="tagline">
-            <em>ライフを管理</em>しながら解く、<em>Vim戦略パズル</em>。<br>
-            最短の手順を見つけ出し、テキストを目標の形に変えろ。
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">♥</div>
+          <div class="feature-title">ライフ制パズル</div>
+          <div class="feature-desc">1コマンド＝1ダメージ。少ない手数でクリアするほど高評価。</div>
         </div>
+        <div class="feature">
+          <div class="feature-icon">🃏</div>
+          <div class="feature-title">スキルカード</div>
+          <div class="feature-desc">動詞と対象が合体する「合成UI」でVimの文法を視覚化。</div>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🌳</div>
+          <div class="feature-title">スキルツリー</div>
+          <div class="feature-desc">60+のコマンドを段階的に習得。渇望→報酬の感情設計。</div>
+        </div>
+      </div>
 
-        <div class="demo-preview">
-            <div class="before">color: "<span style="color: var(--text-primary);">#ff0000</span>";</div>
-            <div class="arrow">↓ <span class="cmd">ci"</span> → #333333 → Esc</div>
-            <div class="after">color: "#333333";</div>
-            <div style="font-family: 'Inter', sans-serif; font-size: 11px; color: var(--text-dim); margin-top: 8px;">ci"
-                = "" の中身を丸ごと変更。たった1コマンド。</div>
+      <div class="cta">
+        <button class="btn-start">はじめる</button>
+        <div class="cta-sub">
+          アカウント不要・無料・ブラウザだけで遊べます
+          <div class="requirements">
+            <span class="req-badge">⌨️ キーボード必須</span>
+            <span class="req-badge">🖥️ デスクトップ専用</span>
+          </div>
         </div>
-
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">♥</div>
-                <div class="feature-title">ライフ制パズル</div>
-                <div class="feature-desc">1コマンド＝1ダメージ。少ない手数でクリアするほど高評価。</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🃏</div>
-                <div class="feature-title">スキルカード</div>
-                <div class="feature-desc">動詞と対象が合体する「合成UI」でVimの文法を視覚化。</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🌳</div>
-                <div class="feature-title">スキルツリー</div>
-                <div class="feature-desc">60+のコマンドを段階的に習得。渇望→報酬の感情設計。</div>
-            </div>
-        </div>
-
-        <div class="cta">
-            <button class="btn-start">はじめる</button>
-            <div class="cta-sub">
-                アカウント不要・無料・ブラウザだけで遊べます
-                <div class="requirements">
-                    <span class="req-badge">⌨️ キーボード必須</span>
-                    <span class="req-badge">🖥️ デスクトップ専用</span>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <div class="footer">
-        VimQuest — 「指の慣れ」を卒業し、「最短の思考」を手に入れる
-    </div>
-
-</body>
-
+    <div class="footer">VimQuest — 「指の慣れ」を卒業し、「最短の思考」を手に入れる</div>
+  </body>
 </html>
