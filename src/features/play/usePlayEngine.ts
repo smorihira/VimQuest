@@ -85,6 +85,22 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
                 return
             }
 
+            // Arrow keys in insert mode: move cursor without damage
+            if (editorState.mode === 'insert' && key.startsWith('Arrow')) {
+                const motionMap: Record<string, string> = {
+                    ArrowLeft: 'h', ArrowDown: 'j', ArrowUp: 'k', ArrowRight: 'l',
+                }
+                const motion = motionMap[key]
+                if (motion) {
+                    const next = executeCommand(
+                        { ...editorState, mode: 'normal' },
+                        { raw: motion, motion: motion as 'h' | 'j' | 'k' | 'l', valid: true },
+                    )
+                    setEditorState({ ...next, mode: 'insert' })
+                }
+                return
+            }
+
             // Track Backspace/Enter char count in insert mode
             if (editorState.mode === 'insert') {
                 if (key === 'Backspace') {

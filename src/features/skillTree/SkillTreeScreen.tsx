@@ -107,7 +107,7 @@ export function SkillTreeScreen() {
         <div className="tree-screen">
             {/* Header */}
             <div className="tree-header">
-                <div className="tree-title">
+                <div className="tree-title" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
                     <span className="tree-vim">Vim</span>
                     <span className="tree-quest">Quest</span>
                     <span className="tree-subtitle">SKILL TREE</span>

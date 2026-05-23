@@ -212,6 +212,10 @@ function mapKeyEvent(e: KeyboardEvent): string | null {
     if (e.key === 'Escape') return 'Esc'
     if (e.key === 'Backspace') return 'Backspace'
     if (e.key === 'Enter') return 'Enter'
+    if (e.key === 'ArrowLeft') return 'ArrowLeft'
+    if (e.key === 'ArrowDown') return 'ArrowDown'
+    if (e.key === 'ArrowUp') return 'ArrowUp'
+    if (e.key === 'ArrowRight') return 'ArrowRight'
 
     // Single character
     if (e.key.length === 1) return e.key
