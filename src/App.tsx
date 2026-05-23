@@ -1,10 +1,11 @@
 import { Routes, Route, Navigate } from 'react-router'
+import { PlayScreen } from './features/play/PlayScreen'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Placeholder screen="Landing" />} />
-      <Route path="/play/:stageId" element={<Placeholder screen="Play" />} />
+      <Route path="/play/:stageId" element={<PlayScreen />} />
       <Route path="/result/:stageId" element={<Placeholder screen="Result" />} />
       <Route path="/gameover/:stageId" element={<Placeholder screen="GameOver" />} />
       <Route path="/tree" element={<Placeholder screen="SkillTree" />} />
