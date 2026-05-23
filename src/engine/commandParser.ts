@@ -149,6 +149,7 @@ export class CommandParser {
   private searchBuffer: string = ''
   private registerName: string | undefined = undefined
   private availableCommands: string[] | undefined = undefined
+  private baseCommands: string[] | undefined = undefined
   private visualCommands: string[] | undefined = undefined
   private onResult: ((result: ParseResult) => void) | undefined = undefined
   private editorMode: 'normal' | 'visual' | 'insert' = 'normal'
@@ -157,16 +158,23 @@ export class CommandParser {
     availableCommands?: string[],
     onResult?: (result: ParseResult) => void,
     visualCommands?: string[],
+    baseCommands?: string[],
   ) {
     this.availableCommands = availableCommands
+    this.baseCommands = baseCommands
     this.visualCommands = visualCommands
     this.onResult = onResult
   }
 
   /** Update hand cards */
-  setAvailableCommands(commands: string[] | undefined, visualCommands?: string[]): void {
+  setAvailableCommands(
+    commands: string[] | undefined,
+    visualCommands?: string[],
+    baseCommands?: string[],
+  ): void {
     this.availableCommands = commands
     this.visualCommands = visualCommands
+    this.baseCommands = baseCommands
   }
 
   /** Set editor mode so parser can adjust behavior (e.g. visual mode d/x/y) */
@@ -196,13 +204,14 @@ export class CommandParser {
     return this.state
   }
 
-  /** Get effective hand: in visual mode, merge visualCommands into availableCommands */
+  /** Get effective hand: merge base + available + (visual mode) visualCommands */
   private getEffectiveHand(): string[] | undefined {
     if (!this.availableCommands) return undefined
-    if (this.editorMode === 'visual' && this.visualCommands?.length) {
-      return [...this.availableCommands, ...this.visualCommands]
-    }
-    return this.availableCommands
+    const base = this.baseCommands ?? []
+    const visual =
+      this.editorMode === 'visual' && this.visualCommands?.length ? this.visualCommands : []
+    if (base.length === 0 && visual.length === 0) return this.availableCommands
+    return [...base, ...this.availableCommands, ...visual]
   }
 
   /** Get display string for current buffer (for UI display) */

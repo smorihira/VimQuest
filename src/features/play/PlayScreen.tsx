@@ -282,34 +282,51 @@ function PlayScreenInner({
             <span className="insert-esc">Esc で確定</span>
           </div>
         ) : (
-          <div className="card-row">
-            {(play.editorState.mode === 'visual' && stage.visualCommands
-              ? [...stage.availableCommands, ...stage.visualCommands]
-              : stage.availableCommands
-            ).map((cmd) => {
-              const pendingOp = getPendingOperator(play.parserBuffer)
-              const isOperator = ['d', 'c', 'y', '>', '<'].includes(cmd)
-              const isTarget = !isOperator && !['u', 'Esc', '.'].includes(cmd)
-              const isPending = pendingOp === cmd
-              const isDisabled = pendingOp && isOperator && cmd !== pendingOp
-              const isMerged =
-                play.lastExecutedRaw.length > 1 &&
-                play.lastExecutedRaw.startsWith(cmd) &&
-                isOperator
+          <>
+            {stage.baseCommands && stage.baseCommands.length > 0 && (
+              <div className="base-row">
+                {(play.editorState.mode === 'visual'
+                  ? stage.baseCommands.filter((c) => c !== 'v' && c !== 'V')
+                  : stage.baseCommands
+                ).map((cmd) => (
+                  <span key={cmd} className={`base-card ${getCardClass(cmd)}`}>
+                    {cmd}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="card-row">
+              {(play.editorState.mode === 'visual' && stage.visualCommands
+                ? [
+                    ...stage.availableCommands.filter((c) => c !== 'v' && c !== 'V'),
+                    ...stage.visualCommands,
+                  ]
+                : stage.availableCommands
+              ).map((cmd) => {
+                const pendingOp = getPendingOperator(play.parserBuffer)
+                const isOperator = ['d', 'c', 'y', '>', '<'].includes(cmd)
+                const isTarget = !isOperator && !['u', 'Esc', '.'].includes(cmd)
+                const isPending = pendingOp === cmd
+                const isDisabled = pendingOp && isOperator && cmd !== pendingOp
+                const isMerged =
+                  play.lastExecutedRaw.length > 1 &&
+                  play.lastExecutedRaw.startsWith(cmd) &&
+                  isOperator
 
-              let cardState = ''
-              if (isPending) cardState = ' card-pending'
-              else if (pendingOp && isTarget) cardState = ' card-target'
-              else if (isDisabled) cardState = ' card-disabled'
-              if (isMerged) cardState += ' card-merged'
+                let cardState = ''
+                if (isPending) cardState = ' card-pending'
+                else if (pendingOp && isTarget) cardState = ' card-target'
+                else if (isDisabled) cardState = ' card-disabled'
+                if (isMerged) cardState += ' card-merged'
 
-              return (
-                <div key={cmd} className={`card ${getCardClass(cmd)}${cardState}`}>
-                  {isMerged ? play.lastExecutedRaw : cmd}
-                </div>
-              )
-            })}
-          </div>
+                return (
+                  <div key={cmd} className={`card ${getCardClass(cmd)}${cardState}`}>
+                    {isMerged ? play.lastExecutedRaw : cmd}
+                  </div>
+                )
+              })}
+            </div>
+          </>
         )}
         {play.parserBuffer && <div className="parser-buffer">{play.parserBuffer}_</div>}
       </div>

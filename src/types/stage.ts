@@ -47,8 +47,10 @@ export interface Stage {
   life: number
   /** Star thresholds: [☆3, ☆2, ☆1] damage counts */
   stars: [number, number, number]
-  /** Available commands (hand cards) */
+  /** Available commands (hand cards — shown prominently) */
   availableCommands: string[]
+  /** Base commands (always usable, shown in compact "BASE" row) */
+  baseCommands?: string[]
   /** Visual-mode-only commands (shown only in visual mode) */
   visualCommands?: string[]
   /** Extended clear conditions (text match is always required) */

@@ -68,7 +68,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
 
   // Parser instance (stable across renders, recreated on reset)
   const parserRef = useRef<CommandParser>(
-    new CommandParser(stage.availableCommands, undefined, stage.visualCommands),
+    new CommandParser(stage.availableCommands, undefined, stage.visualCommands, stage.baseCommands),
   )
 
   const life = stage.life
@@ -291,7 +291,12 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
     insertEntryRef.current = null
     insertCharCount.current = 0
     insertCommandRef.current = ''
-    parserRef.current = new CommandParser(stage.availableCommands, undefined, stage.visualCommands)
+    parserRef.current = new CommandParser(
+      stage.availableCommands,
+      undefined,
+      stage.visualCommands,
+      stage.baseCommands,
+    )
     setSpells([])
   }, [stage])
 

@@ -188,6 +188,27 @@
   letter-spacing: 1px;
 }
 
+.base-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.base-card {
+  font-family: var(--font-code);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-dim, #8888aa);
+  background: rgba(34, 34, 68, 0.5);
+  border: 1px solid rgba(68, 68, 120, 0.4);
+  border-radius: 4px;
+  padding: 2px 8px;
+  min-width: 24px;
+  text-align: center;
+}
+
 .card-row {
   display: flex;
   justify-content: center;

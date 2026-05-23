@@ -98,7 +98,8 @@ describe('Stage content sanity', () => {
       })
 
       it('has at least 2 available commands', () => {
-        expect(stage.availableCommands.length).toBeGreaterThanOrEqual(2)
+        const totalCommands = (stage.baseCommands?.length ?? 0) + stage.availableCommands.length
+        expect(totalCommands).toBeGreaterThanOrEqual(2)
       })
 
       it('opt ≥ 1', () => {

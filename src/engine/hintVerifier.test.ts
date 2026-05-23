@@ -34,7 +34,12 @@ import type { Stage } from '../types/stage'
  */
 function simulateHintCommands(stage: Stage): EditorState {
   let state = createEditorState(stage.initialText, stage.initialCursor)
-  const parser = new CommandParser(stage.availableCommands, undefined, stage.visualCommands)
+  const parser = new CommandParser(
+    stage.availableCommands,
+    undefined,
+    stage.visualCommands,
+    stage.baseCommands,
+  )
 
   // Track insert mode for proper insert session handling
   let insertEntryState: EditorState | null = null
