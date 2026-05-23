@@ -69,6 +69,14 @@ export function SkillTreeScreen() {
         const status = getNodeStatus(node, progress)
         if (status === 'locked') return
 
+        // If no stages played yet (first visit), show WeaponGet screen
+        const stages = getStagesByNode(node.id)
+        const hasPlayed = stages.some((s) => progress.stageResults[s.id])
+        if (!hasPlayed) {
+            navigate(`/weapon/${node.id}`)
+            return
+        }
+
         // If tutorial exists and not completed, go to tutorial
         if (hasTutorial(node.id) && !progress.tutorialStatus[node.id]) {
             navigate(`/tutorial/${node.id}`)
@@ -76,7 +84,6 @@ export function SkillTreeScreen() {
         }
 
         // Go to first uncompleted stage, or first stage
-        const stages = getStagesByNode(node.id)
         const firstUncompleted = stages.find((s) => {
             const r = progress.stageResults[s.id]
             return !r || r.bestStars === 0

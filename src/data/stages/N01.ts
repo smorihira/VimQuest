@@ -27,7 +27,7 @@ export const N01_STAGES: Stage[] = [
     },
 
     // ── Practice: 2次元移動でターゲットに到達 ──
-    // opt = 6 (jjjlll) → ☆3=6, ☆2=8, ☆1=10, life=12
+    // opt = 5 (jjjll) → ☆3=5, ☆2=7, ☆1=9, life=11
     {
         id: 'N01-P',
         nodeId: 'N01',
@@ -37,8 +37,8 @@ export const N01_STAGES: Stage[] = [
         initialText: 'abc\ndef\nghi\njkl',
         goalText: 'abc\ndef\nghi\njkl',
         initialCursor: { line: 0, col: 0 },
-        life: 12,
-        stars: [6, 8, 10],
+        life: 11,
+        stars: [5, 7, 9],
         availableCommands: ['h', 'j', 'k', 'l'],
         clearConditions: { cursor: { line: 3, col: 2 } },
         hints: [{ cost: 1, commands: ['j', 'j', 'j', 'l', 'l'] }],

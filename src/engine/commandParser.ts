@@ -156,6 +156,8 @@ export class CommandParser {
                 return this.handleOpNumberPrefix(key)
             case 'gPending':
                 return this.handleGPending(key)
+            case 'rPending':
+                return this.handleRPending(key)
             default:
                 this.reset()
                 return null
@@ -192,6 +194,15 @@ export class CommandParser {
         // g prefix
         if (key === 'g') {
             this.state = 'gPending'
+            return null
+        }
+
+        // r prefix (replace char)
+        if (key === 'r') {
+            if (!isInHand('r', this.availableCommands)) {
+                return this.emitInvalid('r')
+            }
+            this.state = 'rPending'
             return null
         }
 
@@ -257,6 +268,15 @@ export class CommandParser {
         // g prefix after count
         if (key === 'g') {
             this.state = 'gPending'
+            return null
+        }
+
+        // r prefix after count
+        if (key === 'r') {
+            if (!isInHand('r', this.availableCommands)) {
+                return this.emitInvalid(this.buffer)
+            }
+            this.state = 'rPending'
             return null
         }
 
@@ -421,6 +441,27 @@ export class CommandParser {
 
         return this.emitInvalid(this.buffer)
     }
+
+    private handleRPending(key: string): ParseResult | null {
+        this.buffer += key
+
+        // Esc cancels
+        if (key === 'Esc') {
+            return this.emit({ raw: 'Esc', valid: true }, 0)
+        }
+
+        // Any single character → replace command
+        if (key.length === 1) {
+            const raw = this.buffer
+            const count = mergeCount(this.countPrefix, this.countAfterOp)
+            return this.emit(
+                { raw, char: key, count, valid: true },
+                1,
+            )
+        }
+
+        return this.emitInvalid(this.buffer)
+    }
 }
 
 // ─── State type ─────────────────────────────────────────────────────
@@ -431,6 +472,7 @@ type ParserState =
     | 'operatorPending'
     | 'opNumberPrefix'
     | 'gPending'
+    | 'rPending'
 
 // ─── Convenience: one-shot parse ────────────────────────────────────
 

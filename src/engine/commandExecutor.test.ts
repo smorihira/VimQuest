@@ -209,15 +209,15 @@ describe('Ctrl+R redo', () => {
         expect(state.text).toBe('ello')
     })
 
-    it('redo stack clears on new operation', () => {
+    it('redo stack clears on new text-changing operation', () => {
         let state = createEditorState('hello', { line: 0, col: 0 })
         state = executeCommand(state, simple('x'))
         state = executeCommand(state, simple('u'))
-        // Now do a new operation instead of redo
-        state = executeCommand(state, motion('l', 'l'))
+        // Now do a new text-changing operation instead of redo
+        state = executeCommand(state, simple('x'))
         // Redo should do nothing
         state = executeCommand(state, { raw: 'Ctrl+R', valid: true })
-        expect(state.cursor.col).toBe(1) // stays from the 'l' move
+        expect(state.text).toBe('ello') // stays from the second x
     })
 })
 
@@ -322,10 +322,10 @@ describe('db delete backward word', () => {
 // ─── Undo stack correctness ────────────────────────────────────────
 
 describe('undo stack', () => {
-    it('movement pushes to undo stack', () => {
+    it('movement does NOT push to undo stack (motions are not undoable)', () => {
         const state = createEditorState('hello', { line: 0, col: 0 })
         const next = executeCommand(state, motion('l', 'l'))
-        expect(next.undoStack).toHaveLength(1)
+        expect(next.undoStack).toHaveLength(0)
     })
 
     it('undo does not increase undo stack', () => {
@@ -354,30 +354,59 @@ describe('invalid commands', () => {
 describe('finalizeInsertSession', () => {
     it('consolidates insert session into one undo entry', () => {
         const entry = createEditorState('hello', { line: 0, col: 5 })
-        // Simulate: entered insert mode, typed " world"
+        // Simulate: entered insert mode, typed " world" (6 chars)
         const afterInsert: EditorState = {
             ...entry,
             text: 'hello world',
             cursor: { line: 0, col: 11 },
             mode: 'insert',
-            undoStack: [
-                // The 'i' mode entry
-                {
-                    oldText: 'hello',
-                    newText: 'hello',
-                    oldCursor: { line: 0, col: 5 },
-                    newCursor: { line: 0, col: 5 },
-                    oldMode: 'normal',
-                    newMode: 'insert',
-                    damage: 1,
-                },
-            ],
+            undoStack: [], // i/a no longer pushes undo
         }
 
-        const finalized = finalizeInsertSession(afterInsert, entry)
+        const finalized = finalizeInsertSession(afterInsert, entry, 6)
         expect(finalized.undoStack).toHaveLength(1)
         expect(finalized.undoStack[0].oldText).toBe('hello')
         expect(finalized.undoStack[0].newText).toBe('hello world')
+        // 6 chars → ceil(6/5) = 2 damage
+        expect(finalized.undoStack[0].damage).toBe(2)
+    })
+
+    it('empty insert (i→Esc) produces 0 damage and no undo entry', () => {
+        const entry = createEditorState('hello', { line: 0, col: 2 })
+        // Same text, just mode changed
+        const afterInsert: EditorState = {
+            ...entry,
+            mode: 'normal',
+            cursor: { line: 0, col: 1 }, // Esc moves cursor back
+        }
+
+        const finalized = finalizeInsertSession(afterInsert, entry, 0)
+        expect(finalized.undoStack).toHaveLength(0)
+    })
+
+    it('5 chars → 1 damage', () => {
+        const entry = createEditorState('', { line: 0, col: 0 })
+        const afterInsert: EditorState = {
+            ...entry,
+            text: 'hello',
+            cursor: { line: 0, col: 5 },
+            mode: 'normal',
+        }
+
+        const finalized = finalizeInsertSession(afterInsert, entry, 5)
         expect(finalized.undoStack[0].damage).toBe(1)
+    })
+
+    it('11 chars → 3 damage', () => {
+        const entry = createEditorState('', { line: 0, col: 0 })
+        const afterInsert: EditorState = {
+            ...entry,
+            text: 'hello world',
+            cursor: { line: 0, col: 11 },
+            mode: 'normal',
+        }
+
+        const finalized = finalizeInsertSession(afterInsert, entry, 11)
+        expect(finalized.undoStack[0].damage).toBe(3)
     })
 })

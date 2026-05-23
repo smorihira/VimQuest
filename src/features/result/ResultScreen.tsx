@@ -22,7 +22,7 @@ export function ResultScreen() {
     const { stageId } = useParams<{ stageId: string }>()
     const navigate = useNavigate()
     const location = useLocation()
-    const [, setProgress] = useAtom(gameProgressAtom)
+    const [progress, setProgress] = useAtom(gameProgressAtom)
     const saved = useRef(false)
     const stage = stageId ? getStage(stageId) : undefined
 
@@ -94,6 +94,22 @@ export function ResultScreen() {
     const nodeStages = getStagesByNode(stage.nodeId)
     const currentIdx = nodeStages.findIndex((s) => s.id === stage.id)
     const nextStage = currentIdx < nodeStages.length - 1 ? nodeStages[currentIdx + 1] : null
+
+    // When this is the last stage in the node, find newly unlocked next node
+    const getNextNodeId = (): string | null => {
+        if (nextStage) return null // Still stages left in this node
+        // Find dependent nodes that are unlocked but have no stage results yet (= newly unlocked)
+        const dependents = SKILL_NODES
+            .filter((n) => n.prerequisites.includes(stage.nodeId))
+            .filter((n) => progress.unlockedNodes.includes(n.id))
+            .filter((n) => {
+                // "New" = no stages played yet
+                const nStages = getStagesByNode(n.id)
+                return !nStages.some((s) => progress.stageResults[s.id])
+            })
+        return dependents.length > 0 ? dependents[0].id : null
+    }
+    const nextNodeId = getNextNodeId()
 
     return (
         <div className="result-screen">
@@ -172,6 +188,14 @@ export function ResultScreen() {
                             onClick={() => navigate(`/play/${nextStage.id}`)}
                         >
                             次のステージへ →
+                        </button>
+                    )}
+                    {!nextStage && nextNodeId && (
+                        <button
+                            className="btn btn-primary"
+                            onClick={() => navigate(`/weapon/${nextNodeId}`)}
+                        >
+                            次のノードへ →
                         </button>
                     )}
                 </div>

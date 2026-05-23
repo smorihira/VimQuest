@@ -11,6 +11,7 @@ import { getStagesByNode } from '../../data/stages'
 import { gameProgressAtom } from '../../store/atoms'
 import { createEditorState } from '../../types/editor'
 import { executeCommand } from '../../engine/commandExecutor'
+import { parseKeys } from '../../engine/commandParser'
 import type { EditorState } from '../../types/editor'
 import type { TutorialStep } from '../../types/tutorial'
 import { EditorView } from '../play/EditorView'
@@ -106,9 +107,12 @@ function TutorialInner({
 
             if (accepted.includes(key)) {
                 setWrongMessage(null)
-                // Apply key to editor
-                const next = executeCommand(editorState, { raw: key, valid: true })
-                setEditorState(next)
+                // Apply key to editor via parser → executor
+                const parsed = parseKeys([key])
+                if (parsed) {
+                    const next = executeCommand(editorState, parsed.command)
+                    setEditorState(next)
+                }
 
                 // Advance if it's the expected key
                 if (key === step.expectedKey) {

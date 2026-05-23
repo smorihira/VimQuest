@@ -26,7 +26,7 @@ export const N02_STAGES: Stage[] = [
     },
 
     // ── Practice: x連打の苦痛を味わう（dw渇望ステージ） ──
-    // opt = 7 (wwxxxxxまたはlllllxxxxx等) → ☆3=7, ☆2=9, ☆1=11, life=13
+    // opt = 12 (llllllxxxxxx) → ☆3=12, ☆2=14, ☆1=16, life=18
     {
         id: 'N02-P',
         nodeId: 'N02',
@@ -36,8 +36,8 @@ export const N02_STAGES: Stage[] = [
         initialText: 'hello XXXXX world',
         goalText: 'hello world',
         initialCursor: { line: 0, col: 0 },
-        life: 13,
-        stars: [7, 9, 11],
+        life: 18,
+        stars: [12, 14, 16],
         availableCommands: ['h', 'j', 'k', 'l', 'x', 'u'],
         hints: [{ cost: 1, commands: ['l', 'l', 'l', 'l', 'l', 'l', 'x', 'x', 'x', 'x', 'x', 'x'] }],
         flavor: 'XXXXXを消せ。…もっと良い方法があればいいのに',

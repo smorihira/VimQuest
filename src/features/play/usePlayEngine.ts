@@ -48,6 +48,8 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
 
     // Ref for insert-mode entry snapshot (for finalizeInsertSession)
     const insertEntryRef = useRef<EditorState | null>(null)
+    // Net character count during current insert session
+    const insertCharCount = useRef(0)
 
     // Parser instance (stable across renders, recreated on reset)
     const parserRef = useRef<CommandParser>(
@@ -77,9 +79,19 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
                 key !== 'Enter' &&
                 key.length === 1
             ) {
+                insertCharCount.current++
                 const next = executeCommand(editorState, { raw: key, valid: true })
                 setEditorState(next)
                 return
+            }
+
+            // Track Backspace/Enter char count in insert mode
+            if (editorState.mode === 'insert') {
+                if (key === 'Backspace') {
+                    insertCharCount.current = Math.max(0, insertCharCount.current - 1)
+                } else if (key === 'Enter') {
+                    insertCharCount.current++
+                }
             }
 
             const parseResult = parser.feed(key)
@@ -95,36 +107,70 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
                 return
             }
 
-            // Track damage
-            const newDamage = damage + parseResult.damage
-            setDamage(newDamage)
+            const raw = parseResult.command.raw
 
-            // Check death
-            if (newDamage >= life) {
-                setStatus('dead')
+            // ── Undo: restore damage from undone operation ──
+            if (raw === 'u') {
+                if (editorState.undoStack.length > 0) {
+                    const op = editorState.undoStack[editorState.undoStack.length - 1]
+                    setDamage((prev) => Math.max(0, prev - op.damage))
+                }
+                const next = executeCommand(editorState, parseResult.command)
+                setEditorState(next)
+                if (next.mode === 'normal' && isStageClear(next, stage)) {
+                    setStatus('clear')
+                }
                 return
             }
 
-            // Execute the command
-            let next: EditorState
-
-            // Entering insert mode
-            if (
-                (parseResult.command.raw === 'i' || parseResult.command.raw === 'a') &&
-                editorState.mode === 'normal'
-            ) {
-                next = executeCommand(editorState, parseResult.command)
-                insertEntryRef.current = editorState
+            // ── Redo: re-add damage from redone operation ──
+            if (raw === 'Ctrl+R') {
+                if (editorState.redoStack.length > 0) {
+                    const op = editorState.redoStack[editorState.redoStack.length - 1]
+                    const newDamage = damage + op.damage
+                    setDamage(newDamage)
+                    if (newDamage >= life) {
+                        setStatus('dead')
+                        return
+                    }
+                }
+                const next = executeCommand(editorState, parseResult.command)
                 setEditorState(next)
                 return
             }
 
-            // Leaving insert mode
-            if (parseResult.command.raw === 'Esc' && editorState.mode === 'insert') {
-                next = executeCommand(editorState, parseResult.command)
+            // ── Entering insert mode (i/a/I/A): defer damage to session finalize ──
+            if (
+                (raw === 'i' || raw === 'a' || raw === 'I' || raw === 'A') &&
+                editorState.mode === 'normal'
+            ) {
+                const next = executeCommand(editorState, parseResult.command)
+                insertEntryRef.current = editorState
+                insertCharCount.current = 0
+                setEditorState(next)
+                return
+            }
+
+            // ── Leaving insert mode (Esc): compute session damage ──
+            if (raw === 'Esc' && editorState.mode === 'insert') {
+                let next = executeCommand(editorState, parseResult.command)
                 if (insertEntryRef.current) {
-                    next = finalizeInsertSession(next, insertEntryRef.current)
+                    const charCount = insertCharCount.current
+                    next = finalizeInsertSession(next, insertEntryRef.current, charCount)
                     insertEntryRef.current = null
+
+                    // Compute insert damage: 0 for empty session, ceil(charCount/5) otherwise
+                    const insertDamage = charCount === 0 && next.text === editorState.text
+                        ? 0
+                        : charCount <= 0
+                            ? 1
+                            : Math.ceil(charCount / 5)
+                    const newDamage = damage + insertDamage
+                    setDamage(newDamage)
+                    if (newDamage >= life) {
+                        setStatus('dead')
+                        return
+                    }
                 }
                 setEditorState(next)
                 if (isStageClear(next, stage)) {
@@ -133,7 +179,32 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
                 return
             }
 
-            next = executeCommand(editorState, parseResult.command)
+            // ── Esc in normal mode: free ──
+            if (raw === 'Esc') {
+                return
+            }
+
+            // ── All other commands: add parser damage ──
+            const next = executeCommand(editorState, parseResult.command)
+
+            // Skip damage if state didn't change (e.g., motion hitting wall)
+            if (
+                next.text === editorState.text &&
+                next.cursor.line === editorState.cursor.line &&
+                next.cursor.col === editorState.cursor.col &&
+                next.mode === editorState.mode
+            ) {
+                return
+            }
+
+            const newDamage = damage + parseResult.damage
+            setDamage(newDamage)
+
+            if (newDamage >= life) {
+                setStatus('dead')
+                return
+            }
+
             setEditorState(next)
 
             // Check clear (only in normal mode)
@@ -152,6 +223,7 @@ export function usePlayEngine(stage: Stage): PlayState & PlayActions {
         setParserBuffer('')
         setLastInvalid(false)
         insertEntryRef.current = null
+        insertCharCount.current = 0
         parserRef.current = new CommandParser(stage.availableCommands)
     }, [stage])
 

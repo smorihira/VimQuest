@@ -62,11 +62,17 @@ function PlayScreenInner({
 
             // Map key events to our key strings
             const key = mapKeyEvent(e)
-            if (key) {
-                play.handleKey(key)
+            if (!key) return
+
+            // Esc in normal mode with no pending parser input → exit stage
+            if (key === 'Esc' && play.editorState.mode === 'normal' && !play.parserBuffer) {
+                navigate('/tree')
+                return
             }
+
+            play.handleKey(key)
         },
-        [play],
+        [play, navigate],
     )
 
     useEffect(() => {
@@ -85,7 +91,7 @@ function PlayScreenInner({
         play.lifePercent > 50
             ? 'var(--success)'
             : play.lifePercent > 25
-                ? 'var(--star)'
+                ? 'var(--star-gold)'
                 : 'var(--danger)'
 
     const starThresholds = stage.stars
@@ -98,8 +104,9 @@ function PlayScreenInner({
                     <button
                         className="quit-btn"
                         onClick={() => navigate('/tree')}
+                        title="ツリーに戻る (Esc)"
                     >
-                        :q!
+                        ◀ :q!
                     </button>
                     <div className="life-gauge">
                         <span className="life-icon">♥</span>

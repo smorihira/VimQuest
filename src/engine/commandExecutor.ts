@@ -311,14 +311,14 @@ function isMotionInclusive(motion: string): boolean {
 
 // ─── Command Execution ─────────────────────────────────────────────
 
-/** Execute a motion-only command (h/j/k/l/w/b/e) */
+/** Execute a motion-only command (h/j/k/l/w/b/e) — no undo entry (motions aren't undoable) */
 function executeMotion(state: EditorState, cmd: Command): EditorState {
     const count = cmd.count ?? 1
     const motion = cmd.motion!
     const target = resolveMotion(state, motion, count)
     if (!target) return state
 
-    return pushUndo(state, state.text, target, state.mode, 1)
+    return { ...state, cursor: clampCursor(state.text, target, state.mode) }
 }
 
 /** Execute x (delete character under cursor) */
@@ -372,15 +372,62 @@ function executeRedo(state: EditorState): EditorState {
     }
 }
 
-/** Enter insert mode (i) */
+/** Enter insert mode (i) — no undo entry (entire session consolidated on Esc) */
 function executeInsertBefore(state: EditorState): EditorState {
-    return pushUndo(state, state.text, state.cursor, 'insert', 1)
+    return { ...state, mode: 'insert' as const }
 }
 
-/** Enter insert mode after cursor (a) */
+/** Enter insert mode after cursor (a) — no undo entry (entire session consolidated on Esc) */
 function executeInsertAfter(state: EditorState): EditorState {
     const newCol = Math.min(state.cursor.col + 1, lineLen(state.text, state.cursor.line))
-    return pushUndo(state, state.text, { line: state.cursor.line, col: newCol }, 'insert', 1)
+    return { ...state, cursor: { line: state.cursor.line, col: newCol }, mode: 'insert' as const }
+}
+
+/** Enter insert mode at first non-blank of line (I) */
+function executeInsertLineStart(state: EditorState): EditorState {
+    const ls = lines(state.text)
+    const line = ls[state.cursor.line]
+    let col = 0
+    while (col < line.length && isSpace(line[col])) col++
+    return { ...state, cursor: { line: state.cursor.line, col }, mode: 'insert' as const }
+}
+
+/** Enter insert mode at end of line (A) */
+function executeInsertLineEnd(state: EditorState): EditorState {
+    const len = lineLen(state.text, state.cursor.line)
+    return { ...state, cursor: { line: state.cursor.line, col: len }, mode: 'insert' as const }
+}
+
+/** Replace character under cursor (r + char) */
+function executeReplace(state: EditorState, char: string): EditorState {
+    const ls = lines(state.text)
+    const line = ls[state.cursor.line]
+    if (line.length === 0 || state.cursor.col >= line.length) return state
+
+    const newLine = line.slice(0, state.cursor.col) + char + line.slice(state.cursor.col + 1)
+    const newLines = [...ls]
+    newLines[state.cursor.line] = newLine
+    const newText = join(newLines)
+
+    return pushUndo(state, newText, state.cursor, 'normal', 1)
+}
+
+/** Toggle case of character under cursor (~) and advance */
+function executeToggleCase(state: EditorState): EditorState {
+    const ls = lines(state.text)
+    const line = ls[state.cursor.line]
+    if (line.length === 0 || state.cursor.col >= line.length) return state
+
+    const ch = line[state.cursor.col]
+    const toggled = ch === ch.toUpperCase() ? ch.toLowerCase() : ch.toUpperCase()
+    const newLine = line.slice(0, state.cursor.col) + toggled + line.slice(state.cursor.col + 1)
+    const newLines = [...ls]
+    newLines[state.cursor.line] = newLine
+    const newText = join(newLines)
+
+    // ~ advances cursor by 1 (Vim behavior)
+    const newCol = Math.min(state.cursor.col + 1, Math.max(0, newLine.length - 1))
+    return pushUndo(state, newText, { line: state.cursor.line, col: newCol }, 'normal', 1)
 }
 
 /** Exit insert mode (Esc) */
@@ -401,11 +448,13 @@ function executeEscape(state: EditorState): EditorState {
 
 /** Insert text at cursor (during insert mode) */
 function executeInsertText(state: EditorState, text: string): EditorState {
+    // Map 'Enter' key string to actual newline
+    const actualText = text === 'Enter' ? '\n' : text
     const ls = lines(state.text)
     const line = ls[state.cursor.line]
     const { col } = state.cursor
 
-    if (text === '\n') {
+    if (actualText === '\n') {
         // Enter key — split line
         const before = line.slice(0, col)
         const after = line.slice(col)
@@ -418,11 +467,11 @@ function executeInsertText(state: EditorState, text: string): EditorState {
     }
 
     // Regular character insertion
-    const newLine = line.slice(0, col) + text + line.slice(col)
+    const newLine = line.slice(0, col) + actualText + line.slice(col)
     const newLines = [...ls]
     newLines[state.cursor.line] = newLine
     const newText = join(newLines)
-    return { ...state, text: newText, cursor: { line: state.cursor.line, col: col + text.length } }
+    return { ...state, text: newText, cursor: { line: state.cursor.line, col: col + actualText.length } }
 }
 
 /** Execute Backspace in insert mode */
@@ -511,6 +560,16 @@ export function executeCommand(state: EditorState, cmd: Command): EditorState {
     // Enter insert mode
     if (raw === 'i') return executeInsertBefore(state)
     if (raw === 'a') return executeInsertAfter(state)
+    if (raw === 'I') return executeInsertLineStart(state)
+    if (raw === 'A') return executeInsertLineEnd(state)
+
+    // Toggle case
+    if (raw === '~') return executeToggleCase(state)
+
+    // Replace character (r + char)
+    if (cmd.char !== undefined && raw.startsWith('r')) {
+        return executeReplace(state, cmd.char)
+    }
 
     // Delete character
     if (raw === 'x') return executeDeleteChar(state, cmd)
@@ -531,12 +590,28 @@ export function executeCommand(state: EditorState, cmd: Command): EditorState {
 /**
  * Finalize insert mode: consolidate the insert session into a single undo entry.
  * Called when exiting insert mode (Esc).
- * The insert-mode entry push + all typed characters become one atomic undo operation.
+ *
+ * Damage formula (ENGINE-SPEC §5.1, per examples):
+ *   charCount === 0 → 0 (immediate cancel: i→Esc)
+ *   charCount >= 1  → ceil(charCount / 5)
+ *
+ * @param charCount  Net characters typed (chars − backspaces, Enter counts as 1)
  */
-export function finalizeInsertSession(state: EditorState, entryState: EditorState): EditorState {
-    // Remove all undo entries since insert mode started
-    // Replace with a single entry covering the entire insert session
-    const insertEntryIdx = entryState.undoStack.length
+export function finalizeInsertSession(
+    state: EditorState,
+    entryState: EditorState,
+    charCount: number,
+): EditorState {
+    // Empty insert (i → Esc): no damage, no undo entry
+    if (charCount === 0 && state.text === entryState.text) {
+        return {
+            ...state,
+            undoStack: entryState.undoStack,
+            redoStack: [],
+        }
+    }
+
+    const damage = charCount <= 0 ? 1 : Math.ceil(charCount / 5)
     const op: Operation = {
         oldText: entryState.text,
         newText: state.text,
@@ -544,12 +619,12 @@ export function finalizeInsertSession(state: EditorState, entryState: EditorStat
         newCursor: state.cursor,
         oldMode: 'normal',
         newMode: 'normal',
-        damage: 1, // entire insert session = 1 damage
+        damage,
     }
 
     return {
         ...state,
-        undoStack: [...entryState.undoStack.slice(0, insertEntryIdx), op],
+        undoStack: [...entryState.undoStack, op],
         redoStack: [],
     }
 }
