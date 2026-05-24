@@ -105,16 +105,17 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
         }
     }, [editorState])
 
-    // Close on Esc or click
+    // Capture ALL keys during hint overlay — only Esc closes
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' || e.code === 'Space') {
-                e.preventDefault()
+            e.preventDefault()
+            e.stopPropagation()
+            if (e.key === 'Escape') {
                 onClose()
             }
         }
-        window.addEventListener('keydown', handleKey)
-        return () => window.removeEventListener('keydown', handleKey)
+        window.addEventListener('keydown', handleKey, true)
+        return () => window.removeEventListener('keydown', handleKey, true)
     }, [onClose])
 
     const isComplete = step >= commands.length

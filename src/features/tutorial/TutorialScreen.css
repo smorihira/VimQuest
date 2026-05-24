@@ -146,8 +146,68 @@
 }
 
 .navi-icon {
-    font-size: 32px;
     flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    perspective: 120px;
+}
+
+.mini-cube-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mini-cube {
+    width: 18px;
+    height: 18px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: mini-cube-spin 8s linear infinite;
+}
+
+@keyframes mini-cube-spin {
+    0% {
+        transform: rotateX(20deg) rotateY(0deg);
+    }
+
+    100% {
+        transform: rotateX(20deg) rotateY(360deg);
+    }
+}
+
+.mini-face {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(124, 124, 255, 0.4);
+    background: rgba(124, 124, 255, 0.08);
+}
+
+.mini-face.front {
+    transform: translateZ(9px);
+}
+
+.mini-face.back {
+    transform: rotateY(180deg) translateZ(9px);
+}
+
+.mini-face.left {
+    transform: rotateY(-90deg) translateZ(9px);
+}
+
+.mini-face.right {
+    transform: rotateY(90deg) translateZ(9px);
+}
+
+.mini-face.top {
+    transform: rotateX(90deg) translateZ(9px);
+}
+
+.mini-face.bottom {
+    transform: rotateX(-90deg) translateZ(9px);
 }
 
 .navi-content {

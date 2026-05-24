@@ -334,7 +334,18 @@ export function StageTutorial({ tutorial, stage, onComplete }: Props) {
                 >
                     Skip ▸
                 </button>
-                <div className="navi-icon">🗡</div>
+                <div className="navi-icon">
+                    <div className="mini-cube-wrapper">
+                        <div className="mini-cube">
+                            <div className="mini-face front" />
+                            <div className="mini-face back" />
+                            <div className="mini-face left" />
+                            <div className="mini-face right" />
+                            <div className="mini-face top" />
+                            <div className="mini-face bottom" />
+                        </div>
+                    </div>
+                </div>
                 <div className="navi-content">
                     <div className="navi-name">ナビゲーター</div>
                     <div className="navi-message">

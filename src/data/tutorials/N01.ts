@@ -32,7 +32,7 @@ export const N01_1_TUTORIAL: Tutorial = {
             expectedKey: null,
         },
         {
-            message: 'ゴールが浮かんだだろう？ 次は :h と入力してみろ。答えが再生される（☆1確定）',
+            message: 'ゴールが浮かんだだろう？ 困ったら :h で答えを再生できるぞ（☆1確定）。プレイ中は画面右下に表示されるキューブでもOKだ',
             type: 'colon_command',
             colonCommand: ':h',
             expectedKey: null,
