@@ -156,9 +156,9 @@ export const N01_STAGES: Stage[] = [
     type: 'tutorial',
     title: '文字を書け',
     language: 'plaintext',
-    initialText: 'hd',
+    initialText: 'hllo',
     goalText: 'hello world',
-    initialCursor: { line: 0, col: 0 },
+    initialCursor: { line: 0, col: 1 },
     life: 999,
     stars: [999, 999, 999],
     availableCommands: [
@@ -181,7 +181,9 @@ export const N01_STAGES: Stage[] = [
       'i',
       'a',
     ],
-    hints: [{ cost: 1, commands: ['a', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'Esc'] }],
+    hints: [
+      { cost: 1, commands: ['i', 'e', 'Esc', '$', 'a', ' ', 'w', 'o', 'r', 'l', 'd', 'Esc'] },
+    ],
     flavor: 'i と a で足りない文字を補え',
   },
 

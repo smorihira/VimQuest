@@ -240,33 +240,39 @@ export const N01_8_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-8',
   initialSetup: {
-    text: 'hd',
-    cursor: { line: 0, col: 0 },
+    text: 'hllo',
+    cursor: { line: 0, col: 1 },
   },
   steps: [
-    // ── Exercise 1: long insert with `a` ──
+    // ── Short insert with `i` ──
     {
-      message: 'a を押してみろ。カーソルの後ろに文字を挿入できるぞ',
-      expectedKey: 'a',
+      message: 'i を押してみろ。カーソルの前に文字を挿入できるぞ',
+      expectedKey: 'i',
     },
     {
-      message: 'ello worl と9文字打ってみろ。まず e',
+      message: 'e と打て',
       expectedKey: 'e',
     },
     {
-      message: '続けて l',
-      expectedKey: 'l',
+      message: 'Esc で NORMAL に戻れ',
+      expectedKey: 'Esc',
     },
     {
-      message: 'l',
-      expectedKey: 'l',
+      message: '1文字打って１ダメージ。insert 中は5文字まで1ダメージで済む',
+      expectedKey: null,
+    },
+    // ── Navigate to end ──
+    {
+      message: '$ で行末に飛べ',
+      expectedKey: '$',
+    },
+    // ── Long insert with `a` ──
+    {
+      message: '今度は a だ。カーソルの後ろに挿入する。i との違いを覚えろ',
+      expectedKey: 'a',
     },
     {
-      message: 'o',
-      expectedKey: 'o',
-    },
-    {
-      message: 'スペース',
+      message: ' world と6文字打ってみろ。まずスペース',
       expectedKey: ' ',
     },
     {
@@ -282,34 +288,20 @@ export const N01_8_TUTORIAL: Tutorial = {
       expectedKey: 'r',
     },
     {
-      message: 'l で完了！',
+      message: 'l',
       expectedKey: 'l',
     },
     {
-      message: 'Esc で NORMAL に戻れ',
+      message: 'd',
+      expectedKey: 'd',
+    },
+    {
+      message: 'Esc。Insert に入ったら必ず Esc。これが Vim の基本だ',
       expectedKey: 'Esc',
     },
     {
-      message: '9文字打って2ダメージだ。insert 中は5文字ごとに1ダメージ増える。タイプ数を意識しろ',
+      message: '6文字で2ダメージだ。5文字ごとに1ダメージ増えるぞ。効率よく直せ',
       expectedKey: null,
-    },
-    // ── Exercise 2: short insert with `i` ──
-    {
-      message: '次は i を試そう',
-      editorSetup: { text: 'hllo', cursor: { line: 0, col: 1 } },
-      expectedKey: null,
-    },
-    {
-      message: 'i はカーソルの前に挿入する。a との違いを覚えろ',
-      expectedKey: 'i',
-    },
-    {
-      message: 'e と打て',
-      expectedKey: 'e',
-    },
-    {
-      message: 'Esc。1文字なら1ダメージ。Insert に入ったら必ず Esc。これが Vim の基本だ',
-      expectedKey: 'Esc',
     },
   ],
 }
