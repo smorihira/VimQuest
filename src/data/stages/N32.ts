@@ -1,84 +1,45 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N32: c+TextObj (ciw, ci", ca()
- * ALL合流ノード: N30(delim) + N27(cf/ct)
- * ★★★ 重要ノード — Teach(T) + Practice(P) + Challenge(C) = 3ステージ
+ * N32: Visualモード (v, V)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N32_STAGES: Stage[] = [
-  // ── Teach: ciw で単語を置換 ──
-  // opt = 2 (w + ciw + 'count' + Esc)
+  // ── Teach: V で行選択して削除 ──
+  // opt = 2 (j + Vd)
   {
     id: 'N32-T',
     nodeId: 'N32',
     type: 'teach',
-    title: '単語を変えろ',
+    title: '選んで消せ',
     language: 'javascript',
-    initialText: 'let value = 0;',
-    goalText: 'let count = 0;',
+    initialText: 'keep this\nremove this\nkeep this too',
+    goalText: 'keep this\nkeep this too',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't', '0', '$'],
-    hints: [{ cost: 1, commands: ['w', 'ciw', 'count', 'Esc'] }],
-    flavor: 'ciw で単語を消してそのままInsertモードへ。変数名を変えろ',
+    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
+    visualCommands: ['d'],
+    hints: [{ cost: 1, commands: ['j', 'V', 'd'] }],
+    flavor: 'V で行を選択、d で削除。Visual モードの基本だ',
   },
 
-  // ── Practice: 複数の TextObj 変更 ──
-  // opt = 4 (ci"+#333+Esc, j+ci"+20px+Esc)
+  // ── Practice: v で範囲選択して削除 ──
+  // opt = 4 (f<+v+f>+d)
   {
     id: 'N32-P',
     nodeId: 'N32',
     type: 'practice',
-    title: '属性を直せ',
-    language: 'css',
-    initialText: 'color: "red";\nfont-size: "16px";',
-    goalText: 'color: "#333";\nfont-size: "20px";',
+    title: '範囲狙撃',
+    language: 'html',
+    initialText: 'Hello <World> end',
+    goalText: 'Hello  end',
     initialCursor: { line: 0, col: 0 },
     life: 10,
     stars: [4, 6, 8],
-    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't', '0', '$'],
-    hints: [{ cost: 1, commands: ['ci"', '#333', 'Esc', 'j', 'ci"', '20px', 'Esc'] }],
-    flavor: '2行の引用符内を ci" で書き換えろ',
-  },
-
-  // ── Challenge: JSON修正パズル ──
-  // opt = 8 (複数の ci" + ca( を駆使)
-  {
-    id: 'N32-C',
-    nodeId: 'N32',
-    type: 'challenge',
-    title: 'JSON外科',
-    language: 'json',
-    initialText:
-      '{\n' + '  "name": "Alice",\n' + '  "age": "twenty",\n' + '  "role": "user"\n' + '}',
-    goalText: '{\n' + '  "name": "Bob",\n' + '  "age": "30",\n' + '  "role": "admin"\n' + '}',
-    initialCursor: { line: 0, col: 0 },
-    life: 17,
-    stars: [9, 12, 15],
-    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't', '0', '$'],
-    hints: [
-      {
-        cost: 1,
-        commands: [
-          'j',
-          'fA',
-          'ci"',
-          'Bob',
-          'Esc',
-          'j',
-          'ft',
-          'ci"',
-          '30',
-          'Esc',
-          'j',
-          'fu',
-          'ci"',
-          'admin',
-          'Esc',
-        ],
-      },
-    ],
-    flavor: 'JSON の値を3箇所書き換えろ。ci" の腕の見せどころだ',
+    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
+    visualCommands: ['d'],
+    hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd'] }],
+    flavor: 'v で選択開始し、f でタグの終わりまで選択して d で消せ',
   },
 ]

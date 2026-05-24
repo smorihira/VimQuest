@@ -31,11 +31,11 @@ export const N01_1_TUTORIAL: Tutorial = {
             expectedKey: null,
         },
         {
-            message: '💡 困ったら右下のキューブを押せ。答え（ヒント）が再生される。ただし ☆1 確定だ',
+            message: '💡 困ったら :h と入力してみろ。答えが再生される。ただし ☆1 確定だ',
             expectedKey: null,
         },
         {
-            message: '💡 左上の :q! でツリーに戻れる（Escでも可）。:r を押せばリトライだ',
+            message: '💡 :q! でツリーに戻れる（Escでも可）。:r でリトライだ',
             expectedKey: null,
         },
     ],

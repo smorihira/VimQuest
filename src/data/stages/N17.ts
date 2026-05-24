@@ -1,26 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N17: カーソル下検索 (*, #)
+ * N17: 行末削除 (d$, d0)
  * Teach(T) = 1ステージ
  */
 export const N17_STAGES: Stage[] = [
-  // ── Teach: カーソル下の単語を検索 ──
-  // opt = 1 (*)
+  // ── Teach: 行末まで削除 ──
+  // opt = 3 (e + l + d$)
   {
     id: 'N17-T',
     nodeId: 'N17',
     type: 'teach',
-    title: '同じ奴を探せ',
+    title: '末尾を切れ',
     language: 'javascript',
-    initialText: 'let foo = 1;\nlet bar = 2;\nlet foo = 3;',
-    goalText: 'let foo = 1;\nlet bar = 2;\nlet foo = 3;',
-    initialCursor: { line: 0, col: 4 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['*', '#', '/', 'n', 'N'],
-    clearConditions: { cursor: { line: 2, col: 4 } },
-    hints: [{ cost: 1, commands: ['*'] }],
-    flavor: '* でカーソル下の単語を即検索。foo を見つけ出せ',
+    initialText: 'return value; // temporary hack',
+    goalText: 'return value;',
+    initialCursor: { line: 0, col: 0 },
+    life: 11,
+    stars: [5, 6, 8],
+    availableCommands: ['dd', 'd$', 'd0', 'dw', '0', '$'],
+    hints: [{ cost: 1, commands: ['e', 'e', 'l', 'l', 'd$'] }],
+    flavor: 'コメントを d$ で行末まで一気に削除せよ',
   },
 ]

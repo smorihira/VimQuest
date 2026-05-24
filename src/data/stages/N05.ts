@@ -1,25 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N05: 新行Insert (o, O)
+ * N05: 大小切替 (~)
  * Teach(T) = 1ステージ
  */
 export const N05_STAGES: Stage[] = [
-  // ── Teach: 新しい行を追加 ──
-  // opt = 1 (o + type 'world' + Esc)
+  // ── Teach: 先頭を大文字に ──
+  // opt = 1 (~)
   {
     id: 'N05-T',
     nodeId: 'N05',
     type: 'teach',
-    title: '行を足せ',
+    title: 'トグルせよ',
     language: 'plaintext',
-    initialText: 'hello',
-    goalText: 'hello\nworld',
+    initialText: 'hello World',
+    goalText: 'Hello World',
     initialCursor: { line: 0, col: 0 },
     life: 7,
     stars: [1, 2, 4],
-    availableCommands: ['o', 'O', 'I', 'A'],
-    hints: [{ cost: 1, commands: ['o', 'world', 'Esc'] }],
-    flavor: 'o で下に新しい行を作り world と入力せよ',
+    availableCommands: ['~'],
+    hints: [{ cost: 1, commands: ['~'] }],
+    flavor: 'h を H に変えろ。~ で大小文字を切り替えられる',
   },
 ]

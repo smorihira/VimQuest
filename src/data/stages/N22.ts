@@ -1,25 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N22: 行結合 (J)
+ * N22: d+f/t (df, dt)
+ * ALL合流ノード: N20(f/t) + N15(dw)
  * Teach(T) = 1ステージ
  */
 export const N22_STAGES: Stage[] = [
-  // ── Teach: 2行を1行に結合 ──
-  // opt = 1 (J)
+  // ── Teach: dt で指定文字の手前まで削除 ──
+  // opt = 2 (f: + dt;)
   {
     id: 'N22-T',
     nodeId: 'N22',
     type: 'teach',
-    title: '行をつなげ',
-    language: 'plaintext',
-    initialText: 'hello\nworld',
-    goalText: 'hello world',
+    title: '範囲を断て',
+    language: 'css',
+    initialText: 'padding: 0px10px;',
+    goalText: 'padding: 10px;',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['dd', 'J', '0', '$', '^'],
-    hints: [{ cost: 1, commands: ['J'] }],
-    flavor: 'J で下の行を現在行に結合できる',
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['dw', 'de', 'db', 'df', 'dt', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'w', 'dt1'] }],
+    flavor: 'dt で指定文字の手前まで削除。余分な部分だけ消せ',
   },
 ]

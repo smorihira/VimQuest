@@ -1,44 +1,46 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N23: 行内ジャンプ (f, t)
+ * N23: c+f/t (cf, ct)
+ * 渇望→報酬サイクル #4: dw+i+入力 → cw で2手
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N23_STAGES: Stage[] = [
-  // ── Teach: f で文字へジャンプ ──
-  // opt = 1 (f()
+  // ── Teach: ct で文字の手前まで変更 ──
+  // opt = 2 (w + ct;)  — change 'red' to 'blue'
   {
     id: 'N23-T',
     nodeId: 'N23',
     type: 'teach',
-    title: '狙い撃て',
-    language: 'javascript',
-    initialText: 'const result = getValue(42);',
-    goalText: 'const result = getValue(42);',
+    title: '書き換えろ',
+    language: 'css',
+    initialText: 'color: red;',
+    goalText: 'color: blue;',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['f', 't'],
-    clearConditions: { cursor: { line: 0, col: 23 } },
-    hints: [{ cost: 1, commands: ['f('] }],
-    flavor: 'f( で ( まで一瞬でジャンプだ。www より速い',
+    life: 10,
+    stars: [4, 5, 7],
+    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'w', 'ct;', 'blue', 'Esc'] }],
+    flavor: 'ct; で ; の手前まで消してInsertモードに。d+i が一体化した c の威力',
   },
 
-  // ── Practice: f/t を使い分けて複数目標 ──
-  // opt = 3 (f= + x + f; で = を消して ; に到達)
+  // ── Practice: 複数行で cf/ct を使い分け ──
+  // opt = 5 (w+ct;+50px+Esc, j+w+ct;+80px+Esc)
   {
     id: 'N23-P',
     nodeId: 'N23',
     type: 'practice',
-    title: '精密射撃',
+    title: '一括修正',
     language: 'css',
-    initialText: 'style: rred;',
-    goalText: 'style: red;',
+    initialText: 'width: 100px;\nheight: 200px;',
+    goalText: 'width: 50px;\nheight: 80px;',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['f', 't'],
-    hints: [{ cost: 1, commands: ['fr', 'l', 'x'] }],
-    flavor: 'f で素早く目標に接近し、余分な r を消せ',
+    life: 14,
+    stars: [8, 10, 12],
+    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
+    hints: [
+      { cost: 1, commands: ['w', 'w', 'ct;', '50px', 'Esc', 'j', 'b', 'ct;', '80px', 'Esc'] },
+    ],
+    flavor: 'ct; で値を書き換えろ。2行とも修正だ',
   },
 ]

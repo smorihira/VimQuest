@@ -13,7 +13,7 @@
 
 チュートリアルには2種類がある:
 - **N01ステージ別チュートリアル**: N01の5ステージそれぞれに紐づくチュートリアル。N01連続プレイ中、各ステージの前に自動表示
-- **ノード別チュートリアル**: Weapon Get後に発動する従来型（N18, N29, N37）
+- **ノード別チュートリアル**: Weapon Get後に発動する従来型（N15, N24, N32）
 
 ### 1.1 目的
 
@@ -33,7 +33,7 @@
 
 ## 2. 画面フロー
 
-### 2.1 ノード別チュートリアル（N18, N29, N37）
+### 2.1 ノード別チュートリアル（N15, N24, N32）
 
 ```
 ノードの全ステージクリア
@@ -80,9 +80,9 @@ Weapon Get画面はなし（N01にはWeaponの概念がない）。
 
 | ノード  | 新概念                      | ステップ数目安 | 特記事項                    |
 | ------- | --------------------------- | -------------- | ----------------------------- |
-| **N18** | オペレータ+モーション（dw） | 5-7            | Vim文法の核心（d + motion） |
-| **N29** | TextObj（iw/aw）            | 5-6            | テキストオブジェクト概念    |
-| **N37** | Visualモード（v/V）         | 5-7            | 3つ目のモード導入           |
+| **N15** | オペレータ+モーション（dw） | 5-7            | Vim文法の核心（d + motion） |
+| **N24** | TextObj（iw/aw）            | 5-6            | テキストオブジェクト概念    |
+| **N32** | Visualモード（v/V）         | 5-7            | 3つ目のモード導入           |
 
 ### 3.2 チュートリアルなしノード（33ノード）
 
@@ -271,9 +271,9 @@ data/
     ├── N01-3.ts
     ├── N01-4.ts
     ├── N01-5.ts
-    ├── N18.ts        # ノード別チュートリアル（3件）
-    ├── N29.ts
-    ├── N37.ts
+    ├── N15.ts        # ノード別チュートリアル（3件）
+    ├── N24.ts
+    ├── N32.ts
     └── index.ts      # getTutorial(stageId, nodeId) マッピング
 ```
 
@@ -285,9 +285,9 @@ import { N01_2_TUTORIAL } from './N01-2'
 import { N01_3_TUTORIAL } from './N01-3'
 import { N01_4_TUTORIAL } from './N01-4'
 import { N01_5_TUTORIAL } from './N01-5'
-import { N18_TUTORIAL } from './N18'
-import { N29_TUTORIAL } from './N29'
-import { N37_TUTORIAL } from './N37'
+import { N18_TUTORIAL } from './N15'
+import { N21_TUTORIAL } from './N24'
+import { N21_TUTORIAL } from './N32'
 
 // N01ステージ別チュートリアル: stageId で検索
 const STAGE_TUTORIALS: Record<string, Tutorial> = {
@@ -300,9 +300,9 @@ const STAGE_TUTORIALS: Record<string, Tutorial> = {
 
 // ノード別チュートリアル: nodeId で検索
 const NODE_TUTORIALS: Record<string, Tutorial> = {
-  N18: N18_TUTORIAL,
-  N29: N29_TUTORIAL,
-  N37: N37_TUTORIAL,
+  N15: N18_TUTORIAL,
+  N24: N21_TUTORIAL,
+  N32: N21_TUTORIAL,
 }
 
 /** stageId優先 → nodeIdフォールバック */
@@ -327,7 +327,7 @@ export function hasTutorial(stageId: string, nodeId: string): boolean {
 | T4  | 誤入力の扱い   | 無視 + ナビが期待キー再表示。固定メッセージ                          |
 | T5  | undo教育       | N01-4で導入。x消しすぎ→u復元                                           |
 | T6  | スキップ       | 全体スキップ。Esc + Skipボタン。N01ステージ別もスキップ可       |
-| T7  | 対象ノード     | N01ステージ別×5 + ノード別×3（N18,N29,N37）= 合計8件     |
+| T7  | 対象ノード     | N01ステージ別×5 + ノード別×3（N15,N24,N32）= 合計8件     |
 | T8  | Teachとの関係  | 両方残す。チュートリアル=練習、Teach=実戦                            |
 | T9  | データ形式     | data/tutorials/ 専用ディレクトリ。getTutorial(stageId,nodeId)      |
 | T10 | 永続化         | GameProgressにtutorialStatus追加。completed/skippedのみ              |

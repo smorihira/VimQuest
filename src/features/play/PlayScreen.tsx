@@ -16,7 +16,7 @@ import { EditorView } from './EditorView'
 import { NavigatorCube } from './NavigatorCube'
 import { HintOverlay } from './HintOverlay'
 import { StageTutorial } from './StageTutorial'
-import { playTick, playError, playClear, playGameOver, playType } from '../../engine/sound'
+import { playTick, playError, playClear, playGameOver, playType, playHint } from '../../engine/sound'
 import { isMuted, setMuted } from '../../engine/sound'
 import './PlayScreen.css'
 
@@ -150,38 +150,48 @@ function PlayScreenInner({
             const key = mapKeyEvent(e)
             if (!key) return
 
-            // :q! easter egg — track colon-command buffer in normal mode
+            // :q! / :r / :h — colon-command buffer in normal mode
             // Skip when parser is in search input mode (parserBuffer starts with '/')
             if (play.editorState.mode === 'normal' && !play.parserBuffer.startsWith('/')) {
                 if (key === ':') {
                     setColonBuffer(':')
                     return
                 }
-                if (colonBuffer === ':' && key === 'q') {
-                    setColonBuffer(':q')
-                    return
-                }
-                if (colonBuffer === ':q' && key === '!') {
-                    setColonBuffer(':q!')
-                    return
-                }
-                if (colonBuffer === ':q!' && e.key === 'Enter') {
-                    setColonBuffer('')
-                    playTick()
-                    navigate('/tree', { state: { nodeId: stage.nodeId } })
-                    return
-                }
-                if (colonBuffer === ':' && key === 'r') {
-                    setColonBuffer(':r')
-                    return
-                }
-                if (colonBuffer === ':r' && e.key === 'Enter') {
-                    setColonBuffer('')
-                    playTick()
-                    play.reset()
-                    return
-                }
                 if (colonBuffer) {
+                    if (e.key === 'Escape') {
+                        setColonBuffer('')
+                        return
+                    }
+                    if (e.key === 'Enter') {
+                        const cmd = colonBuffer
+                        setColonBuffer('')
+                        if (cmd === ':q!') {
+                            playTick()
+                            navigate('/tree', { state: { nodeId: stage.nodeId } })
+                        } else if (cmd === ':r') {
+                            playTick()
+                            play.reset()
+                        } else if (cmd === ':h') {
+                            if (stage.hints.length > 0) {
+                                playHint()
+                                play.useHint()
+                                setShowHint(true)
+                            }
+                        }
+                        return
+                    }
+                    if (e.key === 'Backspace') {
+                        const next = colonBuffer.slice(0, -1)
+                        setColonBuffer(next || '')
+                        if (!next) return
+                        return
+                    }
+                    const validPrefixes = [':q', ':q!', ':r', ':h']
+                    const next = colonBuffer + key
+                    if (validPrefixes.includes(next)) {
+                        setColonBuffer(next)
+                        return
+                    }
                     setColonBuffer('')
                     // Don't swallow the key — fall through to handleKey
                 }
@@ -252,6 +262,19 @@ function PlayScreenInner({
                     >
                         :r
                     </button>
+                    {stage.hints.length > 0 && (
+                        <button
+                            className="quit-btn"
+                            onClick={() => {
+                                playHint()
+                                play.useHint()
+                                setShowHint(true)
+                            }}
+                            title="ヒント表示 (:h)"
+                        >
+                            :h
+                        </button>
+                    )}
                     <button className="mute-btn" onClick={toggleMute} title={muted ? '音声ON' : '音声OFF'}>
                         {muted ? '🔇' : '🔊'}
                     </button>
@@ -354,6 +377,9 @@ function PlayScreenInner({
                                 return (
                                     <div key={cmd} className={`card ${getCardClass(cmd)}${cardState}`}>
                                         {isMerged ? play.lastExecutedRaw : cmd}
+                                        {getCardHint(cmd) && (
+                                            <span className="card-hint">{getCardHint(cmd)}</span>
+                                        )}
                                     </div>
                                 )
                             })}
@@ -382,6 +408,7 @@ function PlayScreenInner({
                 lastInvalid={play.lastInvalid}
                 lastExecutedRaw={play.lastExecutedRaw}
                 onClick={() => {
+                    playHint()
                     play.useHint()
                     setShowHint(true)
                 }}
@@ -457,4 +484,10 @@ function getCardClass(cmd: string): string {
     if (cmd.startsWith('i') && cmd.length >= 2) return 'object'
     if (cmd.startsWith('a') && cmd.length >= 2) return 'object'
     return ''
+}
+
+function getCardHint(cmd: string): string | null {
+    if (cmd === 'f' || cmd === 't') return '; ,'
+    if (cmd === '/' || cmd === '*' || cmd === '#') return 'n N'
+    return null
 }

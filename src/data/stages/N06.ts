@@ -1,26 +1,27 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N06: 1文字置換 (r)
- * 渇望→報酬サイクル #2: x+i → r 一発
+ * N06: WORD移動 (W, B, E)
+ * w は記号で止まるが W は空白区切りでジャンプ。
  * Teach(T) = 1ステージ
  */
 export const N06_STAGES: Stage[] = [
-  // ── Teach: 1文字を置換 ──
-  // opt = 2 (l + re)
+  // ── Teach: WORD単位で高速移動 ──
+  // opt = 2 (WW) → cursor at 'five'
   {
     id: 'N06-T',
     nodeId: 'N06',
     type: 'teach',
-    title: '一文字直せ',
+    title: 'WORDで飛べ',
     language: 'plaintext',
-    initialText: 'hallo',
-    goalText: 'hello',
+    initialText: 'one.two three.four five',
+    goalText: 'one.two three.four five',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['r'],
-    hints: [{ cost: 1, commands: ['l', 're'] }],
-    flavor: 'a を e に置き換えろ。x で消して i で打ち直す？ r なら一発だ',
+    availableCommands: ['W', 'B', 'E'],
+    clearConditions: { cursor: { line: 0, col: 19 } },
+    hints: [{ cost: 1, commands: ['W', 'W'] }],
+    flavor: 'w だと . で止まる。W なら空白まで一気に飛べる',
   },
 ]

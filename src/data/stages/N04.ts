@@ -1,25 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N04: 行頭/末Insert (I, A)
+ * N04: 1文字置換 (r)
+ * 渇望→報酬サイクル #2: x+i → r 一発
  * Teach(T) = 1ステージ
  */
 export const N04_STAGES: Stage[] = [
-  // ── Teach: 行頭にコメント記号を追加 ──
-  // opt = 1 (I + type '// ' + Esc)
+  // ── Teach: 1文字を置換 ──
+  // opt = 2 (l + re)
   {
     id: 'N04-T',
     nodeId: 'N04',
     type: 'teach',
-    title: 'コメントアウト',
-    language: 'javascript',
-    initialText: 'fixBug()',
-    goalText: '// fixBug()',
-    initialCursor: { line: 0, col: 3 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['I', 'A'],
-    hints: [{ cost: 1, commands: ['I', '// ', 'Esc'] }],
-    flavor: 'I で行頭に移動して // を挿入せよ',
+    title: '一文字直せ',
+    language: 'plaintext',
+    initialText: 'hallo',
+    goalText: 'hello',
+    initialCursor: { line: 0, col: 0 },
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['r'],
+    hints: [{ cost: 1, commands: ['l', 're'] }],
+    flavor: 'a を e に置き換えろ。x で消して i で打ち直す？ r なら一発だ',
   },
 ]

@@ -125,7 +125,7 @@ src/
 │   ├── constants.ts                  # BASE_COMMANDS 等のグローバル定数
 │   ├── stages/                       # ノード別ステージ定義
 │   │   ├── N01.ts
-│   │   ├── N04.ts
+│   │   ├── N02.ts
 │   │   ├── ...                       # N02/N03/N08 削除済み
 │   │   └── index.ts                  # 全ステージ集約export
 │   ├── tutorials/                    # チュートリアルデータ
@@ -134,9 +134,9 @@ src/
 │   │   ├── N01-3.ts
 │   │   ├── N01-4.ts
 │   │   ├── N01-5.ts
-│   │   ├── N18.ts                    # ノード別チュートリアル（3件）
-│   │   ├── N29.ts
-│   │   ├── N37.ts
+│   │   ├── N15.ts                    # ノード別チュートリアル（3件）
+│   │   ├── N24.ts
+│   │   ├── N32.ts
 │   │   └── index.ts                  # getTutorial(stageId, nodeId) マッピング
 │   └── skillTree.ts                  # ノード定義・エッジ・コマンドマッピング
 │
@@ -255,7 +255,7 @@ export const N01_STAGES: Stage[] = [
 ```typescript
 // types/stage.ts
 export interface Stage {
-  id: string // 'N01-T', 'N18-C' 等
+  id: string // 'N01-T', 'N15-C' 等
   nodeId: string // スキルツリーノードID
   type: 'tutorial' | 'teach' | 'practice' | 'challenge'
   title: string // ステージ名
@@ -285,7 +285,7 @@ export interface Hint {
 
 | フェーズ    | 内容                                     | ステージ数                  |
 | ----------- | ---------------------------------------- | --------------------------- |
-| **Phase 1** | エンジン開発。サンプルステージで動作確認 | 8（N01×5 + N04×3）         |
+| **Phase 1** | エンジン開発。サンプルステージで動作確認 | 8（N01×5 + N02×3）         |
 | **Phase 2** | 全57ステージ量産                         | 残り49                      |
 | **Phase 3** | バランス調整（opt値検証、ライフ調整）    | —                           |
 

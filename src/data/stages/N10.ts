@@ -1,26 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N10: 行頭/末移動 (0, $)
+ * N10: 折り返し行 (gj, gk)
  * Teach(T) = 1ステージ
  */
 export const N10_STAGES: Stage[] = [
-  // ── Teach: 行末にジャンプ ──
-  // opt = 1 ($) → cursor at last char
+  // ── Teach: 表示行単位で移動 ──
+  // opt = 2 (gj + gj)
   {
     id: 'N10-T',
     nodeId: 'N10',
     type: 'teach',
-    title: '端まで飛べ',
+    title: '表示行を歩け',
     language: 'plaintext',
-    initialText: 'jump to the end of this line!',
-    goalText: 'jump to the end of this line!',
+    initialText: 'first line\nsecond line\nthird line',
+    goalText: 'first line\nsecond line\nthird line',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['0', '$'],
-    clearConditions: { cursor: { line: 0, col: 28 } },
-    hints: [{ cost: 1, commands: ['$'] }],
-    flavor: '$ で行末に一瞬で飛べる。w 連打とはおさらばだ',
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['gj', 'gk'],
+    clearConditions: { cursor: { line: 2, col: 0 } },
+    hints: [{ cost: 1, commands: ['gj', 'gj'] }],
+    flavor: 'j は論理行で動く。gj なら表示行で移動できる。ここでは gj だけが使える',
   },
 ]

@@ -1,43 +1,86 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N29: 基本TextObj (iw, aw)
- * Teach(T) + Practice(P) = 2ステージ
+ * N29: ドットリピート (.)
+ * ★★★ 最高峰ノード — Vim の真髄
+ * 渇望→報酬サイクル #5: 手動繰り返し → . 一発
+ * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N29_STAGES: Stage[] = [
-  // ── Teach: daw で単語ごと削除 ──
-  // opt = 2 (w + daw)
+  // ── Teach: . で直前の変更を繰り返す ──
+  // opt = 3 (ciw+yes+Esc, w+.)
   {
     id: 'N29-T',
     nodeId: 'N29',
     type: 'teach',
-    title: '単語を掴め',
+    title: 'リピート',
     language: 'plaintext',
-    initialText: 'hello nice world',
-    goalText: 'hello world',
+    initialText: 'no no no',
+    goalText: 'yes yes yes',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw'] }],
-    flavor: 'daw で周囲の空白ごと単語を消せる。dw より正確だ',
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['ciw', 's', '.', 'f', 't', '0', '$'],
+    hints: [{ cost: 1, commands: ['ciw', 'yes', 'Esc', 'w', '.', 'w', '.'] }],
+    flavor: 'ciw で最初の no を yes に変え、. で残りも一発だ',
   },
 
-  // ── Practice: 複数単語削除 ──
-  // opt = 3 (w + daw + daw)
+  // ── Practice: 複数行でドットリピート ──
+  // opt = 6 (j+^+ciw+let+Esc, j+^+., j+^+.)
   {
     id: 'N29-P',
     nodeId: 'N29',
     type: 'practice',
-    title: '不要語削除',
-    language: 'plaintext',
-    initialText: 'remove bad ugly text here',
-    goalText: 'remove text here',
+    title: '連続リピート',
+    language: 'javascript',
+    initialText:
+      'function setup() {\n' + '  var a = 1;\n' + '  var b = 2;\n' + '  var c = 3;\n' + '}',
+    goalText: 'function setup() {\n' + '  let a = 1;\n' + '  let b = 2;\n' + '  let c = 3;\n' + '}',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
-    flavor: '不要な形容詞を daw で消し去れ',
+    life: 12,
+    stars: [6, 8, 10],
+    availableCommands: ['ciw', 's', '.', 'f', 't', '0', '$', '^'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['j', '^', 'ciw', 'let', 'Esc', 'j', '^', '.', 'j', '^', '.'],
+      },
+    ],
+    flavor: '全ての var を let に変えろ。. で繰り返せ',
+  },
+
+  // ── Challenge: 複合パズル ──
+  // opt = 10 (ciw + . による複数変更 + f/t 移動)
+  {
+    id: 'N29-C',
+    nodeId: 'N29',
+    type: 'challenge',
+    title: 'リファクタリング',
+    language: 'javascript',
+    initialText:
+      'function getUser(id) {\n' +
+      '  var name = fetch(id);\n' +
+      '  var age = fetch(id);\n' +
+      '  var role = fetch(id);\n' +
+      '  return { name: name, age: age, role: role };\n' +
+      '}',
+    goalText:
+      'function getUser(id) {\n' +
+      '  const name = fetch(id);\n' +
+      '  const age = fetch(id);\n' +
+      '  const role = fetch(id);\n' +
+      '  return { name: name, age: age, role: role };\n' +
+      '}',
+    initialCursor: { line: 0, col: 0 },
+    life: 18,
+    stars: [10, 13, 16],
+    availableCommands: ['ciw', 's', 'S', 'C', '.', 'f', 't', '0', '$', '^'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['j', '^', 'ciw', 'const', 'Esc', 'j', '^', '.', 'j', '^', '.'],
+      },
+    ],
+    flavor: 'var を const に統一しろ。. を使いこなせ',
   },
 ]

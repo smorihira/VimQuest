@@ -1,25 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N07: 大小切替 (~)
+ * N07: 行頭/末移動 (0, $)
  * Teach(T) = 1ステージ
  */
 export const N07_STAGES: Stage[] = [
-  // ── Teach: 先頭を大文字に ──
-  // opt = 1 (~)
+  // ── Teach: 行末にジャンプ ──
+  // opt = 1 ($) → cursor at last char
   {
     id: 'N07-T',
     nodeId: 'N07',
     type: 'teach',
-    title: 'トグルせよ',
+    title: '端まで飛べ',
     language: 'plaintext',
-    initialText: 'hello World',
-    goalText: 'Hello World',
+    initialText: 'jump to the end of this line!',
+    goalText: 'jump to the end of this line!',
     initialCursor: { line: 0, col: 0 },
     life: 7,
     stars: [1, 2, 4],
-    availableCommands: ['~'],
-    hints: [{ cost: 1, commands: ['~'] }],
-    flavor: 'h を H に変えろ。~ で大小文字を切り替えられる',
+    availableCommands: ['0', '$'],
+    clearConditions: { cursor: { line: 0, col: 28 } },
+    hints: [{ cost: 1, commands: ['$'] }],
+    flavor: '$ で行末に一瞬で飛べる。w 連打とはおさらばだ',
   },
 ]

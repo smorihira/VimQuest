@@ -1,26 +1,55 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N13: 折り返し行 (gj, gk)
- * Teach(T) = 1ステージ
+ * N13: 検索 (/, n, N)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N13_STAGES: Stage[] = [
-  // ── Teach: 表示行単位で移動 ──
-  // opt = 2 (gj + gj)
+  // ── Teach: 検索でジャンプ ──
+  // opt = 1 (/error + Enter)
   {
     id: 'N13-T',
     nodeId: 'N13',
     type: 'teach',
-    title: '表示行を歩け',
-    language: 'plaintext',
-    initialText: 'first line\nsecond line\nthird line',
-    goalText: 'first line\nsecond line\nthird line',
+    title: '検索せよ',
+    language: 'javascript',
+    initialText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
+    goalText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['gj', 'gk'],
-    clearConditions: { cursor: { line: 2, col: 0 } },
-    hints: [{ cost: 1, commands: ['gj', 'gj'] }],
-    flavor: 'j は論理行で動く。gj なら表示行で移動できる。ここでは gj だけが使える',
+    life: 7,
+    stars: [1, 2, 4],
+    availableCommands: ['/', '0', '$'],
+    clearConditions: { cursor: { line: 2, col: 6 } },
+    hints: [{ cost: 1, commands: ['/error', 'Enter'] }],
+    flavor: '/ で検索開始。error を探し出せ',
+  },
+
+  // ── Practice: 検索 + n で次へ ──
+  // opt = 3 (/TODO + Enter, n, n)
+  {
+    id: 'N13-P',
+    nodeId: 'N13',
+    type: 'practice',
+    title: '全部見つけろ',
+    language: 'javascript',
+    initialText:
+      '// TODO: fix auth\n' +
+      'function login() {}\n' +
+      '// TODO: add validation\n' +
+      'function save() {}\n' +
+      '// TODO: write tests',
+    goalText:
+      '// TODO: fix auth\n' +
+      'function login() {}\n' +
+      '// TODO: add validation\n' +
+      'function save() {}\n' +
+      '// TODO: write tests',
+    initialCursor: { line: 0, col: 0 },
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['/', '0', '$'],
+    clearConditions: { cursor: { line: 4, col: 3 } },
+    hints: [{ cost: 1, commands: ['/TODO', 'Enter', 'n', 'n'] }],
+    flavor: '/TODO で検索して n で次のマッチへ。全3箇所の最後まで行け',
   },
 ]

@@ -1,79 +1,63 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N15: 画面位置調整 (zz, zt, zb)
- * ビューポートコマンド。テキスト変更なし。
- * Teach(T) = 1ステージ
+ * N15: オペレータ+モーション (dw/de/db)
+ * Vim文法の核心「動詞+対象」を初体験。
+ * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
+
 export const N15_STAGES: Stage[] = [
-  // ── Teach: 画面中央に合わせる ──
-  // opt = 2 (Ctrl+d + zz)
+  // ── Teach: dw で単語1つ消す ──
+  // opt = 2 (wdw等) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N15-T',
     nodeId: 'N15',
     type: 'teach',
-    title: '画面を合わせろ',
-    language: 'javascript',
-    initialText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET: move cursor here\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
-    goalText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET: move cursor here\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
+    title: '単語を消せ',
+    language: 'plaintext',
+    initialText: 'delete this word',
+    goalText: 'delete word',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['zz', 'zt', 'zb', 'Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 16, col: 0 } },
-    hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d'] }],
-    flavor: 'Ctrl+d で半ページ移動、zz で現在行を画面中央に合わせてみよう',
+    availableCommands: ['dw', 'de', 'db'],
+    hints: [{ cost: 1, commands: ['w', 'dw'] }],
+    flavor: '"this " を dw で一撃で消せ',
+  },
+
+  // ── Practice: 複数単語を効率的に消す ──
+  // opt = 4 (wdwwdw等) → ☆3=4, ☆2=6, ☆1=8, life=10
+  {
+    id: 'N15-P',
+    nodeId: 'N15',
+    type: 'practice',
+    title: '連続削除',
+    language: 'javascript',
+    initialText: 'const very extremely important value = 42',
+    goalText: 'const value = 42',
+    initialCursor: { line: 0, col: 0 },
+    life: 10,
+    stars: [4, 6, 8],
+    availableCommands: ['dw', 'de', 'db'],
+    hints: [{ cost: 1, commands: ['w', 'dw', 'dw', 'dw'] }],
+    flavor: '余計な修飾語を dw で消し去れ',
+  },
+
+  // ── Challenge: 複数行で dw/de/db を使い分け ──
+  // opt = 5 → ☆3=5, ☆2=8, ☆1=11, life=13
+  {
+    id: 'N15-C',
+    nodeId: 'N15',
+    type: 'challenge',
+    title: '精密削除',
+    language: 'css',
+    initialText: 'body {\n  color: dark red;\n  background: light blue;\n}',
+    goalText: 'body {\n  color: red;\n  background: blue;\n}',
+    initialCursor: { line: 0, col: 0 },
+    life: 18,
+    stars: [10, 13, 16],
+    availableCommands: ['dw', 'de', 'db'],
+    hints: [{ cost: 1, commands: ['j', 'w', 'w', 'w', 'dw', 'j', 'b', 'w', 'w', 'dw'] }],
+    flavor: 'dark と light の接頭辞だけを正確に削れ',
   },
 ]

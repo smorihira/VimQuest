@@ -1,26 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N19: 行削除 (dd)
- * ALL合流ノード: N11(^) + N18(dw)
+ * N19: 行結合 (J)
  * Teach(T) = 1ステージ
  */
 export const N19_STAGES: Stage[] = [
-  // ── Teach: 不要な行を削除 ──
-  // opt = 2 (j + dd)
+  // ── Teach: 2行を1行に結合 ──
+  // opt = 1 (J)
   {
     id: 'N19-T',
     nodeId: 'N19',
     type: 'teach',
-    title: '行を消せ',
-    language: 'javascript',
-    initialText: 'const a = 1;\nconsole.log("debug");\nconst b = 2;',
-    goalText: 'const a = 1;\nconst b = 2;',
+    title: '行をつなげ',
+    language: 'plaintext',
+    initialText: 'hello\nworld',
+    goalText: 'hello world',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['dw', 'de', 'db', 'dd', '0', '$', '^'],
-    hints: [{ cost: 1, commands: ['j', 'dd'] }],
-    flavor: 'デバッグ行をまるごと消せ。dd で一行削除だ',
+    life: 7,
+    stars: [1, 2, 4],
+    availableCommands: ['dd', 'J', '0', '$', '^'],
+    hints: [{ cost: 1, commands: ['J'] }],
+    flavor: 'J で下の行を現在行に結合できる',
   },
 ]

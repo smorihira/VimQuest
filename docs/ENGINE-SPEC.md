@@ -158,7 +158,7 @@ N01ステージ中はBASE_COMMANDSは未解放。各ステージの `availableCo
 ステージは `visualCommands?: string[]` フィールドを持てる。このフィールドに含まれるコマンドは **Visualモード中のみ** 手札に追加される。NORMALモードでは使用不可。
 
 ```typescript
-// 例: N37-T — d はVisualモードでのみ使用可能
+// 例: N32-T — d はVisualモードでのみ使用可能
 {
   availableCommands: ['h', 'j', 'k', 'l', 'v', 'V', ...],
   visualCommands: ['d'],  // Visualモード中のみ手札に追加

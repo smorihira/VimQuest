@@ -14,7 +14,7 @@ const TUTORIALS: Record<string, Tutorial> = {
     'N01-3': N01_3_TUTORIAL,
     'N01-4': N01_4_TUTORIAL,
     'N01-5': N01_5_TUTORIAL,
-    // N18, N29, N37 will be added later
+    // N15, N25, N33 will be added later
 }
 
 /** Check if a stage or node has a tutorial (stageId first, then nodeId fallback) */

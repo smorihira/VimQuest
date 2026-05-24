@@ -120,9 +120,9 @@
 | N02    | 初の編集（x）+ undo導入     |
 | N03    | Insertモード（i/a）         |
 | N08    | 単語移動（w/b/e）           |
-| N18    | オペレータ+モーション（dw） |
-| N29    | TextObj（iw/aw）            |
-| N37    | Visualモード（v/V）         |
+| N15    | オペレータ+モーション（dw） |
+| N24    | TextObj（iw/aw）            |
+| N32    | Visualモード（v/V）         |
 
 残り33ノードは武器取得画面の説明 + Teachステージで対応。
 

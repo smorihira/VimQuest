@@ -1,26 +1,45 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N33: 変更ショート (s, S, C)
- * s = cl, S = cc, C = c$
- * Teach(T) = 1ステージ
+ * N33: 矩形選択 (Ctrl+v)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N33_STAGES: Stage[] = [
-  // ── Teach: s で1文字置換＋Insert ──
-  // opt = 2 (fs + s + 'S' + Esc)
+  // ── Teach: 矩形選択で列を削除 ──
+  // opt = 3 (Ctrl+v + jj + d)
   {
     id: 'N33-T',
     nodeId: 'N33',
     type: 'teach',
-    title: 'ショートカット',
-    language: 'javascript',
-    initialText: 'const result = null;',
-    goalText: 'const Result = null;',
-    initialCursor: { line: 0, col: 6 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['ciw', 's', 'S', 'C', 'f', 't', '0', '$'],
-    hints: [{ cost: 1, commands: ['s', 'R', 'Esc'] }],
-    flavor: 's で1文字消してすぐ入力。r より柔軟だ',
+    title: '矩形で切れ',
+    language: 'plaintext',
+    initialText: 'X hello\nX world\nX test',
+    goalText: ' hello\n world\n test',
+    initialCursor: { line: 0, col: 0 },
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['v', 'V', 'Ctrl+v', '0', '$'],
+    visualCommands: ['d'],
+    hints: [{ cost: 1, commands: ['Ctrl+v', 'j', 'j', 'd'] }],
+    flavor: 'Ctrl+v で矩形選択。縦1列をまとめて消せる',
+  },
+
+  // ── Practice: 矩形選択で接頭辞を除去 ──
+  // opt = 5 (Ctrl+v + jjj + ll + d)
+  {
+    id: 'N33-P',
+    nodeId: 'N33',
+    type: 'practice',
+    title: '列を消せ',
+    language: 'plaintext',
+    initialText: '-- alpha\n-- beta\n-- gamma\n-- delta',
+    goalText: ' alpha\n beta\n gamma\n delta',
+    initialCursor: { line: 0, col: 0 },
+    life: 11,
+    stars: [5, 7, 9],
+    availableCommands: ['v', 'V', 'Ctrl+v', '0', '$'],
+    visualCommands: ['d'],
+    hints: [{ cost: 1, commands: ['Ctrl+v', 'j', 'j', 'j', 'l', 'd'] }],
+    flavor: '全行の -- を矩形選択で一括削除せよ',
   },
 ]

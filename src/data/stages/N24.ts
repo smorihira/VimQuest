@@ -1,26 +1,43 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N24: f/t繰り返し (;, ,)
- * Teach(T) = 1ステージ
+ * N24: 基本TextObj (iw, aw)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N24_STAGES: Stage[] = [
-  // ── Teach: ; でf/tを繰り返す ──
-  // opt = 3 (f/ + ; + ;) → third '/' in path
+  // ── Teach: daw で単語ごと削除 ──
+  // opt = 2 (w + daw)
   {
     id: 'N24-T',
     nodeId: 'N24',
     type: 'teach',
-    title: '繰り返し撃て',
+    title: '単語を掴め',
     language: 'plaintext',
-    initialText: 'path/to/the/file.txt',
-    goalText: 'path/to/the/file.txt',
+    initialText: 'hello nice world',
+    goalText: 'hello world',
+    initialCursor: { line: 0, col: 0 },
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'daw'] }],
+    flavor: 'daw で周囲の空白ごと単語を消せる。dw より正確だ',
+  },
+
+  // ── Practice: 複数単語削除 ──
+  // opt = 3 (w + daw + daw)
+  {
+    id: 'N24-P',
+    nodeId: 'N24',
+    type: 'practice',
+    title: '不要語削除',
+    language: 'plaintext',
+    initialText: 'remove bad ugly text here',
+    goalText: 'remove text here',
     initialCursor: { line: 0, col: 0 },
     life: 9,
-    stars: [3, 4, 6],
-    availableCommands: [';', ',', 'f', 't'],
-    clearConditions: { cursor: { line: 0, col: 11 } },
-    hints: [{ cost: 1, commands: ['f/', ';', ';'] }],
-    flavor: 'f/ で最初の / へ。; で次の / に繰り返しジャンプだ',
+    stars: [3, 5, 7],
+    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
+    flavor: '不要な形容詞を daw で消し去れ',
   },
 ]

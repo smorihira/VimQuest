@@ -1,26 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N21: Dショートカット (D)
- * D = d$ のショートカット
+ * N21: 括弧ジャンプ (%)
  * Teach(T) = 1ステージ
  */
 export const N21_STAGES: Stage[] = [
-  // ── Teach: D で行末を切る ──
-  // opt = 1 (D) — cursor starts at cut point
+  // ── Teach: 対応する括弧へジャンプ ──
+  // opt = 2 (f{ + %)
   {
     id: 'N21-T',
     nodeId: 'N21',
     type: 'teach',
-    title: 'Dで断て',
+    title: '対を見つけろ',
     language: 'javascript',
-    initialText: 'return null; // FIXME: remove this',
-    goalText: 'return null;',
-    initialCursor: { line: 0, col: 12 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['dd', 'd$', 'd0', 'D', 'dw', '0', '$'],
-    hints: [{ cost: 1, commands: ['D'] }],
-    flavor: 'd$ と同じことが D 一文字でできる',
+    initialText: 'if (x > 0) { return x; }',
+    goalText: 'if (x > 0) { return x; }',
+    initialCursor: { line: 0, col: 0 },
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['%', 'f', 't'],
+    clearConditions: { cursor: { line: 0, col: 23 } },
+    hints: [{ cost: 1, commands: ['f{', '%'] }],
+    flavor: '% で対応する括弧にジャンプ。{ から } へ一瞬で飛べる',
   },
 ]

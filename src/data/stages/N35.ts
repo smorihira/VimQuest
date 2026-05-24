@@ -1,25 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N35: 大小文字変換 (gu, gU)
+ * N35: ペースト (p, P)
  * Teach(T) = 1ステージ
  */
 export const N35_STAGES: Stage[] = [
-  // ── Teach: gU + TextObj で大文字化 ──
-  // opt = 2 (w + gUiw)
+  // ── Teach: dd + P で行を移動 ──
+  // opt = 3 (jj + dd + P → move line 3 to line 2)
   {
     id: 'N35-T',
     nodeId: 'N35',
     type: 'teach',
-    title: '大文字にしろ',
-    language: 'javascript',
-    initialText: 'const max_size = 100;',
-    goalText: 'const MAX_SIZE = 100;',
+    title: '切り貼りせよ',
+    language: 'plaintext',
+    initialText: 'first\nthird\nsecond',
+    goalText: 'first\nsecond\nthird',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['diw', 'di"', 'gu', 'gU', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'gUiw'] }],
-    flavor: 'gU + TextObj で単語を大文字に変換できる',
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['y', 'yy', 'dd', 'p', 'P', '0', '$'],
+    hints: [{ cost: 1, commands: ['j', 'j', 'dd', 'P'] }],
+    flavor: 'dd で行を切り取り、P でカーソルの上にペーストだ',
   },
 ]

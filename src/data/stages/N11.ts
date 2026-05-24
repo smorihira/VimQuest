@@ -1,27 +1,72 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N11: 非空白行頭 (^)
- * 渇望→報酬サイクル #3: 0+www → ^ 一発
+ * N11: 半ページ移動 (Ctrl+d, Ctrl+u)
  * Teach(T) = 1ステージ
  */
 export const N11_STAGES: Stage[] = [
-  // ── Teach: インデント先頭へジャンプ ──
-  // opt = 1 (^)
+  // ── Teach: 半ページジャンプ ──
+  // opt = 2 (Ctrl+d + Ctrl+d)
   {
     id: 'N11-T',
     nodeId: 'N11',
     type: 'teach',
-    title: 'コードの頭へ',
+    title: 'ページを飛べ',
     language: 'javascript',
-    initialText: '    const x = 42;',
-    goalText: '    const x = 42;',
-    initialCursor: { line: 0, col: 15 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['^', '0', '$'],
-    clearConditions: { cursor: { line: 0, col: 4 } },
-    hints: [{ cost: 1, commands: ['^'] }],
-    flavor: '0 だと空白の前に行く。^ ならコードの先頭に飛べる',
+    initialText:
+      'function setup() {\n' +
+      '  const a = 1;\n' +
+      '  const b = 2;\n' +
+      '  const c = 3;\n' +
+      '  const d = 4;\n' +
+      '  const e = 5;\n' +
+      '  const f = 6;\n' +
+      '  const g = 7;\n' +
+      '  const h = 8;\n' +
+      '  const i = 9;\n' +
+      '  const j = 10;\n' +
+      '  const k = 11;\n' +
+      '  const l = 12;\n' +
+      '  const m = 13;\n' +
+      '  const n = 14;\n' +
+      '  const o = 15;\n' +
+      '  const p = 16;\n' +
+      '  const q = 17;\n' +
+      '  const r = 18;\n' +
+      '  const s = 19;\n' +
+      '  const t = 20;\n' +
+      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
+      '}',
+    goalText:
+      'function setup() {\n' +
+      '  const a = 1;\n' +
+      '  const b = 2;\n' +
+      '  const c = 3;\n' +
+      '  const d = 4;\n' +
+      '  const e = 5;\n' +
+      '  const f = 6;\n' +
+      '  const g = 7;\n' +
+      '  const h = 8;\n' +
+      '  const i = 9;\n' +
+      '  const j = 10;\n' +
+      '  const k = 11;\n' +
+      '  const l = 12;\n' +
+      '  const m = 13;\n' +
+      '  const n = 14;\n' +
+      '  const o = 15;\n' +
+      '  const p = 16;\n' +
+      '  const q = 17;\n' +
+      '  const r = 18;\n' +
+      '  const s = 19;\n' +
+      '  const t = 20;\n' +
+      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
+      '}',
+    initialCursor: { line: 0, col: 0 },
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['Ctrl+d', 'Ctrl+u', '0', '$', 'gg'],
+    clearConditions: { cursor: { line: 16, col: 0 } },
+    hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d'] }],
+    flavor: 'j 連打より Ctrl+d で半ページ分ジャンプだ',
   },
 ]
