@@ -26,13 +26,15 @@ interface Props {
   /** Stage data for goal overlay + title. Optional for standalone tutorial route. */
   stage?: Stage
   onComplete: (status: TutorialStatus) => void
+  /** When true, this is a review (re-watch) — skip button says "閉じる" instead of "Skip" */
+  isReview?: boolean
 }
 
 function stepType(step: TutorialStep) {
   return step.type ?? 'key'
 }
 
-export function StageTutorial({ tutorial, stage, onComplete }: Props) {
+export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) {
   const [stepIdx, setStepIdx] = useState(0)
   const [editorState, setEditorState] = useState<EditorState>(() =>
     createEditorState(tutorial.initialSetup.text, tutorial.initialSetup.cursor),
@@ -353,11 +355,11 @@ export function StageTutorial({ tutorial, stage, onComplete }: Props) {
           className="skip-btn"
           onClick={() => {
             playTick()
-            onComplete('skipped')
+            onComplete(isReview ? 'completed' : 'skipped')
           }}
-          title="Esc でスキップ"
+          title={isReview ? 'Esc で閉じる' : 'Esc でスキップ'}
         >
-          Skip ▸
+          {isReview ? '閉じる ✕' : 'Skip ▸'}
         </button>
         <div className="navi-icon">
           <div className="mini-cube-wrapper">

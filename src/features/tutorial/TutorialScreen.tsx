@@ -1,6 +1,6 @@
 /**
  * TutorialScreen — standalone route wrapper for StageTutorial.
- * Delegates all rendering and step logic to StageTutorial (single source of truth).
+ * Accepts stageId or nodeId as route param. Delegates to StageTutorial (SSOT).
  */
 
 import { useParams, useNavigate } from 'react-router'
@@ -13,39 +13,50 @@ import { StageTutorial } from '../play/StageTutorial'
 import './TutorialScreen.css'
 
 export function TutorialScreen() {
-    const { nodeId } = useParams<{ nodeId: string }>()
-    const navigate = useNavigate()
-    const setProgress = useSetAtom(gameProgressAtom)
+  const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
+  const setProgress = useSetAtom(gameProgressAtom)
 
-    const tutorial = nodeId ? getTutorial(nodeId) : undefined
-    if (!tutorial) {
-        return <div className="tutorial-error">Tutorial not found: {nodeId}</div>
+  // Try stageId first, then nodeId fallback
+  const tutorial = id ? (getTutorial(id) ?? getTutorial(id, id)) : undefined
+  const isReview = new URLSearchParams(window.location.search).get('review') === '1'
+
+  if (!tutorial) {
+    return <div className="tutorial-error">Tutorial not found: {id}</div>
+  }
+
+  const stage = tutorial.stageId ? getStage(tutorial.stageId) : undefined
+
+  const handleComplete = (status: TutorialStatus) => {
+    if (!isReview) {
+      setProgress((prev) => ({
+        ...prev,
+        tutorialStatus: {
+          ...prev.tutorialStatus,
+          [tutorial.stageId ?? tutorial.nodeId]: status,
+        },
+      }))
     }
 
-    const stage = tutorial.stageId ? getStage(tutorial.stageId) : undefined
-
-    const handleComplete = (status: TutorialStatus) => {
-        setProgress((prev) => ({
-            ...prev,
-            tutorialStatus: {
-                ...prev.tutorialStatus,
-                [tutorial.nodeId]: status,
-            },
-        }))
-
-        const stages = getStagesByNode(tutorial.nodeId)
-        if (stages.length > 0) {
-            navigate(`/play/${stages[0].id}`)
-        } else {
-            navigate('/tree')
-        }
+    if (isReview) {
+      navigate(-1)
+      return
     }
 
-    return (
-        <StageTutorial
-            tutorial={tutorial}
-            stage={stage}
-            onComplete={handleComplete}
-        />
-    )
+    const stages = getStagesByNode(tutorial.nodeId)
+    if (stages.length > 0) {
+      navigate(`/play/${stages[0].id}`)
+    } else {
+      navigate('/tree')
+    }
+  }
+
+  return (
+    <StageTutorial
+      tutorial={tutorial}
+      stage={stage}
+      onComplete={handleComplete}
+      isReview={isReview}
+    />
+  )
 }

@@ -16,6 +16,7 @@ interface TopBarProps {
   onQuit: () => void
   onRetry: () => void
   onHint: () => void
+  onTutorial?: () => void
 }
 
 export function TopBar({
@@ -29,6 +30,7 @@ export function TopBar({
   onQuit,
   onRetry,
   onHint,
+  onTutorial,
 }: TopBarProps) {
   const lifeColor =
     lifePercent > 50 ? 'var(--success)' : lifePercent > 25 ? 'var(--star-gold)' : 'var(--danger)'
@@ -59,6 +61,18 @@ export function TopBar({
             title="ヒント表示 (:h)"
           >
             :h
+          </button>
+        )}
+        {onTutorial && (
+          <button
+            className="quit-btn tutorial-btn"
+            onClick={() => {
+              playTick()
+              onTutorial()
+            }}
+            title="チュートリアルを見る"
+          >
+            📖
           </button>
         )}
         <button className="mute-btn" onClick={toggleMute} title={muted ? '音声ON' : '音声OFF'}>

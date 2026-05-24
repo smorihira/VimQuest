@@ -37,6 +37,7 @@ export function PlayScreen() {
   const progress = useAtomValue(gameProgressAtom)
   const setProgress = useSetAtom(gameProgressAtom)
   const [tutorialDone, setTutorialDone] = useState(false)
+  const [reviewTutorial, setReviewTutorial] = useState(false)
 
   if (!stage) {
     return <div className="play-error">Stage not found: {stageId}</div>
@@ -45,6 +46,18 @@ export function PlayScreen() {
   const tutorial = getTutorial(stage.id, stage.nodeId)
   const alreadyDone = progress.tutorialStatus[stage.id] != null
   const showTutorial = tutorial && !alreadyDone && !tutorialDone
+
+  // Review mode: re-watch a completed tutorial
+  if (tutorial && reviewTutorial) {
+    return (
+      <StageTutorial
+        tutorial={tutorial}
+        stage={stage}
+        onComplete={() => setReviewTutorial(false)}
+        isReview
+      />
+    )
+  }
 
   if (showTutorial) {
     return (
@@ -65,15 +78,26 @@ export function PlayScreen() {
     )
   }
 
-  return <PlayScreenInner stage={stage} navigate={navigate} />
+  return (
+    <PlayScreenInner
+      stage={stage}
+      navigate={navigate}
+      hasStageTutorial={!!tutorial}
+      onReviewTutorial={() => setReviewTutorial(true)}
+    />
+  )
 }
 
 function PlayScreenInner({
   stage,
   navigate,
+  hasStageTutorial,
+  onReviewTutorial,
 }: {
   stage: NonNullable<ReturnType<typeof getStage>>
   navigate: ReturnType<typeof useNavigate>
+  hasStageTutorial: boolean
+  onReviewTutorial: () => void
 }) {
   const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
   const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined)
@@ -274,6 +298,7 @@ function PlayScreenInner({
           play.useHint()
           setShowHint(true)
         }}
+        onTutorial={hasStageTutorial ? onReviewTutorial : undefined}
       />
 
       {/* Editor */}

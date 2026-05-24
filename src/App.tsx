@@ -18,7 +18,7 @@ function App() {
         <Route path="/gameover/:stageId" element={<GameOverScreen />} />
         <Route path="/tree" element={<SkillTreeScreen />} />
         <Route path="/weapon/:nodeId" element={<WeaponGetScreen />} />
-        <Route path="/tutorial/:nodeId" element={<TutorialScreen />} />
+        <Route path="/tutorial/:id" element={<TutorialScreen />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </DeviceGate>
