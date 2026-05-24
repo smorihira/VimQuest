@@ -8,7 +8,7 @@ import type { Stage } from '../../types/stage'
  */
 export const N24_STAGES: Stage[] = [
   // ── Teach: . で直前の変更を繰り返す ──
-  // opt = 6 (ciw(1)+Esc(1) + w(1)+.(1) + w(1)+.(1))
+  // opt = 5 (ciw…yes…Esc(1) + w(1)+.(1) + w(1)+.(1))
   {
     id: 'N24-T',
     nodeId: 'N24',
@@ -18,15 +18,15 @@ export const N24_STAGES: Stage[] = [
     initialText: 'no no no',
     goalText: 'yes yes yes',
     initialCursor: { line: 0, col: 0 },
-    life: 12,
-    stars: [6, 7, 9],
+    life: 11,
+    stars: [5, 6, 8],
     availableCommands: ['ciw', 's', '.', 'f', 't'],
     hints: [{ cost: 1, commands: ['ciw', 'yes', 'Esc', 'w', '.', 'w', '.'] }],
     flavor: 'ciw で最初の no を yes に変え、. で残りも一発だ',
   },
 
   // ── Practice: 複数行でドットリピート ──
-  // opt = 10 (j+^+ciw(1)+Esc(1) + j+^+. + j+^+.)
+  // opt = 9 (j+^+ciw…let…Esc(1) + j+^+. + j+^+.)
   {
     id: 'N24-P',
     nodeId: 'N24',
@@ -37,8 +37,8 @@ export const N24_STAGES: Stage[] = [
       'function setup() {\n' + '  var a = 1;\n' + '  var b = 2;\n' + '  var c = 3;\n' + '}',
     goalText: 'function setup() {\n' + '  let a = 1;\n' + '  let b = 2;\n' + '  let c = 3;\n' + '}',
     initialCursor: { line: 0, col: 0 },
-    life: 16,
-    stars: [10, 12, 14],
+    life: 15,
+    stars: [9, 11, 13],
     availableCommands: ['ciw', 's', '.', 'f', 't'],
     hints: [
       {
@@ -50,7 +50,7 @@ export const N24_STAGES: Stage[] = [
   },
 
   // ── Challenge: 複合パズル ──
-  // opt = 10 (ciw + . による複数変更 + f/t 移動)
+  // opt = 9 (j+^+ciw…const…Esc(1) + j+^+. + j+^+.)
   {
     id: 'N24-C',
     nodeId: 'N24',
@@ -72,8 +72,8 @@ export const N24_STAGES: Stage[] = [
       '  return { name: name, age: age, role: role };\n' +
       '}',
     initialCursor: { line: 0, col: 0 },
-    life: 18,
-    stars: [10, 13, 16],
+    life: 17,
+    stars: [9, 12, 15],
     availableCommands: ['ciw', 's', 'S', 'C', '.', 'f', 't'],
     hints: [
       {

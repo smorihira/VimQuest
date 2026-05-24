@@ -21,6 +21,9 @@ import type { SpellEntry } from '../../types/spell'
 export type { SpellEntry }
 export type PlayStatus = 'playing' | 'clear' | 'dead'
 
+/** Number of free characters per INSERT session before excess damage kicks in */
+const INSERT_FREE_CHARS = 5
+
 /** Insert session tracking state */
 interface InsertSession {
   entryState: EditorState
@@ -29,7 +32,6 @@ interface InsertSession {
   damageAtEntry: number
   entryCommand: Command
   insertText: string
-  paidEntry: boolean
 }
 
 /** Stamp damageAtEntry on the last undoStack operation (if stack grew) */
@@ -116,65 +118,45 @@ export function usePlayEngine(
 
       const parser = parserRef.current
 
-      // In insert mode, bypass parser for character input
-      // (parser handles Esc, Backspace, Enter, but regular chars go direct)
-      if (
-        editorState.mode === 'insert' &&
-        key !== 'Esc' &&
-        key !== 'Backspace' &&
-        key !== 'Enter' &&
-        key.length === 1
-      ) {
-        if (insertRef.current) {
-          insertRef.current.charCount++
-          insertRef.current.insertText += key
-        }
-        const next = executeCommand(editorState, { raw: key, valid: true })
-        setEditorState(next)
-        return
-      }
+      // ── INSERT mode: handle all keys directly (only Esc falls through to parser) ──
+      if (editorState.mode === 'insert' && key !== 'Esc') {
+        // Arrow keys: disabled in INSERT mode
+        if (key.startsWith('Arrow')) return
 
-      // Arrow keys in insert mode: move cursor without damage
-      if (editorState.mode === 'insert' && key.startsWith('Arrow')) {
-        const ls = editorState.text.split('\n')
-        let { line, col } = editorState.cursor
-        switch (key) {
-          case 'ArrowLeft':
-            col = Math.max(0, col - 1)
-            break
-          case 'ArrowRight':
-            col = Math.min(ls[line].length, col + 1)
-            break
-          case 'ArrowDown': {
-            const newLine = Math.min(ls.length - 1, line + 1)
-            line = newLine
-            col = Math.min(col, ls[line].length)
-            break
-          }
-          case 'ArrowUp': {
-            const newLine = Math.max(0, line - 1)
-            line = newLine
-            col = Math.min(col, ls[line].length)
-            break
-          }
-        }
-        setEditorState({ ...editorState, cursor: { line, col } })
-        return
-      }
-
-      // Track Backspace/Enter char count in insert mode
-      if (editorState.mode === 'insert') {
+        // Backspace: only allowed for chars typed in this session
         if (key === 'Backspace') {
-          if (insertRef.current) {
-            insertRef.current.charCount = Math.max(0, insertRef.current.charCount - 1)
-            insertRef.current.insertText = insertRef.current.insertText.slice(0, -1)
-          }
-        } else if (key === 'Enter') {
+          if (!insertRef.current || insertRef.current.charCount <= 0) return
+          insertRef.current.charCount--
+          insertRef.current.insertText = insertRef.current.insertText.slice(0, -1)
+          const next = executeCommand(editorState, { raw: key, valid: true })
+          setEditorState(next)
+          return
+        }
+
+        // Enter: counts as a typed character
+        if (key === 'Enter') {
           if (insertRef.current) {
             insertRef.current.charCount++
             insertRef.current.insertText += '\n'
           }
+          const next = executeCommand(editorState, { raw: key, valid: true })
+          setEditorState(next)
+          return
         }
+
+        // Regular character input
+        if (key.length === 1) {
+          if (insertRef.current) {
+            insertRef.current.charCount++
+            insertRef.current.insertText += key
+          }
+          const next = executeCommand(editorState, { raw: key, valid: true })
+          setEditorState(next)
+          return
+        }
+
+        // Other keys (Ctrl combinations, etc.): ignore in INSERT
+        return
       }
 
       // Sync parser with current editor mode (needed for visual mode d/x/y/c handling)
@@ -242,7 +224,6 @@ export function usePlayEngine(
           damageAtEntry: damage,
           entryCommand: parseResult.command,
           insertText: '',
-          paidEntry: false,
         }
         setEditorState(next)
         return
@@ -258,7 +239,6 @@ export function usePlayEngine(
           damageAtEntry: damage,
           entryCommand: parseResult.command,
           insertText: '',
-          paidEntry: false,
         }
         setEditorState(next)
         return
@@ -280,11 +260,8 @@ export function usePlayEngine(
           }
           insertRef.current = null
 
-          // Compute insert damage:
-          // Path A (paidEntry=false): always at least 1 (prevents i→Esc free-move exploit)
-          // Path B (paidEntry=true): entry already cost 1, so Esc is 0 when nothing typed
-          const insertDamage =
-            charCount <= 0 ? (session.paidEntry ? 0 : 1) : Math.ceil(charCount / 5)
+          // Compute insert damage: base cost 1 + excess chars beyond free threshold
+          const insertDamage = 1 + Math.max(0, charCount - INSERT_FREE_CHARS)
           const newDamage = damage + insertDamage
           setDamage(newDamage)
           setSpells((prev) => [
@@ -335,17 +312,8 @@ export function usePlayEngine(
         return
       }
 
-      const newDamage = damage + parseResult.damage
-      setDamage(newDamage)
-      setSpells((prev) => [...prev, { command: raw, damage: parseResult.damage }])
-
-      if (newDamage >= life) {
-        setStatus('dead')
-        return
-      }
-
       // If command transitioned into insert mode (cc, cw, C, s, S, etc.),
-      // create an insert session so undo/damage tracking works on Esc.
+      // defer damage to Esc (entry = 0, unified with Path A).
       if (next.mode === 'insert' && editorState.mode !== 'insert') {
         insertRef.current = {
           entryState: editorState,
@@ -354,8 +322,18 @@ export function usePlayEngine(
           damageAtEntry: damage,
           entryCommand: parseResult.command,
           insertText: '',
-          paidEntry: true,
         }
+        setEditorState(next)
+        return
+      }
+
+      const newDamage = damage + parseResult.damage
+      setDamage(newDamage)
+      setSpells((prev) => [...prev, { command: raw, damage: parseResult.damage }])
+
+      if (newDamage >= life) {
+        setStatus('dead')
+        return
       }
 
       // Set lastCommand for dot repeat:

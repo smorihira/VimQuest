@@ -144,7 +144,7 @@ export function finalizeInsertSession(
     }
   }
 
-  const damage = charCount <= 0 ? 1 : Math.ceil(charCount / 5)
+  const damage = 1 + Math.max(0, charCount - 5)
   const op: Operation = {
     oldText: entryState.text,
     newText: state.text,

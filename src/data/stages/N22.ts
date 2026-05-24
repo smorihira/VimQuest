@@ -7,7 +7,7 @@ import type { Stage } from '../../types/stage'
  */
 export const N22_STAGES: Stage[] = [
   // ── Teach: ciw で単語を置換 ──
-  // opt = 3 (w(1) + ciw(1) + Esc(ceil(5/5)=1))
+  // opt = 2 (w(1) + ciw…count…Esc(1))
   {
     id: 'N22-T',
     nodeId: 'N22',
@@ -17,15 +17,15 @@ export const N22_STAGES: Stage[] = [
     initialText: 'let value = 0;',
     goalText: 'let count = 0;',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
+    life: 8,
+    stars: [2, 3, 5],
     availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't'],
     hints: [{ cost: 1, commands: ['w', 'ciw', 'count', 'Esc'] }],
     flavor: 'ciw で単語を消してそのままInsertモードへ。変数名を変えろ',
   },
 
   // ── Practice: 複数の TextObj 変更 ──
-  // opt = 5 (ci"(1)+Esc(1) + j(1) + ci"(1)+Esc(1))
+  // opt = 3 (ci"…#333…Esc(1) + j(1) + ci"…20px…Esc(1))
   {
     id: 'N22-P',
     nodeId: 'N22',
@@ -35,15 +35,15 @@ export const N22_STAGES: Stage[] = [
     initialText: 'color: "red";\nfont-size: "16px";',
     goalText: 'color: "#333";\nfont-size: "20px";',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 7, 9],
+    life: 9,
+    stars: [3, 5, 7],
     availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't'],
     hints: [{ cost: 1, commands: ['ci"', '#333', 'Esc', 'j', 'ci"', '20px', 'Esc'] }],
     flavor: '2行の引用符内を ci" で書き換えろ',
   },
 
   // ── Challenge: JSON修正パズル ──
-  // opt = 12 (j+fA+ci"+Esc(1) + j+ft+ci"+Esc(1) + j+fu+ci"+Esc(1))
+  // opt = 9 (j+fA+ci"…Bob…Esc(1) + j+ft+ci"…30…Esc(1) + j+fu+ci"…admin…Esc(1))
   {
     id: 'N22-C',
     nodeId: 'N22',
@@ -54,8 +54,8 @@ export const N22_STAGES: Stage[] = [
       '{\n' + '  "name": "Alice",\n' + '  "age": "twenty",\n' + '  "role": "user"\n' + '}',
     goalText: '{\n' + '  "name": "Bob",\n' + '  "age": "30",\n' + '  "role": "admin"\n' + '}',
     initialCursor: { line: 0, col: 0 },
-    life: 20,
-    stars: [12, 15, 18],
+    life: 17,
+    stars: [9, 12, 15],
     availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't'],
     hints: [
       {

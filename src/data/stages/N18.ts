@@ -7,7 +7,7 @@ import type { Stage } from '../../types/stage'
  */
 export const N18_STAGES: Stage[] = [
   // ── Teach: ct で文字の手前まで変更 ──
-  // opt = 2 (w + ct;)  — change 'red' to 'blue'
+  // opt = 3 (w+w+ct;…blue…Esc(1))
   {
     id: 'N18-T',
     nodeId: 'N18',
@@ -17,15 +17,15 @@ export const N18_STAGES: Stage[] = [
     initialText: 'color: red;',
     goalText: 'color: blue;',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 5, 7],
+    life: 9,
+    stars: [3, 4, 6],
     availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
     hints: [{ cost: 1, commands: ['w', 'w', 'ct;', 'blue', 'Esc'] }],
     flavor: 'ct; で ; の手前まで消してInsertモードに。d+i が一体化した c の威力',
   },
 
   // ── Practice: 複数行で cf/ct を使い分け ──
-  // opt = 5 (w+ct;+50px+Esc, j+w+ct;+80px+Esc)
+  // opt = 6 (w+w+ct;…50px…Esc(1) + j+b+ct;…80px…Esc(1))
   {
     id: 'N18-P',
     nodeId: 'N18',
@@ -35,8 +35,8 @@ export const N18_STAGES: Stage[] = [
     initialText: 'width: 100px;\nheight: 200px;',
     goalText: 'width: 50px;\nheight: 80px;',
     initialCursor: { line: 0, col: 0 },
-    life: 14,
-    stars: [8, 10, 12],
+    life: 12,
+    stars: [6, 8, 10],
     availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
     hints: [
       { cost: 1, commands: ['w', 'w', 'ct;', '50px', 'Esc', 'j', 'b', 'ct;', '80px', 'Esc'] },

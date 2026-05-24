@@ -397,7 +397,7 @@ describe('finalizeInsertSession', () => {
     expect(finalized.undoStack[0].damage).toBe(1)
   })
 
-  it('11 chars → 3 damage', () => {
+  it('11 chars → 7 damage (1 + max(0, 11-5))', () => {
     const entry = createEditorState('', { line: 0, col: 0 })
     const afterInsert: EditorState = {
       ...entry,
@@ -407,6 +407,6 @@ describe('finalizeInsertSession', () => {
     }
 
     const finalized = finalizeInsertSession(afterInsert, entry, 11)
-    expect(finalized.undoStack[0].damage).toBe(3)
+    expect(finalized.undoStack[0].damage).toBe(7)
   })
 })
