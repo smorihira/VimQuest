@@ -6,21 +6,26 @@ import type { Stage } from '../../types/stage'
  * Teach(T) = 1ステージ
  */
 export const N11_STAGES: Stage[] = [
-  // ── Teach: 不要な行を削除 ──
-  // opt = 2 (j + dd)
+  // ── Teach: 不要な行を削除 (2本) ──
+  // opt = 4 (j + dd + j + dd)
   {
     id: 'N11-T',
     nodeId: 'N11',
     type: 'teach',
     title: '行を消せ',
     language: 'javascript',
-    initialText: 'const a = 1;\nconsole.log("debug");\nconst b = 2;',
-    goalText: 'const a = 1;\nconst b = 2;',
+    initialText:
+      'const a = 1;\n' +
+      'console.log("debug1");\n' +
+      'const b = 2;\n' +
+      'console.log("debug2");\n' +
+      'const c = 3;',
+    goalText: 'const a = 1;\nconst b = 2;\nconst c = 3;',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
+    life: 10,
+    stars: [4, 5, 7],
     availableCommands: ['dw', 'de', 'db', 'dd'],
-    hints: [{ cost: 1, commands: ['j', 'dd'] }],
+    hints: [{ cost: 1, commands: ['j', 'dd', 'j', 'dd'] }],
     flavor: 'デバッグ行をまるごと消せ。dd で一行削除だ',
   },
 ]

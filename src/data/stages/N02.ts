@@ -5,21 +5,26 @@ import type { Stage } from '../../types/stage'
  * Teach(T) = 1ステージ
  */
 export const N02_STAGES: Stage[] = [
-  // ── Teach: 行頭にコメント記号を追加 ──
-  // opt = 1 (I + type '// ' + Esc)
+  // ── Teach: /* */ で囲む (I で行頭、A で行末) ──
+  // opt = 9 (I(1)+Esc(1) + A(1)+Esc(1) + j(1) + I(1)+Esc(1) + A(1)+Esc(1))
   {
     id: 'N02-T',
     nodeId: 'N02',
     type: 'teach',
-    title: 'コメントアウト',
+    title: 'コメントで囲め',
     language: 'javascript',
-    initialText: 'fixBug()',
-    goalText: '// fixBug()',
-    initialCursor: { line: 0, col: 3 },
-    life: 7,
-    stars: [1, 2, 4],
+    initialText: 'fix()\nrun()',
+    goalText: '/* fix() */\n/* run() */',
+    initialCursor: { line: 0, col: 2 },
+    life: 15,
+    stars: [9, 10, 12],
     availableCommands: ['I', 'A'],
-    hints: [{ cost: 1, commands: ['I', '// ', 'Esc'] }],
-    flavor: 'I で行頭に移動して // を挿入せよ',
+    hints: [
+      {
+        cost: 1,
+        commands: ['I', '/* ', 'Esc', 'A', ' */', 'Esc', 'j', 'I', '/* ', 'Esc', 'A', ' */', 'Esc'],
+      },
+    ],
+    flavor: 'I で行頭、A で行末から Insert。両端から /* */ で囲め',
   },
 ]

@@ -6,21 +6,21 @@ import type { Stage } from '../../types/stage'
  * Teach(T) = 1ステージ
  */
 export const N04_STAGES: Stage[] = [
-  // ── Teach: 1文字を置換 ──
-  // opt = 2 (l + re)
+  // ── Teach: typo を直す (2行分) ──
+  // opt = 4 (l + re + j + ro)
   {
     id: 'N04-T',
     nodeId: 'N04',
     type: 'teach',
     title: '一文字直せ',
     language: 'plaintext',
-    initialText: 'hallo',
-    goalText: 'hello',
+    initialText: 'hallo\nwarld',
+    goalText: 'hello\nworld',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
+    life: 10,
+    stars: [4, 5, 7],
     availableCommands: ['r'],
-    hints: [{ cost: 1, commands: ['l', 're'] }],
-    flavor: 'a を e に置き換えろ。x で消して i で打ち直す？ r なら一発だ',
+    hints: [{ cost: 1, commands: ['l', 're', 'j', 'ro'] }],
+    flavor: 'r で 1 文字だけ置換。x+i より速いぞ',
   },
 ]

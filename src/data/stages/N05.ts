@@ -5,8 +5,8 @@ import type { Stage } from '../../types/stage'
  * Teach(T) = 1ステージ
  */
 export const N05_STAGES: Stage[] = [
-  // ── Teach: 先頭を大文字に ──
-  // opt = 1 (~)
+  // ── Teach: 2箇所の大小を直す ──
+  // opt = 3 (~ + w + ~)
   {
     id: 'N05-T',
     nodeId: 'N05',
@@ -14,12 +14,12 @@ export const N05_STAGES: Stage[] = [
     title: 'トグルせよ',
     language: 'plaintext',
     initialText: 'hello World',
-    goalText: 'Hello World',
+    goalText: 'Hello world',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
+    life: 9,
+    stars: [3, 4, 6],
     availableCommands: ['~'],
-    hints: [{ cost: 1, commands: ['~'] }],
-    flavor: 'h を H に変えろ。~ で大小文字を切り替えられる',
+    hints: [{ cost: 1, commands: ['~', 'w', '~'] }],
+    flavor: '~ で大小文字をトグル。カーソルも自動で進むぞ',
   },
 ]
