@@ -123,11 +123,13 @@ export function usePlayEngine(
         // Arrow keys: disabled in INSERT mode
         if (key.startsWith('Arrow')) return
 
-        // Backspace: only allowed for chars typed in this session
+        // Backspace: freely allowed, but charCount doesn't go below 0
+        // (arrow keys are disabled, so BS hack requires normal-mode movement cost)
         if (key === 'Backspace') {
-          if (!insertRef.current || insertRef.current.charCount <= 0) return
-          insertRef.current.charCount--
-          insertRef.current.insertText = insertRef.current.insertText.slice(0, -1)
+          if (insertRef.current && insertRef.current.charCount > 0) {
+            insertRef.current.charCount--
+            insertRef.current.insertText = insertRef.current.insertText.slice(0, -1)
+          }
           const next = executeCommand(editorState, { raw: key, valid: true })
           setEditorState(next)
           return
