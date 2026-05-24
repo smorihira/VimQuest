@@ -132,7 +132,7 @@ export const N01_4_TUTORIAL: Tutorial = {
             expectedKey: 'W',
         },
         {
-            message: 'W は記号をまたいで飛ぶ。return までたどり着いたな',
+            message: 'W は記号をまたいで飛ぶ。末尾の ; まで W で一気に行け',
             expectedKey: null,
         },
     ],
@@ -270,6 +270,30 @@ export const N01_8_TUTORIAL: Tutorial = {
         {
             message: 'Esc で戻れ。Insert に入ったら必ず Esc。これが Vim の基本だ',
             expectedKey: 'Esc',
+        },
+    ],
+}
+
+/** N01-C: 卒業試験 */
+export const N01_C_TUTORIAL: Tutorial = {
+    nodeId: 'N01',
+    stageId: 'N01-C',
+    initialSetup: {
+        text: 'helo world\nthee quick brown fox\njumps ovr the\n  lazy dogg',
+        cursor: { line: 0, col: 0 },
+    },
+    steps: [
+        {
+            message: '基礎訓練の総仕上げだ。全ての武器を使って、4行のタイプミスを修正しろ',
+            expectedKey: null,
+        },
+        {
+            message: 'ここでマスターした武器は「BASE」として、これから先の全ステージで常に使えるぞ。手札の BASE ▸ で確認できる',
+            expectedKey: null,
+        },
+        {
+            message: 'さぁ、始めろ。x で消して i/a で挿入だ',
+            expectedKey: null,
         },
     ],
 }

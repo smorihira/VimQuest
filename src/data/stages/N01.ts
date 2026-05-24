@@ -74,9 +74,9 @@ export const N01_STAGES: Stage[] = [
     life: 999,
     stars: [999, 999, 999],
     availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E'],
-    clearConditions: { cursor: { line: 0, col: 13 } },
-    hints: [{ cost: 1, commands: ['W'] }],
-    flavor: 'W は記号をまたいで空白区切りで飛ぶ。return まで一発だ',
+    clearConditions: { cursor: { line: 0, col: 27 } },
+    hints: [{ cost: 1, commands: ['W', 'W', 'W'] }],
+    flavor: 'W は記号をまたいで空白区切りで飛ぶ。末尾の ; まで一気に行け',
   },
 
   // ── N01-5: 行頭末ジャンプ ──
@@ -127,7 +127,7 @@ export const N01_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 3 },
     life: 999,
     stars: [999, 999, 999],
-    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'x'],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', '0', '^', '$', 'gg', 'G', 'x'],
     hints: [{ cost: 1, commands: ['x', 'x'] }],
     flavor: '余分な l を x で消せ',
   },
@@ -144,8 +144,25 @@ export const N01_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 1 },
     life: 999,
     stars: [999, 999, 999],
-    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'x', 'i', 'a'],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', '0', '^', '$', 'gg', 'G', 'x', 'i', 'a'],
     hints: [{ cost: 1, commands: ['i', 'e', 'Esc', 'w', 'e', 'a', 'd', 'Esc'] }],
     flavor: 'i と a で足りない文字を補え',
+  },
+
+  // ── N01-C: 卒業試験 ──
+  {
+    id: 'N01-C',
+    nodeId: 'N01',
+    type: 'tutorial',
+    title: '卒業試験',
+    language: 'plaintext',
+    initialText: 'helo world\nthee quick brown fox\njumps ovr the\n  lazy dogg',
+    goalText: 'hello world\nthe quick brown fox\njumps over the\n  lazy dog',
+    initialCursor: { line: 0, col: 0 },
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: [],
+    hints: [{ cost: 1, commands: ['l', 'l', 'a', 'l', 'Esc', 'j', '0', 'l', 'l', 'l', 'x', 'j', 'w', 'l', 'a', 'e', 'Esc', 'j', '$', 'x'] }],
+    flavor: '全ての武器を使いこなせ',
   },
 ]

@@ -5,7 +5,7 @@
 import type { SkillNodeDef, SkillTreeEdge } from '../types/game'
 
 export const SKILL_NODES: SkillNodeDef[] = [
-    { id: 'N01', name: '基礎訓練', commands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', '0', '^', '$', 'gg', 'G', 'x', 'i', 'a'], stageCount: 8, prerequisites: [] },
+    { id: 'N01', name: '基礎訓練', commands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', '0', '^', '$', 'gg', 'G', 'x', 'i', 'a'], stageCount: 9, prerequisites: [] },
     { id: 'N02', name: '行頭/末Insert', commands: ['I', 'A'], stageCount: 1, prerequisites: ['N01'] },
     { id: 'N03', name: '新行Insert', commands: ['o', 'O'], stageCount: 1, prerequisites: ['N02'] },
     { id: 'N04', name: '1文字置換', commands: ['r'], stageCount: 1, prerequisites: ['N01'] },

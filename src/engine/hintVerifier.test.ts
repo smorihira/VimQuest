@@ -34,104 +34,104 @@ import type { Stage } from '../types/stage'
  * to the executor.
  */
 function simulateHintCommands(stage: Stage): EditorState {
-  let state = createEditorState(stage.initialText, stage.initialCursor)
-  const parser = new CommandParser(
-    stage.availableCommands,
-    undefined,
-    stage.visualCommands,
-    stage.nodeId !== 'N01' ? (BASE_COMMANDS as unknown as string[]) : undefined,
-  )
+    let state = createEditorState(stage.initialText, stage.initialCursor)
+    const parser = new CommandParser(
+        stage.availableCommands,
+        undefined,
+        stage.visualCommands,
+        stage.nodeId !== 'N01' || stage.id === 'N01-C' ? (BASE_COMMANDS as unknown as string[]) : undefined,
+    )
 
-  // Track insert mode for proper insert session handling
-  let insertEntryState: EditorState | null = null
-  let insertCharCount = 0
-  let insertText = ''
-  let lastEditCommand: import('../types/command').Command | null = null
+    // Track insert mode for proper insert session handling
+    let insertEntryState: EditorState | null = null
+    let insertCharCount = 0
+    let insertText = ''
+    let lastEditCommand: import('../types/command').Command | null = null
 
-  for (const cmd of stage.hints[0].commands) {
-    if (state.mode === 'insert') {
-      // In insert mode
-      if (cmd === 'Esc') {
-        // Finalize insert session
-        state = finalizeInsertSession(state, insertEntryState!, insertCharCount)
+    for (const cmd of stage.hints[0].commands) {
+        if (state.mode === 'insert') {
+            // In insert mode
+            if (cmd === 'Esc') {
+                // Finalize insert session
+                state = finalizeInsertSession(state, insertEntryState!, insertCharCount)
+                state = executeCommand(state, { raw: 'Esc', valid: true })
+                // Store lastCommand and lastInsertText for dot repeat
+                if (lastEditCommand) {
+                    state = { ...state, lastCommand: lastEditCommand, lastInsertText: insertText }
+                }
+                insertEntryState = null
+                insertCharCount = 0
+                insertText = ''
+                parser.reset()
+            } else if (cmd === 'Enter') {
+                state = executeCommand(state, { raw: 'Enter', valid: true })
+                insertCharCount++
+                insertText += '\n'
+            } else if (cmd === 'Backspace') {
+                state = executeCommand(state, { raw: 'Backspace', valid: true })
+                insertCharCount = Math.max(0, insertCharCount - 1)
+            } else {
+                // Type each character
+                for (const ch of cmd) {
+                    state = executeCommand(state, { raw: ch, valid: true })
+                    insertCharCount++
+                    insertText += ch
+                }
+            }
+            continue
+        }
+
+        // Normal/Visual mode: parse the command through the parser
+        // Some commands need special handling
+
+        // Search command: /pattern → feed '/' then each char then 'Enter'
+        if (cmd.startsWith('/')) {
+            const pattern = cmd.slice(1)
+            parser.feed('/')
+            for (const ch of pattern) {
+                parser.feed(ch)
+            }
+            // Don't feed Enter here — the next command in hints should be 'Enter'
+            continue
+        }
+
+        // Multi-char commands: feed each character
+        const keys = tokenizeCommand(cmd)
+        for (const key of keys) {
+            // Keep parser aware of current editor mode
+            parser.setEditorMode(state.mode === 'visual' ? 'visual' : 'normal')
+            const result = parser.feed(key)
+            if (result) {
+                if (result.command.valid) {
+                    // Check if this command enters insert mode
+                    const wasNormal = state.mode !== 'insert'
+                    state = executeCommand(state, result.command)
+                    if (wasNormal && state.mode === 'insert') {
+                        insertEntryState = { ...state }
+                        insertCharCount = 0
+                        insertText = ''
+                        // Track the command that entered insert mode
+                        lastEditCommand = result.command
+                    }
+                    // Store lastCommand for non-insert editing commands
+                    if (state.mode === 'normal' && result.command.operator) {
+                        state = { ...state, lastCommand: result.command }
+                    }
+                }
+            }
+        }
+    }
+
+    // If still in insert mode at end, finalize
+    if (state.mode === 'insert' && insertEntryState) {
+        state = finalizeInsertSession(state, insertEntryState, insertCharCount)
         state = executeCommand(state, { raw: 'Esc', valid: true })
-        // Store lastCommand and lastInsertText for dot repeat
         if (lastEditCommand) {
-          state = { ...state, lastCommand: lastEditCommand, lastInsertText: insertText }
+            state = { ...state, lastCommand: lastEditCommand, lastInsertText: insertText }
         }
-        insertEntryState = null
-        insertCharCount = 0
-        insertText = ''
-        parser.reset()
-      } else if (cmd === 'Enter') {
-        state = executeCommand(state, { raw: 'Enter', valid: true })
-        insertCharCount++
-        insertText += '\n'
-      } else if (cmd === 'Backspace') {
-        state = executeCommand(state, { raw: 'Backspace', valid: true })
-        insertCharCount = Math.max(0, insertCharCount - 1)
-      } else {
-        // Type each character
-        for (const ch of cmd) {
-          state = executeCommand(state, { raw: ch, valid: true })
-          insertCharCount++
-          insertText += ch
-        }
-      }
-      continue
     }
 
-    // Normal/Visual mode: parse the command through the parser
-    // Some commands need special handling
-
-    // Search command: /pattern → feed '/' then each char then 'Enter'
-    if (cmd.startsWith('/')) {
-      const pattern = cmd.slice(1)
-      parser.feed('/')
-      for (const ch of pattern) {
-        parser.feed(ch)
-      }
-      // Don't feed Enter here — the next command in hints should be 'Enter'
-      continue
-    }
-
-    // Multi-char commands: feed each character
-    const keys = tokenizeCommand(cmd)
-    for (const key of keys) {
-      // Keep parser aware of current editor mode
-      parser.setEditorMode(state.mode === 'visual' ? 'visual' : 'normal')
-      const result = parser.feed(key)
-      if (result) {
-        if (result.command.valid) {
-          // Check if this command enters insert mode
-          const wasNormal = state.mode !== 'insert'
-          state = executeCommand(state, result.command)
-          if (wasNormal && state.mode === 'insert') {
-            insertEntryState = { ...state }
-            insertCharCount = 0
-            insertText = ''
-            // Track the command that entered insert mode
-            lastEditCommand = result.command
-          }
-          // Store lastCommand for non-insert editing commands
-          if (state.mode === 'normal' && result.command.operator) {
-            state = { ...state, lastCommand: result.command }
-          }
-        }
-      }
-    }
-  }
-
-  // If still in insert mode at end, finalize
-  if (state.mode === 'insert' && insertEntryState) {
-    state = finalizeInsertSession(state, insertEntryState, insertCharCount)
-    state = executeCommand(state, { raw: 'Esc', valid: true })
-    if (lastEditCommand) {
-      state = { ...state, lastCommand: lastEditCommand, lastInsertText: insertText }
-    }
-  }
-
-  return state
+    return state
 }
 
 /**
@@ -157,42 +157,42 @@ function simulateHintCommands(stage: Stage): EditorState {
  *   'f{' → ['f', '{']
  */
 function tokenizeCommand(cmd: string): string[] {
-  // Special multi-char keys
-  if (cmd === 'Esc' || cmd === 'Escape') return ['Esc']
-  if (cmd === 'Enter') return ['Enter']
-  if (cmd === 'Backspace') return ['Backspace']
-  if (cmd.startsWith('Ctrl+')) return [cmd]
+    // Special multi-char keys
+    if (cmd === 'Esc' || cmd === 'Escape') return ['Esc']
+    if (cmd === 'Enter') return ['Enter']
+    if (cmd === 'Backspace') return ['Backspace']
+    if (cmd.startsWith('Ctrl+')) return [cmd]
 
-  // Single character
-  if (cmd.length === 1) return [cmd]
+    // Single character
+    if (cmd.length === 1) return [cmd]
 
-  // Multi-character: split into individual characters
-  return cmd.split('')
+    // Multi-character: split into individual characters
+    return cmd.split('')
 }
 
 // ─── Tests ──────────────────────────────────────────────────────────
 
 describe('Hint Verification', () => {
-  const stages = Object.values(ALL_STAGES)
+    const stages = Object.values(ALL_STAGES)
 
-  for (const stage of stages) {
-    it(`${stage.id}: hint commands produce correct result`, () => {
-      const finalState = simulateHintCommands(stage)
+    for (const stage of stages) {
+        it(`${stage.id}: hint commands produce correct result`, () => {
+            const finalState = simulateHintCommands(stage)
 
-      // 1. Text must match goalText
-      expect(finalState.text).toBe(stage.goalText)
+            // 1. Text must match goalText
+            expect(finalState.text).toBe(stage.goalText)
 
-      // 2. Cursor must match clearConditions.cursor (if specified)
-      if (stage.clearConditions?.cursor) {
-        expect(finalState.cursor).toEqual(stage.clearConditions.cursor)
-      }
+            // 2. Cursor must match clearConditions.cursor (if specified)
+            if (stage.clearConditions?.cursor) {
+                expect(finalState.cursor).toEqual(stage.clearConditions.cursor)
+            }
 
-      // 3. Registers must match clearConditions.registers (if specified)
-      if (stage.clearConditions?.registers) {
-        for (const [reg, value] of Object.entries(stage.clearConditions.registers)) {
-          expect(finalState.registers[reg]).toBe(value)
-        }
-      }
-    })
-  }
+            // 3. Registers must match clearConditions.registers (if specified)
+            if (stage.clearConditions?.registers) {
+                for (const [reg, value] of Object.entries(stage.clearConditions.registers)) {
+                    expect(finalState.registers[reg]).toBe(value)
+                }
+            }
+        })
+    }
 })

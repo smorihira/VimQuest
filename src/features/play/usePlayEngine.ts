@@ -306,10 +306,10 @@ export function usePlayEngine(
             stage.availableCommands,
             undefined,
             stage.visualCommands,
-            stage.baseCommands,
+            baseCommands as string[] | undefined,
         )
         setSpells([])
-    }, [stage])
+    }, [stage, baseCommands])
 
     const useHint = useCallback(() => {
         setUsedHint(true)

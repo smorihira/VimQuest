@@ -65,12 +65,17 @@ function PlayScreenInner({
     stage: NonNullable<ReturnType<typeof getStage>>
     navigate: ReturnType<typeof useNavigate>
 }) {
-    const play = usePlayEngine(stage, stage.nodeId !== 'N01' ? BASE_COMMANDS : undefined)
+    const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
+    const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined)
+    const progress = useAtomValue(gameProgressAtom)
     const [spaceHeld, setSpaceHeld] = useState(false)
     const [muted, setMutedState] = useState(isMuted())
     const [showHint, setShowHint] = useState(false)
     const [focused, setFocused] = useState(true)
     const [colonBuffer, setColonBuffer] = useState('')
+
+    // Base row: only N01-C auto-expands, all others default closed
+    const [baseExpanded, setBaseExpanded] = useState(stage.id === 'N01-C')
 
     // Focus loss detection
     useEffect(() => {
@@ -196,6 +201,13 @@ function PlayScreenInner({
                     setColonBuffer('')
                     // Don't swallow the key — fall through to handleKey
                 }
+            }
+
+            // ? key toggles base row
+            if (key === '?' && play.editorState.mode === 'normal' && showBase) {
+                setBaseExpanded((v) => !v)
+                playTick()
+                return
             }
 
             // Esc in normal mode with no pending parser input → exit stage
@@ -332,7 +344,18 @@ function PlayScreenInner({
 
             {/* Hand Cards */}
             <div className="play-card-panel">
-                <div className="card-label">{play.editorState.mode === 'insert' ? 'INSERT' : 'HAND'}</div>
+                <div className="card-label-row">
+                    <span className="card-label">{play.editorState.mode === 'insert' ? 'INSERT' : 'HAND'}</span>
+                    {showBase && play.editorState.mode !== 'insert' && (
+                        <button
+                            className={`base-toggle${baseExpanded ? ' expanded' : ''}`}
+                            onClick={() => { setBaseExpanded((v) => !v); playTick() }}
+                            title="BASE コマンド表示切替 (?)"
+                        >
+                            BASE {baseExpanded ? '▾' : '▸'}
+                        </button>
+                    )}
+                </div>
                 {play.editorState.mode === 'insert' ? (
                     <div className="insert-info">
                         <span className="insert-chars">入力中…</span>
@@ -340,7 +363,7 @@ function PlayScreenInner({
                     </div>
                 ) : (
                     <>
-                        {stage.nodeId !== 'N01' && (
+                        {showBase && baseExpanded && (
                             <div className="base-row">
                                 {(play.editorState.mode === 'visual'
                                     ? BASE_COMMANDS.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v')
@@ -482,7 +505,9 @@ function getPendingOperator(buffer: string): string | null {
 function getCardClass(cmd: string): string {
     if (['d', 'c', 'y'].includes(cmd[0]) && cmd.length >= 2) return 'verb'
     if (['d', 'c', 'y', '>', '<'].includes(cmd)) return 'verb'
-    if (['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '$', '^', 'G', 'gg'].includes(cmd)) return 'motion'
+    if (['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', '0', '$', '^', 'G', 'gg', 'f', 't', ';', ',', '/', 'n', 'N', '*', '#', '{', '}', '(', ')', '%'].includes(cmd)) return 'motion'
+    if (['x', 'r', '~', 'J', '.', 'u', 'p', 'P'].includes(cmd)) return 'action'
+    if (['i', 'a', 'I', 'A', 'o', 'O', 's', 'S', 'C', 'R'].includes(cmd)) return 'insert'
     if (cmd.startsWith('i') && cmd.length >= 2) return 'object'
     if (cmd.startsWith('a') && cmd.length >= 2) return 'object'
     return ''

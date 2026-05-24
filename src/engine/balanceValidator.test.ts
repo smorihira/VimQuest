@@ -101,6 +101,8 @@ describe('Stage content sanity', () => {
             })
 
             it('has at least 1 available command', () => {
+                // N01-C uses BASE_COMMANDS exclusively (availableCommands is empty)
+                if (stage.id === 'N01-C') return
                 expect(stage.availableCommands.length).toBeGreaterThanOrEqual(1)
             })
 

@@ -44,7 +44,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
                 stage.availableCommands,
                 undefined,
                 stage.visualCommands,
-                stage.nodeId !== 'N01' ? (BASE_COMMANDS as unknown as string[]) : undefined,
+                stage.nodeId !== 'N01' || stage.id === 'N01-C' ? (BASE_COMMANDS as unknown as string[]) : undefined,
             )
             parser.setEditorMode(state.mode)
 
