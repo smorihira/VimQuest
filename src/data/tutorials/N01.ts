@@ -306,6 +306,38 @@ export const N01_8_TUTORIAL: Tutorial = {
   ],
 }
 
+/** N01-9: 文字を置き換えろ (s) */
+export const N01_9_TUTORIAL: Tutorial = {
+  nodeId: 'N01',
+  stageId: 'N01-9',
+  initialSetup: {
+    text: 'cot hot',
+    cursor: { line: 0, col: 1 },
+  },
+  steps: [
+    {
+      message: 's を押してみろ。カーソル上の文字を消して Insert に入るぞ',
+      expectedKey: 's',
+    },
+    {
+      message: 'u と打て',
+      expectedKey: 'u',
+    },
+    {
+      message: 'Esc で NORMAL に戻れ',
+      expectedKey: 'Esc',
+    },
+    {
+      message: 'i は前から、a は後ろから、s は上から。Insert の3つの入口を覚えろ',
+      expectedKey: null,
+    },
+    {
+      message: 'もう一箇所直してクリアしろ。w と l で移動して s だ',
+      expectedKey: null,
+    },
+  ],
+}
+
 /** N01-C: 卒業試験 */
 export const N01_C_TUTORIAL: Tutorial = {
   nodeId: 'N01',
@@ -325,7 +357,7 @@ export const N01_C_TUTORIAL: Tutorial = {
       expectedKey: null,
     },
     {
-      message: 'さぁ、始めろ。x で消して i/a で挿入だ',
+      message: 'さぁ、始めろ。x で消して i/a で挿入、s で置き換えだ',
       expectedKey: null,
     },
   ],

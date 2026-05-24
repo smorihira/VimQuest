@@ -19,7 +19,7 @@ export const N23_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 6 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['ciw', 's', 'S', 'C', 'f', 't'],
+    availableCommands: ['ciw', 'S', 'C', 'f', 't'],
     hints: [{ cost: 1, commands: ['s', 'R', 'Esc'] }],
     flavor: 's で1文字消してすぐ入力。r より柔軟だ',
   },
