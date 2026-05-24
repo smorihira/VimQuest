@@ -135,20 +135,29 @@ export function usePlayEngine(
 
       // Arrow keys in insert mode: move cursor without damage
       if (editorState.mode === 'insert' && key.startsWith('Arrow')) {
-        const motionMap: Record<string, string> = {
-          ArrowLeft: 'h',
-          ArrowDown: 'j',
-          ArrowUp: 'k',
-          ArrowRight: 'l',
+        const ls = editorState.text.split('\n')
+        let { line, col } = editorState.cursor
+        switch (key) {
+          case 'ArrowLeft':
+            col = Math.max(0, col - 1)
+            break
+          case 'ArrowRight':
+            col = Math.min(ls[line].length, col + 1)
+            break
+          case 'ArrowDown': {
+            const newLine = Math.min(ls.length - 1, line + 1)
+            line = newLine
+            col = Math.min(col, ls[line].length)
+            break
+          }
+          case 'ArrowUp': {
+            const newLine = Math.max(0, line - 1)
+            line = newLine
+            col = Math.min(col, ls[line].length)
+            break
+          }
         }
-        const motion = motionMap[key]
-        if (motion) {
-          const next = executeCommand(
-            { ...editorState, mode: 'normal' },
-            { raw: motion, motion: motion as 'h' | 'j' | 'k' | 'l', valid: true },
-          )
-          setEditorState({ ...next, mode: 'insert' })
-        }
+        setEditorState({ ...editorState, cursor: { line, col } })
         return
       }
 

@@ -205,7 +205,7 @@ export const N01_7_TUTORIAL: Tutorial = {
       expectedKey: 'Ctrl+R',
     },
     {
-      message: 'u と Ctrl+R はいつでも使えるセーフティネットだ。覚えておけ',
+      message: 'u と Ctrl+R はいつでも使えるセーフティネットだ。残りの余分な文字も x で消せ',
       expectedKey: null,
     },
   ],
@@ -233,22 +233,17 @@ export const N01_8_TUTORIAL: Tutorial = {
       message: '1文字打って１ダメージ。insert 中は5文字まで1ダメージで済む',
       expectedKey: null,
     },
-    // ── Navigate to end ──
+    // ── Long insert with `a` ──
     {
       message: '$ で行末に飛べ',
       expectedKey: '$',
     },
-    // ── Long insert with `a` ──
     {
       message: '今度は a だ。カーソルの後ろに挿入する。i との違いを覚えろ',
       expectedKey: 'a',
     },
     {
-      message: ' world と6文字打ってみろ。まずスペース',
-      expectedKey: ' ',
-    },
-    {
-      message: 'w',
+      message: 'world! と6文字打ってみろ。まず w',
       expectedKey: 'w',
     },
     {
@@ -268,11 +263,16 @@ export const N01_8_TUTORIAL: Tutorial = {
       expectedKey: 'd',
     },
     {
+      message: '!',
+      expectedKey: '!',
+    },
+    {
       message: 'Esc。Insert に入ったら必ず Esc。これが Vim の基本だ',
       expectedKey: 'Esc',
     },
     {
-      message: '6文字で2ダメージだ。5文字ごとに1ダメージ増えるぞ。効率よく直せ',
+      message:
+        '6文字で2ダメージだ。5文字ごとに1ダメージ増えるぞ。Spaceで重ねてゴールと見比べ、残りも直せ',
       expectedKey: null,
     },
   ],
