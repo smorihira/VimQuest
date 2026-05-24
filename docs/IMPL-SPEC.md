@@ -233,7 +233,7 @@ export const N01_STAGES: Stage[] = [
   {
     id: 'N01-1',
     nodeId: 'N01',
-    type: 'tutorial',  // N01はtutorial型
+    type: 'tutorial', // N01はtutorial型
     title: '最初の一歩：左右移動',
     language: 'plaintext',
     initialText: 'hello world',
@@ -241,7 +241,7 @@ export const N01_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['h', 'l'],  // base未解放、個別指定
+    availableCommands: ['h', 'l'], // base未解放、個別指定
     hints: [{ cost: 1, commands: ['l', 'l', 'l', 'l', 'l'] }],
     flavor: '右に移動して目標地点に到達せよ',
   },
@@ -282,11 +282,11 @@ export interface Hint {
 
 ### 4.3 開発順序
 
-| フェーズ    | 内容                                     | ステージ数                  |
-| ----------- | ---------------------------------------- | --------------------------- |
-| **Phase 1** | エンジン開発。サンプルステージで動作確認 | 8（N01×5 + N02×3）         |
-| **Phase 2** | 全57ステージ量産                         | 残り49                      |
-| **Phase 3** | バランス調整（opt値検証、ライフ調整）    | —                           |
+| フェーズ    | 内容                                     | ステージ数         |
+| ----------- | ---------------------------------------- | ------------------ |
+| **Phase 1** | エンジン開発。サンプルステージで動作確認 | 8（N01×5 + N02×3） |
+| **Phase 2** | 全57ステージ量産                         | 残り49             |
+| **Phase 3** | バランス調整（opt値検証、ライフ調整）    | —                  |
 
 ---
 

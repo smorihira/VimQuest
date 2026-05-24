@@ -74,6 +74,7 @@ export const N07_STAGES: Stage[] = [
     availableCommands: ['zz', 'zt', 'zb', 'Ctrl+d', 'Ctrl+u'],
     clearConditions: { cursor: { line: 18, col: 0 }, viewportTop: 10 },
     hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d', 'j', 'j', 'zz'] }],
-    flavor: 'Ctrl+d でカーソルを移動し、zz で現在行を画面中央に合わせろ。両方揃わないとクリアできない',
+    flavor:
+      'Ctrl+d でカーソルを移動し、zz で現在行を画面中央に合わせろ。両方揃わないとクリアできない',
   },
 ]

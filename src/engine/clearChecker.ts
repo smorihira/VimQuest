@@ -13,42 +13,42 @@ import type { Stage, ClearCondition } from '../types/stage'
  * Always checks text match; optionally checks cursor and registers.
  */
 export function isStageClear(state: EditorState, stage: Stage): boolean {
-    // Primary: text must match goal
-    if (state.text !== stage.goalText) return false
+  // Primary: text must match goal
+  if (state.text !== stage.goalText) return false
 
-    // Extended conditions
-    if (stage.clearConditions) {
-        if (!checkClearConditions(state, stage.clearConditions)) return false
-    }
+  // Extended conditions
+  if (stage.clearConditions) {
+    if (!checkClearConditions(state, stage.clearConditions)) return false
+  }
 
-    return true
+  return true
 }
 
 /**
  * Check extended clear conditions (cursor position, registers).
  */
 export function checkClearConditions(state: EditorState, conditions: ClearCondition): boolean {
-    // Cursor check
-    if (conditions.cursor) {
-        if (
-            state.cursor.line !== conditions.cursor.line ||
-            state.cursor.col !== conditions.cursor.col
-        ) {
-            return false
-        }
+  // Cursor check
+  if (conditions.cursor) {
+    if (
+      state.cursor.line !== conditions.cursor.line ||
+      state.cursor.col !== conditions.cursor.col
+    ) {
+      return false
     }
+  }
 
-    // Register check
-    if (conditions.registers) {
-        for (const [key, expected] of Object.entries(conditions.registers)) {
-            if (state.registers[key] !== expected) return false
-        }
+  // Register check
+  if (conditions.registers) {
+    for (const [key, expected] of Object.entries(conditions.registers)) {
+      if (state.registers[key] !== expected) return false
     }
+  }
 
-    // Viewport check
-    if (conditions.viewportTop !== undefined) {
-        if (state.viewportTop !== conditions.viewportTop) return false
-    }
+  // Viewport check
+  if (conditions.viewportTop !== undefined) {
+    if (state.viewportTop !== conditions.viewportTop) return false
+  }
 
-    return true
+  return true
 }
