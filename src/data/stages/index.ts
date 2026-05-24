@@ -21,61 +21,57 @@ import { N19_STAGES } from './N19'
 import { N20_STAGES } from './N20'
 import { N21_STAGES } from './N21'
 import { N22_STAGES } from './N22'
-import { N23_STAGES } from './N23'
 import { N24_STAGES } from './N24'
 import { N25_STAGES } from './N25'
 import { N26_STAGES } from './N26'
 import { N27_STAGES } from './N27'
 import { N28_STAGES } from './N28'
 import { N29_STAGES } from './N29'
-import { N30_STAGES } from './N30'
 import { N31_STAGES } from './N31'
 
 const ALL_STAGE_ARRAYS: Stage[][] = [
-    N01_STAGES,
-    N02_STAGES,
-    N03_STAGES,
-    N04_STAGES,
-    N05_STAGES,
-    N06_STAGES,
-    N07_STAGES,
-    N08_STAGES,
-    N09_STAGES,
-    N10_STAGES,
-    N11_STAGES,
-    N12_STAGES,
-    N13_STAGES,
-    N14_STAGES,
-    N15_STAGES,
-    N16_STAGES,
-    N17_STAGES,
-    N18_STAGES,
-    N19_STAGES,
-    N20_STAGES,
-    N21_STAGES,
-    N22_STAGES,
-    N23_STAGES,
-    N24_STAGES,
-    N25_STAGES,
-    N26_STAGES,
-    N27_STAGES,
-    N28_STAGES,
-    N29_STAGES,
-    N30_STAGES,
-    N31_STAGES,
+  N01_STAGES,
+  N02_STAGES,
+  N03_STAGES,
+  N04_STAGES,
+  N05_STAGES,
+  N06_STAGES,
+  N07_STAGES,
+  N08_STAGES,
+  N09_STAGES,
+  N10_STAGES,
+  N11_STAGES,
+  N12_STAGES,
+  N13_STAGES,
+  N14_STAGES,
+  N15_STAGES,
+  N16_STAGES,
+  N17_STAGES,
+  N18_STAGES,
+  N19_STAGES,
+  N20_STAGES,
+  N21_STAGES,
+  N22_STAGES,
+  N24_STAGES,
+  N25_STAGES,
+  N26_STAGES,
+  N27_STAGES,
+  N28_STAGES,
+  N29_STAGES,
+  N31_STAGES,
 ]
 
 /** All stages keyed by stage ID */
 export const ALL_STAGES: Record<string, Stage> = Object.fromEntries(
-    ALL_STAGE_ARRAYS.flat().map((s) => [s.id, s]),
+  ALL_STAGE_ARRAYS.flat().map((s) => [s.id, s]),
 )
 
 /** Get all stages for a given node */
 export function getStagesByNode(nodeId: string): Stage[] {
-    return ALL_STAGE_ARRAYS.flat().filter((s) => s.nodeId === nodeId)
+  return ALL_STAGE_ARRAYS.flat().filter((s) => s.nodeId === nodeId)
 }
 
 /** Get a single stage by ID */
 export function getStage(stageId: string): Stage | undefined {
-    return ALL_STAGES[stageId]
+  return ALL_STAGES[stageId]
 }

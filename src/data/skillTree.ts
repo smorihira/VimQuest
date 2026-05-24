@@ -67,7 +67,13 @@ export const SKILL_NODES: SkillNodeDef[] = [
   },
   { id: 'N11', name: '行削除', commands: ['dd'], stageCount: 1, prerequisites: ['N10'] },
   { id: 'N12', name: '行末削除', commands: ['d$', 'd0'], stageCount: 1, prerequisites: ['N11'] },
-  { id: 'N13', name: 'Dショートカット', commands: ['D'], stageCount: 1, prerequisites: ['N12'] },
+  {
+    id: 'N13',
+    name: 'ショートカット',
+    commands: ['D', 'C', 'S'],
+    stageCount: 2,
+    prerequisites: ['N12', 'N22'],
+  },
   { id: 'N14', name: '行結合', commands: ['J'], stageCount: 1, prerequisites: ['N11'] },
   {
     id: 'N15',
@@ -113,14 +119,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     stageCount: 3,
     prerequisites: ['N20', 'N18'],
   },
-  {
-    id: 'N23',
-    name: '変更ショート',
-    commands: ['S', 'C'],
-    stageCount: 1,
-    prerequisites: ['N22'],
-  },
-  { id: 'N24', name: 'ドットリピート', commands: ['.'], stageCount: 3, prerequisites: ['N23'] },
+  { id: 'N24', name: 'ドットリピート', commands: ['.'], stageCount: 3, prerequisites: ['N13'] },
   {
     id: 'N25',
     name: '大小文字変換',
@@ -131,9 +130,14 @@ export const SKILL_NODES: SkillNodeDef[] = [
   { id: 'N26', name: 'インデント', commands: ['>>', '<<'], stageCount: 1, prerequisites: ['N20'] },
   { id: 'N27', name: 'Visualモード', commands: ['v', 'V'], stageCount: 2, prerequisites: ['N20'] },
   { id: 'N28', name: '矩形選択', commands: ['Ctrl+v'], stageCount: 2, prerequisites: ['N27'] },
-  { id: 'N29', name: 'ヤンク', commands: ['y'], stageCount: 2, prerequisites: ['N20'] },
-  { id: 'N30', name: 'ペースト', commands: ['p', 'P'], stageCount: 1, prerequisites: ['N29'] },
-  { id: 'N31', name: 'レジスタ', commands: ['"a', '"0'], stageCount: 2, prerequisites: ['N30'] },
+  {
+    id: 'N29',
+    name: 'ヤンク＆ペースト',
+    commands: ['y', 'p', 'P'],
+    stageCount: 3,
+    prerequisites: ['N20'],
+  },
+  { id: 'N31', name: 'レジスタ', commands: ['"a', '"0'], stageCount: 2, prerequisites: ['N29'] },
 ]
 
 /** All edges derived from prerequisites */
