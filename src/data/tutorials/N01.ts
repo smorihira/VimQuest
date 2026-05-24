@@ -240,40 +240,75 @@ export const N01_8_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-8',
   initialSetup: {
-    text: 'hllo worl',
-    cursor: { line: 0, col: 1 },
+    text: 'hd',
+    cursor: { line: 0, col: 0 },
   },
   steps: [
+    // ── Exercise 1: long insert with `a` ──
     {
-      message: 'i を押すとカーソルの前に文字を挿入できる',
-      expectedKey: 'i',
-    },
-    {
-      message: 'e と打ってみろ',
-      expectedKey: 'e',
-    },
-    {
-      message: 'Esc で元のモードに戻れ',
-      expectedKey: 'Esc',
-    },
-    {
-      message: 'w で次の単語へジャンプだ',
-      expectedKey: 'w',
-    },
-    {
-      message: 'e で単語の末尾に移動',
-      expectedKey: 'e',
-    },
-    {
-      message: 'a を押すとカーソルの後ろに挿入できる。i との違いを覚えろ',
+      message: 'a を押してみろ。カーソルの後ろに文字を挿入できるぞ',
       expectedKey: 'a',
     },
     {
-      message: 'd と打て',
-      expectedKey: 'd',
+      message: 'ello worl と9文字打ってみろ。まず e',
+      expectedKey: 'e',
     },
     {
-      message: 'Esc で戻れ。Insert に入ったら必ず Esc。これが Vim の基本だ',
+      message: '続けて l',
+      expectedKey: 'l',
+    },
+    {
+      message: 'l',
+      expectedKey: 'l',
+    },
+    {
+      message: 'o',
+      expectedKey: 'o',
+    },
+    {
+      message: 'スペース',
+      expectedKey: ' ',
+    },
+    {
+      message: 'w',
+      expectedKey: 'w',
+    },
+    {
+      message: 'o',
+      expectedKey: 'o',
+    },
+    {
+      message: 'r',
+      expectedKey: 'r',
+    },
+    {
+      message: 'l で完了！',
+      expectedKey: 'l',
+    },
+    {
+      message: 'Esc で NORMAL に戻れ',
+      expectedKey: 'Esc',
+    },
+    {
+      message: '9文字打って2ダメージだ。insert 中は5文字ごとに1ダメージ増える。タイプ数を意識しろ',
+      expectedKey: null,
+    },
+    // ── Exercise 2: short insert with `i` ──
+    {
+      message: '次は i を試そう',
+      editorSetup: { text: 'hllo', cursor: { line: 0, col: 1 } },
+      expectedKey: null,
+    },
+    {
+      message: 'i はカーソルの前に挿入する。a との違いを覚えろ',
+      expectedKey: 'i',
+    },
+    {
+      message: 'e と打て',
+      expectedKey: 'e',
+    },
+    {
+      message: 'Esc。1文字なら1ダメージ。Insert に入ったら必ず Esc。これが Vim の基本だ',
       expectedKey: 'Esc',
     },
   ],
