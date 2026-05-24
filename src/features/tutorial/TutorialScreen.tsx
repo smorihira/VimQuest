@@ -25,7 +25,7 @@ export function TutorialScreen() {
     return <div className="tutorial-error">Tutorial not found: {id}</div>
   }
 
-  const stage = tutorial.stageId ? getStage(tutorial.stageId) : undefined
+  const stage = getStage(tutorial.stageId)
 
   const handleComplete = (status: TutorialStatus) => {
     if (!isReview) {
@@ -33,7 +33,7 @@ export function TutorialScreen() {
         ...prev,
         tutorialStatus: {
           ...prev.tutorialStatus,
-          [tutorial.stageId ?? tutorial.nodeId]: status,
+          [tutorial.stageId]: status,
         },
       }))
     }

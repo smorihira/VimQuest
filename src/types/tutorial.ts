@@ -28,10 +28,10 @@ export interface TutorialStep {
 export interface Tutorial {
   /** Target node ID */
   nodeId: string
-  /** Target stage ID (optional; enables stage-specific tutorials) */
-  stageId?: string
-  /** Initial editor state for the tutorial */
-  initialSetup: {
+  /** Target stage ID (required; links tutorial to its stage) */
+  stageId: string
+  /** Initial editor state for the tutorial (optional; omit to use stage data) */
+  initialSetup?: {
     text: string
     cursor: CursorPosition
   }

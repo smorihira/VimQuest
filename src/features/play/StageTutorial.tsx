@@ -8,7 +8,7 @@
  *   'colon_command' — wait for a :command input (e.g. :h, :e!)
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import type { Tutorial, TutorialStep } from '../../types/tutorial'
 import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
@@ -23,9 +23,9 @@ import '../tutorial/TutorialScreen.css'
 
 interface Props {
   tutorial: Tutorial
-  /** Stage data for goal overlay + title. Optional for standalone tutorial route. */
+  /** Stage data for goal overlay + title + fallback initial state. */
   stage?: Stage
-  onComplete: (status: TutorialStatus) => void
+  onComplete: (status: TutorialStatus, editorState?: EditorState) => void
   /** When true, this is a review (re-watch) — skip button says "閉じる" instead of "Skip" */
   isReview?: boolean
 }
@@ -35,9 +35,16 @@ function stepType(step: TutorialStep) {
 }
 
 export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) {
+  // Resolve initial text/cursor: tutorial.initialSetup (legacy) > stage data
+  const initText = tutorial.initialSetup?.text ?? stage?.initialText ?? ''
+  const initCursor = useMemo(
+    () => tutorial.initialSetup?.cursor ?? stage?.initialCursor ?? { line: 0, col: 0 },
+    [tutorial.initialSetup?.cursor, stage?.initialCursor],
+  )
+
   const [stepIdx, setStepIdx] = useState(0)
   const [editorState, setEditorState] = useState<EditorState>(() =>
-    createEditorState(tutorial.initialSetup.text, tutorial.initialSetup.cursor),
+    createEditorState(initText, initCursor),
   )
   const [wrongMessage, setWrongMessage] = useState<string | null>(null)
   const [spaceHeld, setSpaceHeld] = useState(false)
@@ -56,7 +63,8 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
     keyBuffer.current = ''
     const nextIdx = stepIdx + 1
     if (nextIdx >= tutorial.steps.length) {
-      onComplete('completed')
+      // Pass editor state so PlayScreen can continue from here
+      onComplete('completed', editorState)
     } else {
       setStepIdx(nextIdx)
       const nextStep = tutorial.steps[nextIdx]
@@ -64,7 +72,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         setEditorState(createEditorState(nextStep.editorSetup.text, nextStep.editorSetup.cursor))
       }
     }
-  }, [stepIdx, tutorial, onComplete])
+  }, [stepIdx, tutorial, onComplete, editorState])
 
   // ─── keydown handler ───────────────────────────────────────
   const handleKeyDown = useCallback(
@@ -132,9 +140,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
             if (colonBuffer === target) {
               // Execute actual command effect
               if (target === ':e!') {
-                setEditorState(
-                  createEditorState(tutorial.initialSetup.text, tutorial.initialSetup.cursor),
-                )
+                setEditorState(createEditorState(initText, initCursor))
               } else if (target === ':q!') {
                 onComplete('skipped')
                 return
@@ -246,7 +252,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
       }
     },
-    [step, stepIdx, editorState, onComplete, colonBuffer, advance],
+    [step, editorState, onComplete, colonBuffer, advance, initText, initCursor, stage],
   )
 
   // ─── keyup handler (for hold_space) ────────────────────────

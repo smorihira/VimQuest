@@ -11,6 +11,7 @@ import { getStage } from '../../data/stages'
 import { getTutorial } from '../../data/tutorials'
 import { BASE_COMMANDS } from '../../data/constants'
 import { gameProgressAtom } from '../../store/atoms'
+import type { EditorState } from '../../types/editor'
 import { usePlayEngine } from './usePlayEngine'
 import { EditorView } from './EditorView'
 import { NavigatorCube } from './NavigatorCube'
@@ -38,6 +39,7 @@ export function PlayScreen() {
   const setProgress = useSetAtom(gameProgressAtom)
   const [tutorialDone, setTutorialDone] = useState(false)
   const [reviewTutorial, setReviewTutorial] = useState(false)
+  const [tutorialEditorState, setTutorialEditorState] = useState<EditorState | undefined>()
 
   if (!stage) {
     return <div className="play-error">Stage not found: {stageId}</div>
@@ -64,7 +66,7 @@ export function PlayScreen() {
       <StageTutorial
         tutorial={tutorial}
         stage={stage}
-        onComplete={(status) => {
+        onComplete={(status, editorState) => {
           setProgress((prev) => ({
             ...prev,
             tutorialStatus: {
@@ -72,6 +74,7 @@ export function PlayScreen() {
               [stage.id]: status,
             },
           }))
+          setTutorialEditorState(editorState)
           setTutorialDone(true)
         }}
       />
@@ -84,6 +87,7 @@ export function PlayScreen() {
       navigate={navigate}
       hasStageTutorial={!!tutorial}
       onReviewTutorial={() => setReviewTutorial(true)}
+      initialEditorState={tutorialEditorState}
     />
   )
 }
@@ -93,14 +97,16 @@ function PlayScreenInner({
   navigate,
   hasStageTutorial,
   onReviewTutorial,
+  initialEditorState,
 }: {
   stage: NonNullable<ReturnType<typeof getStage>>
   navigate: ReturnType<typeof useNavigate>
   hasStageTutorial: boolean
   onReviewTutorial: () => void
+  initialEditorState?: EditorState
 }) {
   const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
-  const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined)
+  const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined, initialEditorState)
   const [spaceHeld, setSpaceHeld] = useState(false)
   const [muted, setMutedState] = useState(isMuted())
   const [showHint, setShowHint] = useState(false)

@@ -59,10 +59,6 @@ export const N01_1_TUTORIAL: Tutorial = {
 export const N01_2_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-2',
-  initialSetup: {
-    text: 'first line\nsecond line\nthird line',
-    cursor: { line: 0, col: 0 },
-  },
   steps: [
     {
       message: 'j で下に移動だ',
@@ -87,10 +83,6 @@ export const N01_2_TUTORIAL: Tutorial = {
 export const N01_3_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-3',
-  initialSetup: {
-    text: 'the quick brown fox jumps',
-    cursor: { line: 0, col: 0 },
-  },
   steps: [
     {
       message: 'w で次の単語にジャンプだ',
@@ -119,10 +111,6 @@ export const N01_3_TUTORIAL: Tutorial = {
 export const N01_4_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-4',
-  initialSetup: {
-    text: 'arr.push(x); return obj.key;',
-    cursor: { line: 0, col: 0 },
-  },
   steps: [
     {
       message: 'w を押してみろ。. で止まるだろう',
@@ -147,10 +135,6 @@ export const N01_4_TUTORIAL: Tutorial = {
 export const N01_5_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-5',
-  initialSetup: {
-    text: '    hello world',
-    cursor: { line: 0, col: 8 },
-  },
   steps: [
     {
       message: '$ で行末にジャンプだ',
@@ -175,10 +159,6 @@ export const N01_5_TUTORIAL: Tutorial = {
 export const N01_6_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-6',
-  initialSetup: {
-    text: 'line 1\nline 2\nline 3\nline 4\nline 5',
-    cursor: { line: 0, col: 0 },
-  },
   steps: [
     {
       message: 'G でファイルの最終行にジャンプだ',
@@ -199,10 +179,6 @@ export const N01_6_TUTORIAL: Tutorial = {
 export const N01_7_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-7',
-  initialSetup: {
-    text: 'hellllo world',
-    cursor: { line: 0, col: 3 },
-  },
   steps: [
     {
       message: 'x でカーソル上の文字を消せ',
@@ -239,10 +215,6 @@ export const N01_7_TUTORIAL: Tutorial = {
 export const N01_8_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-8',
-  initialSetup: {
-    text: 'hllo',
-    cursor: { line: 0, col: 1 },
-  },
   steps: [
     // ── Short insert with `i` ──
     {
@@ -310,10 +282,6 @@ export const N01_8_TUTORIAL: Tutorial = {
 export const N01_9_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-9',
-  initialSetup: {
-    text: 'cot hot',
-    cursor: { line: 0, col: 1 },
-  },
   steps: [
     {
       message: 's を押してみろ。カーソル上の文字を消して Insert に入るぞ',
@@ -342,10 +310,6 @@ export const N01_9_TUTORIAL: Tutorial = {
 export const N01_C_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-C',
-  initialSetup: {
-    text: 'helo world\nthee quick brown fox\njumps ovr the\n  lazy dogg',
-    cursor: { line: 0, col: 0 },
-  },
   steps: [
     {
       message: '基礎訓練の総仕上げだ。全ての武器を使って、4行のタイプミスを修正しろ',

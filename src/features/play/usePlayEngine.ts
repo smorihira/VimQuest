@@ -69,13 +69,17 @@ export interface PlayActions {
 export function usePlayEngine(
   stage: Stage,
   baseCommands?: readonly string[],
+  initialEditorState?: EditorState,
 ): PlayState & PlayActions {
-  const [editorState, setEditorState] = useState<EditorState>(() =>
-    createEditorState(stage.initialText, stage.initialCursor),
+  const [editorState, setEditorState] = useState<EditorState>(
+    () => initialEditorState ?? createEditorState(stage.initialText, stage.initialCursor),
   )
   const [damage, setDamage] = useState(0)
   const [usedHint, setUsedHint] = useState(false)
-  const [status, setStatus] = useState<PlayStatus>('playing')
+  // If initial state already clears the stage (tutorial completed the goal), start as 'clear'
+  const [status, setStatus] = useState<PlayStatus>(() =>
+    initialEditorState && isStageClear(initialEditorState, stage) ? 'clear' : 'playing',
+  )
   const [parserBuffer, setParserBuffer] = useState('')
   const [lastInvalid, setLastInvalid] = useState(false)
   const [lastExecutedRaw, setLastExecutedRaw] = useState('')
