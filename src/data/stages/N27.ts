@@ -25,7 +25,7 @@ export const N27_STAGES: Stage[] = [
   },
 
   // ── Practice: v で範囲選択して削除 ──
-  // opt = 4 (f<+v+f>+d)
+  // opt = 3 (f<+v(free)+f>+d)
   {
     id: 'N27-P',
     nodeId: 'N27',
@@ -35,8 +35,8 @@ export const N27_STAGES: Stage[] = [
     initialText: 'Hello <World> end',
     goalText: 'Hello  end',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 6, 8],
+    life: 9,
+    stars: [3, 5, 7],
     availableCommands: ['v', 'V', 'f', 't'],
     visualCommands: ['d'],
     hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd'] }],

@@ -14,6 +14,7 @@ import { BASE_COMMANDS } from '../data/constants'
 import { CommandParser } from './commandParser'
 import { executeCommand, finalizeInsertSession } from './commandExecutor'
 import { createEditorState } from '../types/editor'
+import { calculateHintDamage } from './commandReplayer'
 import type { EditorState } from '../types/editor'
 import type { Stage } from '../types/stage'
 
@@ -194,6 +195,34 @@ describe('Hint Verification', () => {
         for (const [reg, value] of Object.entries(stage.clearConditions.registers)) {
           expect(finalState.registers[reg]).toBe(value)
         }
+      }
+    })
+  }
+})
+
+describe('Hint Damage Calculation', () => {
+  const stages = Object.values(ALL_STAGES)
+
+  for (const stage of stages) {
+    it(`${stage.id}: hint damage >= stars[0] (opt=${stage.stars[0]})`, () => {
+      const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
+      const baseCommands = showBase ? (BASE_COMMANDS as unknown as readonly string[]) : undefined
+
+      const damage = calculateHintDamage(
+        stage.hints[0].commands,
+        stage.initialText,
+        stage.initialCursor,
+        stage.availableCommands,
+        baseCommands,
+        stage.visualCommands,
+      )
+
+      expect(damage).toBeGreaterThan(0)
+
+      if (stage.stars[0] !== 999) {
+        // Hint damage should be at least as much as optimal (stars[0])
+        // Teaching hints may intentionally use suboptimal commands to demonstrate a concept
+        expect(damage).toBeGreaterThanOrEqual(stage.stars[0])
       }
     })
   }

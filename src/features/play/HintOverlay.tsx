@@ -7,7 +7,7 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import { createEditorState } from '../../types/editor'
-import { applyHintCommand } from '../../engine/commandReplayer'
+import { applyHintCommand, calculateHintDamage } from '../../engine/commandReplayer'
 import { BASE_COMMANDS } from '../../data/constants'
 import { EditorView } from './EditorView'
 import './HintOverlay.css'
@@ -29,6 +29,19 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
 
   const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
   const baseCommands = showBase ? (BASE_COMMANDS as unknown as readonly string[]) : undefined
+
+  const hintDamage = useMemo(
+    () =>
+      calculateHintDamage(
+        commands,
+        stage.initialText,
+        stage.initialCursor,
+        stage.availableCommands,
+        baseCommands,
+        stage.visualCommands,
+      ),
+    [commands, stage, baseCommands],
+  )
 
   // Auto-advance steps
   useEffect(() => {
@@ -113,7 +126,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
 
         {currentCmd && !isComplete && <div className="hint-current-label">→ {currentCmd}</div>}
 
-        {isComplete && <div className="hint-complete">☆3 達成！（{stage.stars[0]}ダメージ）</div>}
+        {isComplete && <div className="hint-complete">☆3 達成！（{hintDamage}ダメージ）</div>}
       </div>
     </div>
   )

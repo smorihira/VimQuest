@@ -6,7 +6,7 @@ import type { Stage } from '../../types/stage'
  */
 export const N03_STAGES: Stage[] = [
   // ── Teach: 上下に行を追加 (O で上、o で下) ──
-  // opt = 8 (O(1)+Esc(1) + j(1) + o(1)+Esc(1) + j(1) + o(1)+Esc(1))
+  // opt = 5 (O…Esc(1) + j(1) + o…Esc(1) + j(1) + o…Esc(1))
   {
     id: 'N03-T',
     nodeId: 'N03',
@@ -16,8 +16,8 @@ export const N03_STAGES: Stage[] = [
     initialText: 'B\nD',
     goalText: 'A\nB\nC\nD\nE',
     initialCursor: { line: 0, col: 0 },
-    life: 14,
-    stars: [8, 9, 11],
+    life: 11,
+    stars: [5, 6, 8],
     availableCommands: ['o', 'O', 'I', 'A'],
     hints: [
       {

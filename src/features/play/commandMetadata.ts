@@ -97,11 +97,11 @@ export function buildCardDisplayList(
 ): Array<{ cmd: string; hint: string | null }> {
   const OPERATOR_KEYS = ['d', 'c', 'y', '>', '<']
 
-  // First pass: group multi-char operator combos
+  // First pass: group multi-char operator combos (skip doubled operators like >>, <<)
   const groups = new Map<string, string[]>()
   for (const cmd of commands) {
     const op = OPERATOR_KEYS.find((o) => cmd.startsWith(o) && cmd.length > o.length)
-    if (op) {
+    if (op && cmd !== op + op) {
       if (!groups.has(op)) groups.set(op, [])
       groups.get(op)!.push(cmd.slice(op.length))
     }
@@ -113,7 +113,7 @@ export function buildCardDisplayList(
 
   for (const cmd of commands) {
     const op = OPERATOR_KEYS.find((o) => cmd.startsWith(o) && cmd.length > o.length)
-    if (op) {
+    if (op && cmd !== op + op) {
       if (!emitted.has(op)) {
         emitted.add(op)
         result.push({ cmd: op, hint: groups.get(op)!.join(' ') })

@@ -230,7 +230,7 @@ export const N01_8_TUTORIAL: Tutorial = {
       expectedKey: 'Esc',
     },
     {
-      message: '1文字打って１ダメージ。insert 中は5文字まで1ダメージで済む',
+      message: 'INSERT 1回で最低1ダメージ。なるべく少ない回数で済ませろ',
       expectedKey: null,
     },
     // ── Long insert with `a` ──
@@ -271,8 +271,11 @@ export const N01_8_TUTORIAL: Tutorial = {
       expectedKey: 'Esc',
     },
     {
-      message:
-        '6文字で2ダメージだ。5文字ごとに1ダメージ増えるぞ。Spaceで重ねてゴールと見比べ、残りも直せ',
+      message: '6文字で2ダメージ。5文字までは無料、超えた分は1文字1ダメージだ',
+      expectedKey: null,
+    },
+    {
+      message: 'Spaceで重ねてゴールと見比べ、残りも直せ',
       expectedKey: null,
     },
   ],

@@ -37,9 +37,11 @@ export function PlayScreen() {
   const stage = stageId ? getStage(stageId) : undefined
   const progress = useAtomValue(gameProgressAtom)
   const setProgress = useSetAtom(gameProgressAtom)
-  const [tutorialDone, setTutorialDone] = useState(false)
+  const [tutorialResult, setTutorialResult] = useState<{
+    done: boolean
+    editorState?: EditorState
+  }>({ done: false })
   const [reviewTutorial, setReviewTutorial] = useState(false)
-  const [tutorialEditorState, setTutorialEditorState] = useState<EditorState | undefined>()
 
   if (!stage) {
     return <div className="play-error">Stage not found: {stageId}</div>
@@ -47,7 +49,7 @@ export function PlayScreen() {
 
   const tutorial = getTutorial(stage.id, stage.nodeId)
   const alreadyDone = progress.tutorialStatus[stage.id] != null
-  const showTutorial = tutorial && !alreadyDone && !tutorialDone
+  const showTutorial = tutorial && !alreadyDone && !tutorialResult.done
 
   // Review mode: re-watch a completed tutorial
   if (tutorial && reviewTutorial) {
@@ -67,6 +69,7 @@ export function PlayScreen() {
         tutorial={tutorial}
         stage={stage}
         onComplete={(status, editorState) => {
+          setTutorialResult({ done: true, editorState })
           setProgress((prev) => ({
             ...prev,
             tutorialStatus: {
@@ -74,8 +77,6 @@ export function PlayScreen() {
               [stage.id]: status,
             },
           }))
-          setTutorialEditorState(editorState)
-          setTutorialDone(true)
         }}
       />
     )
@@ -87,7 +88,7 @@ export function PlayScreen() {
       navigate={navigate}
       hasStageTutorial={!!tutorial}
       onReviewTutorial={() => setReviewTutorial(true)}
-      initialEditorState={tutorialEditorState}
+      initialEditorState={tutorialResult.editorState}
     />
   )
 }
@@ -107,6 +108,7 @@ function PlayScreenInner({
 }) {
   const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
   const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined, initialEditorState)
+  const fromTutorial = !!initialEditorState
   const [spaceHeld, setSpaceHeld] = useState(false)
   const [muted, setMutedState] = useState(isMuted())
   const [showHint, setShowHint] = useState(false)
@@ -140,7 +142,12 @@ function PlayScreenInner({
       playClear()
       const timer = setTimeout(() => {
         navigate(`/result/${stage.id}`, {
-          state: { damage: play.damage, usedHint: play.usedHint, spells: play.spells },
+          state: {
+            damage: play.damage,
+            usedHint: play.usedHint,
+            spells: play.spells,
+            fromTutorial,
+          },
         })
       }, 600)
       return () => clearTimeout(timer)
@@ -283,6 +290,11 @@ function PlayScreenInner({
         ? 'visual-mode'
         : ''
 
+  // Search mode uses colon-style bottom bar (same as :q!, :e!, :h)
+  const isSearchMode = play.parserBuffer.startsWith('/')
+  const searchBuffer = isSearchMode ? play.parserBuffer : ''
+  const cardParserBuffer = isSearchMode ? '' : play.parserBuffer
+
   return (
     <div className={`play-screen ${modeClass}`}>
       {/* Top Bar */}
@@ -321,7 +333,7 @@ function PlayScreenInner({
         mode={play.editorState.mode}
         availableCommands={stage.availableCommands}
         visualCommands={stage.visualCommands}
-        parserBuffer={play.parserBuffer}
+        parserBuffer={cardParserBuffer}
         showBase={showBase}
         baseExpanded={baseExpanded}
         setBaseExpanded={setBaseExpanded}
@@ -357,10 +369,10 @@ function PlayScreenInner({
         <HintOverlay stage={stage} onClose={() => setShowHint(false)} />
       )}
 
-      {/* :q! command line indicator */}
-      {colonBuffer && (
+      {/* Command line: colon or search */}
+      {(colonBuffer || searchBuffer) && (
         <div className="colon-cmd">
-          {colonBuffer}
+          {colonBuffer || searchBuffer}
           <span className="colon-cursor">█</span>
         </div>
       )}

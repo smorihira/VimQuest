@@ -18,7 +18,7 @@ export const N25_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 11,
     stars: [5, 6, 8],
-    availableCommands: ['diw', 'di"', 'gu', 'gU', 'f', 't'],
+    availableCommands: ['gu', 'gU', 'f', 't'],
     hints: [{ cost: 1, commands: ['guiw', 'w', 'gUiw', 'w', 'guiw'] }],
     flavor: 'gu で小文字、gU で大文字。TextObj と組み合わせろ',
   },

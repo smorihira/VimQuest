@@ -6,7 +6,7 @@ import type { Stage } from '../../types/stage'
  */
 export const N02_STAGES: Stage[] = [
   // ── Teach: /* */ で囲む (I で行頭、A で行末) ──
-  // opt = 9 (I(1)+Esc(1) + A(1)+Esc(1) + j(1) + I(1)+Esc(1) + A(1)+Esc(1))
+  // opt = 5 (I…Esc(1) + A…Esc(1) + j(1) + I…Esc(1) + A…Esc(1))
   {
     id: 'N02-T',
     nodeId: 'N02',
@@ -16,8 +16,8 @@ export const N02_STAGES: Stage[] = [
     initialText: 'fix()\nrun()',
     goalText: '/* fix() */\n/* run() */',
     initialCursor: { line: 0, col: 2 },
-    life: 15,
-    stars: [9, 10, 12],
+    life: 11,
+    stars: [5, 6, 8],
     availableCommands: ['I', 'A'],
     hints: [
       {

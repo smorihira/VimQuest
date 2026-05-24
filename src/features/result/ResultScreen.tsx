@@ -22,6 +22,7 @@ interface LocationState {
   damage: number
   usedHint: boolean
   spells?: SpellEntry[]
+  fromTutorial?: boolean
 }
 
 export function ResultScreen() {
@@ -34,6 +35,7 @@ export function ResultScreen() {
 
   const state = (location.state as LocationState) ?? { damage: 0, usedHint: false, spells: [] }
   const spells = state.spells ?? []
+  const fromTutorial = !!state.fromTutorial
   const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
   const stars = stage ? applyHintPenalty(rawStars, state.usedHint) : (0 as StarRating)
 
@@ -44,10 +46,19 @@ export function ResultScreen() {
 
     setProgress((prev) => {
       const existing = prev.stageResults[stage.id]
-      const bestStars = existing
-        ? (Math.max(existing.bestStars, stars) as StarRating)
-        : (stars as StarRating)
-      const bestDamage = existing ? Math.min(existing.bestDamage, state.damage) : state.damage
+
+      // When continuing from tutorial, only mark as cleared (bestStars=1)
+      // without recording damage/stars as best — replay without tutorial for real score
+      const bestStars = fromTutorial
+        ? (Math.max(existing?.bestStars ?? 0, 1) as StarRating)
+        : existing
+          ? (Math.max(existing.bestStars, stars) as StarRating)
+          : (stars as StarRating)
+      const bestDamage = fromTutorial
+        ? (existing?.bestDamage ?? stage.life)
+        : existing
+          ? Math.min(existing.bestDamage, state.damage)
+          : state.damage
 
       const nextResults = {
         ...prev.stageResults,
@@ -194,26 +205,28 @@ export function ResultScreen() {
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className={`star-result${i < stars ? ' earned' : ''}`}
+                className={`star-result${!fromTutorial && i < stars ? ' earned' : ''}`}
                 style={{ animationDelay: `${i * 0.2}s` }}
               >
-                {i < stars ? '★' : '☆'}
+                {!fromTutorial && i < stars ? '★' : '☆'}
               </span>
             ))}
           </div>
-          {state.usedHint && (
+          {!fromTutorial && state.usedHint && (
             <div className="hint-notice">
               <span className="hint-label">ヒント使用</span>: ☆1確定
             </div>
           )}
           <div className="star-label">
-            {stars === 3
-              ? 'パーフェクト！'
-              : stars === 2
-                ? 'よくできました！'
-                : stars === 1
-                  ? 'クリア！'
-                  : ''}
+            {fromTutorial
+              ? ''
+              : stars === 3
+                ? 'パーフェクト！'
+                : stars === 2
+                  ? 'よくできました！'
+                  : stars === 1
+                    ? 'クリア！'
+                    : ''}
           </div>
         </div>
 
@@ -246,22 +259,22 @@ export function ResultScreen() {
         {/* Stats */}
         <div className="stats" data-guide="stats">
           <div className="stat">
-            <div className="stat-value">{state.damage}</div>
+            <div className="stat-value">{fromTutorial ? '—' : state.damage}</div>
             <div className="stat-label">DAMAGE</div>
           </div>
           <div className="stat">
             <div className="stat-value">
-              {stage.life - state.damage}/{stage.life}
+              {fromTutorial ? '—' : `${stage.life - state.damage}/${stage.life}`}
             </div>
             <div className="stat-label">LIFE</div>
           </div>
           <div className="stat">
             <div className="stat-value best-value">
-              {progress.stageResults[stage.id]?.bestDamage ?? state.damage}
+              {fromTutorial ? '—' : (progress.stageResults[stage.id]?.bestDamage ?? state.damage)}
             </div>
             <div className="stat-label">BEST</div>
-            {progress.stageResults[stage.id] &&
-              state.damage <= progress.stageResults[stage.id].bestDamage &&
+            {!fromTutorial &&
+              progress.stageResults[stage.id] &&
               state.damage < progress.stageResults[stage.id].bestDamage && (
                 <div className="new-best">NEW BEST!</div>
               )}

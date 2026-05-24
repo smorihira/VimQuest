@@ -14,7 +14,15 @@ export const N16_T_TUTORIAL: Tutorial = {
       expectedKey: '%',
     },
     {
-      message: '% で括弧の対を行き来。2行目でも同じように飛べ',
+      message: 'j で2行目に移動',
+      expectedKey: 'j',
+    },
+    {
+      message: 'もう一度 %。今度は } から { へ飛ぶ',
+      expectedKey: '%',
+    },
+    {
+      message: '% で括弧の対を自在に行き来できる。これが Vim の括弧ジャンプだ',
       expectedKey: null,
     },
   ],

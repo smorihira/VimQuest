@@ -6,7 +6,7 @@ import type { Stage } from '../../types/stage'
  */
 export const N16_STAGES: Stage[] = [
   // ── Teach: 対応する括弧へジャンプ (2行) ──
-  // opt = 3 (f{ + % + j)
+  // opt = 4 (f{ + % + j + %)
   {
     id: 'N16-T',
     nodeId: 'N16',
@@ -16,11 +16,11 @@ export const N16_STAGES: Stage[] = [
     initialText: 'if (a) { return x; }\nif (b) { return y; }',
     goalText: 'if (a) { return x; }\nif (b) { return y; }',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
+    life: 10,
+    stars: [4, 5, 7],
     availableCommands: ['%', 'f', 't'],
-    clearConditions: { cursor: { line: 1, col: 19 } },
-    hints: [{ cost: 1, commands: ['f{', '%', 'j'] }],
+    clearConditions: { cursor: { line: 1, col: 7 } },
+    hints: [{ cost: 1, commands: ['f{', '%', 'j', '%'] }],
     flavor: '% で対応する括弧にジャンプ。{ から } へ一瞬で飛べる',
   },
 ]

@@ -24,7 +24,7 @@ export const N11_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 10,
     stars: [4, 5, 7],
-    availableCommands: ['dw', 'de', 'db', 'dd'],
+    availableCommands: ['dd'],
     hints: [{ cost: 1, commands: ['j', 'dd', 'j', 'dd'] }],
     flavor: 'デバッグ行をまるごと消せ。dd で一行削除だ',
   },

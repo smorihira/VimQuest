@@ -231,6 +231,13 @@ export function usePlayEngine(
         return
       }
 
+      // ── Entering visual mode (v/V): free entry ──
+      if ((raw === 'v' || raw === 'V' || raw === 'Ctrl+v') && editorState.mode === 'normal') {
+        const next = executeCommand(editorState, parseResult.command)
+        setEditorState(next)
+        return
+      }
+
       // ── Visual change (c): delete selection + enter insert ──
       if (raw === 'c' && editorState.mode === 'visual') {
         const next = executeCommand(editorState, parseResult.command)
@@ -282,10 +289,20 @@ export function usePlayEngine(
         return
       }
 
-      // ── Esc in visual mode: exit visual (free) ──
+      // ── Esc in visual mode: exit visual (1 damage) ──
       if (raw === 'Esc' && editorState.mode === 'visual') {
         const next = executeCommand(editorState, parseResult.command)
+        const newDamage = damage + 1
+        setDamage(newDamage)
+        setSpells((prev) => [...prev, { command: 'v…Esc', damage: 1 }])
+        if (newDamage >= life) {
+          setStatus('dead')
+          return
+        }
         setEditorState(next)
+        if (isStageClear(next, stage)) {
+          setStatus('clear')
+        }
         return
       }
 

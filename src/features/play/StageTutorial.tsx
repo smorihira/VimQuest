@@ -374,7 +374,9 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         ? `${step.colonCommand ?? ':h'} ↵`
         : stepType(step) === 'search'
           ? `${step.searchCommand ?? '/pattern'} ↵`
-          : step.expectedKey)
+          : step.expectedKey === ' '
+            ? 'Space'
+            : step.expectedKey)
 
   return (
     <div className={`tutorial-screen${modeClass}`}>
@@ -434,7 +436,10 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
       )}
 
       {/* Navigator Bar */}
-      <div className={`navigator-bar${wrongMessage ? ' wrong' : ''}`}>
+      <div
+        className={`navigator-bar${wrongMessage ? ' wrong' : ''}`}
+        style={colonBuffer || searchBuffer ? { paddingBottom: 40 } : undefined}
+      >
         <button
           className="skip-btn"
           onClick={() => {

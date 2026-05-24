@@ -18,7 +18,7 @@ export const N12_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 11,
     stars: [5, 6, 8],
-    availableCommands: ['dd', 'd$', 'd0', 'dw'],
+    availableCommands: ['dd', 'd$', 'd0'],
     hints: [{ cost: 1, commands: ['e', 'e', 'l', 'l', 'd$'] }],
     flavor: 'コメントを d$ で行末まで一気に削除せよ',
   },

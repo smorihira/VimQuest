@@ -18,7 +18,7 @@ export const N29_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 9,
     stars: [3, 4, 6],
-    availableCommands: ['diw', 'yiw', 'v', 'p', 'f', 't'],
+    availableCommands: ['yiw', 'v', 'p', 'f', 't'],
     hints: [{ cost: 1, commands: ['yiw', '$', 'p'] }],
     flavor: 'yiw で単語をヤンク（コピー）し、p でペーストだ',
   },

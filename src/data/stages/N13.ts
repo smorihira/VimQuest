@@ -19,7 +19,7 @@ export const N13_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 12 },
     life: 7,
     stars: [1, 2, 4],
-    availableCommands: ['dd', 'd$', 'd0', 'D', 'dw'],
+    availableCommands: ['dd', 'd$', 'd0', 'D'],
     hints: [{ cost: 1, commands: ['D'] }],
     flavor: 'd$ と同じことが D 一文字でできる',
   },
