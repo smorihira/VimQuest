@@ -43,6 +43,7 @@ export function StageTutorial({ tutorial, stage, onComplete }: Props) {
     const [showHint, setShowHint] = useState(false)
     const spaceDownTime = useRef(0)
     const spaceHeldRef = useRef(false)
+    const keyBuffer = useRef('')
 
     const step = tutorial.steps[stepIdx] as TutorialStep | undefined
 
@@ -50,6 +51,7 @@ export function StageTutorial({ tutorial, stage, onComplete }: Props) {
     const advance = useCallback(() => {
         setWrongMessage(null)
         setColonBuffer('')
+        keyBuffer.current = ''
         const nextIdx = stepIdx + 1
         if (nextIdx >= tutorial.steps.length) {
             onComplete('completed')
@@ -197,6 +199,33 @@ export function StageTutorial({ tutorial, stage, onComplete }: Props) {
             const accepted = step.acceptedKeys
                 ? [...step.acceptedKeys, step.expectedKey]
                 : [step.expectedKey]
+
+            // Multi-key command handling (e.g. 'gg')
+            const isMultiKey = step.expectedKey && step.expectedKey.length > 1
+                && !step.expectedKey.includes('+')
+                && step.expectedKey !== 'Esc'
+                && step.expectedKey !== 'Enter'
+                && step.expectedKey !== 'Backspace'
+
+            if (isMultiKey) {
+                const buf = keyBuffer.current + key
+                if (step.expectedKey!.startsWith(buf)) {
+                    keyBuffer.current = buf
+                    if (buf === step.expectedKey) {
+                        setWrongMessage(null)
+                        const parsed = parseKeys(buf.split(''))
+                        if (parsed) {
+                            const next = executeCommand(editorState, parsed.command)
+                            setEditorState(next)
+                        }
+                        advance()
+                    }
+                    return
+                }
+                keyBuffer.current = ''
+                setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
+                return
+            }
 
             if (accepted.includes(key)) {
                 setWrongMessage(null)

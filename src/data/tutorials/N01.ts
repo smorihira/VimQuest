@@ -124,8 +124,8 @@ export const N01_4_TUTORIAL: Tutorial = {
             expectedKey: 'w',
         },
         {
-            message: '0 で行頭に戻れ',
-            expectedKey: '0',
+            message: 'b で前の単語に戻れ',
+            expectedKey: 'b',
         },
         {
             message: '今度は W だ。空白まで一気に飛ぶ',
@@ -181,7 +181,7 @@ export const N01_6_TUTORIAL: Tutorial = {
         },
         {
             message: 'gg で先頭行に戻れる',
-            expectedKey: 'g',
+            expectedKey: 'gg',
         },
         {
             message: 'G で最終行に飛んでクリアしろ',

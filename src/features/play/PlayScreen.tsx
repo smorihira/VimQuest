@@ -133,7 +133,8 @@ function PlayScreenInner({
             if (play.status !== 'playing') return
 
             // Space vision: hold Space in normal/visual mode to see goal
-            if (e.code === 'Space' && play.editorState.mode !== 'insert') {
+            // Skip when parser is in search input mode (/ buffer)
+            if (e.code === 'Space' && play.editorState.mode !== 'insert' && !play.parserBuffer.startsWith('/')) {
                 e.preventDefault()
                 setSpaceHeld(true)
                 return
