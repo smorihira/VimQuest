@@ -16,6 +16,9 @@ import { EditorView } from './EditorView'
 import { NavigatorCube } from './NavigatorCube'
 import { HintOverlay } from './HintOverlay'
 import { StageTutorial } from './StageTutorial'
+import { TopBar } from './components/TopBar'
+import { CardPanel } from './components/CardPanel'
+import { mapKeyEvent } from './commandMetadata'
 import {
   playTick,
   playError,
@@ -229,7 +232,7 @@ function PlayScreenInner({
 
       play.handleKey(key)
     },
-    [play, navigate, colonBuffer, stage.nodeId],
+    [play, navigate, colonBuffer, stage.nodeId, stage.hints.length, showBase],
   )
 
   const onKeyUp = useCallback((e: KeyboardEvent) => {
@@ -254,91 +257,24 @@ function PlayScreenInner({
         ? 'visual-mode'
         : ''
 
-  const lifeColor =
-    play.lifePercent > 50
-      ? 'var(--success)'
-      : play.lifePercent > 25
-        ? 'var(--star-gold)'
-        : 'var(--danger)'
-
-  const starThresholds = stage.stars
-
   return (
     <div className={`play-screen ${modeClass}`}>
       {/* Top Bar */}
-      <div className="play-top-bar">
-        <div className="play-left">
-          <button
-            className="quit-btn"
-            onClick={() => navigate('/tree', { state: { nodeId: stage.nodeId } })}
-            title="ツリーに戻る (Esc)"
-          >
-            :q!
-          </button>
-          <button
-            className="quit-btn"
-            onClick={() => {
-              playTick()
-              play.reset()
-            }}
-            title="リトライ (:e!)"
-          >
-            :e!
-          </button>
-          {stage.hints.length > 0 && (
-            <button
-              className="quit-btn"
-              onClick={() => {
-                playHint()
-                play.useHint()
-                setShowHint(true)
-              }}
-              title="ヒント表示 (:h)"
-            >
-              :h
-            </button>
-          )}
-          <button className="mute-btn" onClick={toggleMute} title={muted ? '音声ON' : '音声OFF'}>
-            {muted ? '🔇' : '🔊'}
-          </button>
-          <div className="life-gauge">
-            <span className="life-icon">♥</span>
-            <div className="life-bar-container">
-              <div
-                className="life-bar"
-                style={{
-                  width: `${play.lifePercent}%`,
-                  background: lifeColor,
-                }}
-              />
-            </div>
-            <span className="life-text" style={{ color: lifeColor }}>
-              {stage.life - play.damage}/{stage.life}
-            </span>
-          </div>
-        </div>
-
-        <div className="play-center">
-          <div className="stage-title">
-            <span className="stage-num">{stage.id}</span> {stage.title}
-          </div>
-          <span className="mode-indicator">{play.editorState.mode.toUpperCase()}</span>
-        </div>
-
-        <div className="play-right">
-          <div className="star-display">
-            {[0, 1, 2].map((i) => (
-              <span key={i} className={`star${i < play.projectedStars ? ' earned' : ''}`}>
-                ★
-              </span>
-            ))}
-          </div>
-          <div className="damage-counter">
-            DMG {play.damage}
-            <span className="damage-thresholds">({starThresholds.join('/')})</span>
-          </div>
-        </div>
-      </div>
+      <TopBar
+        stage={stage}
+        damage={play.damage}
+        lifePercent={play.lifePercent}
+        projectedStars={play.projectedStars}
+        mode={play.editorState.mode}
+        muted={muted}
+        toggleMute={toggleMute}
+        onQuit={() => navigate('/tree', { state: { nodeId: stage.nodeId } })}
+        onRetry={play.reset}
+        onHint={() => {
+          play.useHint()
+          setShowHint(true)
+        }}
+      />
 
       {/* Editor */}
       <div className="play-editor-area">
@@ -353,81 +289,16 @@ function PlayScreenInner({
       </div>
 
       {/* Hand Cards */}
-      <div className="play-card-panel">
-        <div className="card-label-row">
-          <span className="card-label">
-            {play.editorState.mode === 'insert' ? 'INSERT' : 'HAND'}
-          </span>
-          {showBase && play.editorState.mode !== 'insert' && (
-            <button
-              className={`base-toggle${baseExpanded ? ' expanded' : ''}`}
-              onClick={() => {
-                setBaseExpanded((v) => !v)
-                playTick()
-              }}
-              title="BASE コマンド表示切替 (?)"
-            >
-              BASE {baseExpanded ? '▾' : '▸'}
-            </button>
-          )}
-        </div>
-        {play.editorState.mode === 'insert' ? (
-          <div className="insert-info">
-            <span className="insert-chars">入力中…</span>
-            <span className="insert-esc">Esc で確定</span>
-          </div>
-        ) : (
-          <>
-            {showBase && baseExpanded && (
-              <div className="base-row">
-                {(play.editorState.mode === 'visual'
-                  ? BASE_COMMANDS.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v')
-                  : BASE_COMMANDS
-                ).map((cmd) => (
-                  <span key={cmd} className={`base-card ${getCardClass(cmd)}`}>
-                    {cmd}
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="card-row">
-              {(play.editorState.mode === 'visual' && stage.visualCommands
-                ? [
-                    ...stage.availableCommands.filter(
-                      (c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v',
-                    ),
-                    ...stage.visualCommands,
-                  ]
-                : stage.availableCommands
-              ).map((cmd) => {
-                const pendingOp = getPendingOperator(play.parserBuffer)
-                const isOperator = ['d', 'c', 'y', '>', '<'].includes(cmd)
-                const isTarget = !isOperator && !['u', 'Esc', '.'].includes(cmd)
-                const isPending = pendingOp === cmd
-                const isDisabled = pendingOp && isOperator && cmd !== pendingOp
-                const isMerged =
-                  play.lastExecutedRaw.length > 1 &&
-                  play.lastExecutedRaw.startsWith(cmd) &&
-                  isOperator
-
-                let cardState = ''
-                if (isPending) cardState = ' card-pending'
-                else if (pendingOp && isTarget) cardState = ' card-target'
-                else if (isDisabled) cardState = ' card-disabled'
-                if (isMerged) cardState += ' card-merged'
-
-                return (
-                  <div key={cmd} className={`card ${getCardClass(cmd)}${cardState}`}>
-                    {isMerged ? play.lastExecutedRaw : cmd}
-                    {getCardHint(cmd) && <span className="card-hint">{getCardHint(cmd)}</span>}
-                  </div>
-                )
-              })}
-            </div>
-          </>
-        )}
-        {play.parserBuffer && <div className="parser-buffer">{play.parserBuffer}_</div>}
-      </div>
+      <CardPanel
+        mode={play.editorState.mode}
+        availableCommands={stage.availableCommands}
+        visualCommands={stage.visualCommands}
+        parserBuffer={play.parserBuffer}
+        lastExecutedRaw={play.lastExecutedRaw}
+        showBase={showBase}
+        baseExpanded={baseExpanded}
+        setBaseExpanded={setBaseExpanded}
+      />
 
       {/* Status overlays */}
       {play.status === 'clear' && (
@@ -475,94 +346,4 @@ function PlayScreenInner({
       )}
     </div>
   )
-}
-
-// ─── Key mapping ────────────────────────────────────────────────────
-
-function mapKeyEvent(e: KeyboardEvent): string | null {
-  // Ctrl combos
-  if (e.ctrlKey && e.key === 'r') return 'Ctrl+R'
-  if (e.ctrlKey && e.key === 'd') return 'Ctrl+d'
-  if (e.ctrlKey && e.key === 'u') return 'Ctrl+u'
-  if (e.ctrlKey && e.key === 'v') {
-    e.preventDefault()
-    return 'Ctrl+v'
-  }
-
-  // Ignore other Ctrl/Meta combos
-  if (e.ctrlKey || e.metaKey) return null
-
-  // Special keys
-  if (e.key === 'Escape') return 'Esc'
-  if (e.key === 'Backspace') return 'Backspace'
-  if (e.key === 'Enter') return 'Enter'
-  if (e.key === 'ArrowLeft') return 'ArrowLeft'
-  if (e.key === 'ArrowDown') return 'ArrowDown'
-  if (e.key === 'ArrowUp') return 'ArrowUp'
-  if (e.key === 'ArrowRight') return 'ArrowRight'
-
-  // Single character
-  if (e.key.length === 1) return e.key
-
-  return null
-}
-
-// ─── Card styling ───────────────────────────────────────────────────
-
-function getPendingOperator(buffer: string): string | null {
-  if (!buffer) return null
-  // Strip leading count
-  const stripped = buffer.replace(/^\d+/, '')
-  if (['d', 'c', 'y', '>', '<'].includes(stripped)) return stripped
-  return null
-}
-
-function getCardClass(cmd: string): string {
-  if (['d', 'c', 'y'].includes(cmd[0]) && cmd.length >= 2) return 'verb'
-  if (['d', 'c', 'y', '>', '<'].includes(cmd)) return 'verb'
-  if (
-    [
-      'h',
-      'j',
-      'k',
-      'l',
-      'w',
-      'b',
-      'e',
-      'W',
-      'B',
-      'E',
-      '0',
-      '$',
-      '^',
-      'G',
-      'gg',
-      'f',
-      't',
-      ';',
-      ',',
-      '/',
-      'n',
-      'N',
-      '*',
-      '#',
-      '{',
-      '}',
-      '(',
-      ')',
-      '%',
-    ].includes(cmd)
-  )
-    return 'motion'
-  if (['x', 'r', '~', 'J', '.', 'u', 'p', 'P'].includes(cmd)) return 'action'
-  if (['i', 'a', 'I', 'A', 'o', 'O', 's', 'S', 'C', 'R'].includes(cmd)) return 'insert'
-  if (cmd.startsWith('i') && cmd.length >= 2) return 'object'
-  if (cmd.startsWith('a') && cmd.length >= 2) return 'object'
-  return ''
-}
-
-function getCardHint(cmd: string): string | null {
-  if (cmd === 'f' || cmd === 't') return '; ,'
-  if (cmd === '/' || cmd === '*' || cmd === '#') return 'n N'
-  return null
 }

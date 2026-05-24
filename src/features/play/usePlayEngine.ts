@@ -15,349 +15,347 @@ import { executeCommand, finalizeInsertSession } from '../../engine/commandExecu
 import { isStageClear } from '../../engine/clearChecker'
 import { evaluateAttempt } from '../../engine/damageCalculator'
 import type { StarRating } from '../../types/stage'
+import type { SpellEntry } from '../../types/spell'
 
+export type { SpellEntry }
 export type PlayStatus = 'playing' | 'clear' | 'dead'
 
-export interface SpellEntry {
-    command: string
-    damage: number
+/** Insert session tracking state */
+interface InsertSession {
+  entryState: EditorState
+  charCount: number
+  command: string
+  damageAtEntry: number
+}
+
+/** Stamp damageAtEntry on the last undoStack operation (if stack grew) */
+function stampDamageAtEntry(
+  next: EditorState,
+  prev: EditorState,
+  damageAtEntry: number,
+): EditorState {
+  if (next.undoStack.length <= prev.undoStack.length) return next
+  const lastOp = next.undoStack[next.undoStack.length - 1]
+  return {
+    ...next,
+    undoStack: [...next.undoStack.slice(0, -1), { ...lastOp, damageAtEntry }],
+  }
 }
 
 export interface PlayState {
-    editorState: EditorState
-    damage: number
-    life: number
-    lifePercent: number
-    projectedStars: StarRating
-    status: PlayStatus
-    parserBuffer: string
-    usedHint: boolean
-    lastInvalid: boolean
-    spells: SpellEntry[]
-    lastExecutedRaw: string
-    commandSeq: number
+  editorState: EditorState
+  damage: number
+  life: number
+  lifePercent: number
+  projectedStars: StarRating
+  status: PlayStatus
+  parserBuffer: string
+  usedHint: boolean
+  lastInvalid: boolean
+  spells: SpellEntry[]
+  lastExecutedRaw: string
+  commandSeq: number
 }
 
 export interface PlayActions {
-    handleKey: (key: string) => void
-    reset: () => void
-    useHint: () => void
+  handleKey: (key: string) => void
+  reset: () => void
+  useHint: () => void
 }
 
 export function usePlayEngine(
-    stage: Stage,
-    baseCommands?: readonly string[],
+  stage: Stage,
+  baseCommands?: readonly string[],
 ): PlayState & PlayActions {
-    const [editorState, setEditorState] = useState<EditorState>(() =>
-        createEditorState(stage.initialText, stage.initialCursor),
-    )
-    const [damage, setDamage] = useState(0)
-    const [usedHint, setUsedHint] = useState(false)
-    const [status, setStatus] = useState<PlayStatus>('playing')
-    const [parserBuffer, setParserBuffer] = useState('')
-    const [lastInvalid, setLastInvalid] = useState(false)
-    const [lastExecutedRaw, setLastExecutedRaw] = useState('')
-    const [commandSeq, setCommandSeq] = useState(0)
+  const [editorState, setEditorState] = useState<EditorState>(() =>
+    createEditorState(stage.initialText, stage.initialCursor),
+  )
+  const [damage, setDamage] = useState(0)
+  const [usedHint, setUsedHint] = useState(false)
+  const [status, setStatus] = useState<PlayStatus>('playing')
+  const [parserBuffer, setParserBuffer] = useState('')
+  const [lastInvalid, setLastInvalid] = useState(false)
+  const [lastExecutedRaw, setLastExecutedRaw] = useState('')
+  const [commandSeq, setCommandSeq] = useState(0)
 
-    // Ref for insert-mode entry snapshot (for finalizeInsertSession)
-    const insertEntryRef = useRef<EditorState | null>(null)
-    // Net character count during current insert session
-    const insertCharCount = useRef(0)
-    // Command that started the current insert session
-    const insertCommandRef = useRef<string>('')
-    // Cumulative damage when insert session started (for damageAtEntry)
-    const insertDamageAtEntryRef = useRef(0)
+  // Insert session tracking (consolidated)
+  const insertRef = useRef<InsertSession | null>(null)
 
-    // Spell (command history) tracking
-    const [spells, setSpells] = useState<SpellEntry[]>([])
+  // Spell (command history) tracking
+  const [spells, setSpells] = useState<SpellEntry[]>([])
 
-    // Parser instance (stable across renders, recreated on reset)
-    const parserRef = useRef<CommandParser>(
-        new CommandParser(
-            stage.availableCommands,
-            undefined,
-            stage.visualCommands,
-            baseCommands as string[] | undefined,
-        ),
-    )
+  // Parser instance (stable across renders, recreated on reset)
+  const parserRef = useRef<CommandParser>(
+    new CommandParser(
+      stage.availableCommands,
+      undefined,
+      stage.visualCommands,
+      baseCommands as string[] | undefined,
+    ),
+  )
 
-    const life = stage.life
-    const lifePercent = Math.max(0, ((life - damage) / life) * 100)
+  const life = stage.life
+  const lifePercent = Math.max(0, ((life - damage) / life) * 100)
 
-    /** Stamp damageAtEntry on the last undoStack operation (if stack grew) */
-    const stampDamageAtEntry = (
-        next: EditorState,
-        prev: EditorState,
-        damageAtEntry: number,
-    ): EditorState => {
-        if (next.undoStack.length <= prev.undoStack.length) return next
-        const lastOp = next.undoStack[next.undoStack.length - 1]
-        return {
-            ...next,
-            undoStack: [
-                ...next.undoStack.slice(0, -1),
-                { ...lastOp, damageAtEntry },
-            ],
+  const projectedStars = useMemo(() => {
+    const { stars } = evaluateAttempt(stage, damage, usedHint)
+    return stars
+  }, [stage, damage, usedHint])
+
+  const handleKey = useCallback(
+    (key: string) => {
+      if (status !== 'playing') return
+
+      const parser = parserRef.current
+
+      // In insert mode, bypass parser for character input
+      // (parser handles Esc, Backspace, Enter, but regular chars go direct)
+      if (
+        editorState.mode === 'insert' &&
+        key !== 'Esc' &&
+        key !== 'Backspace' &&
+        key !== 'Enter' &&
+        key.length === 1
+      ) {
+        if (insertRef.current) insertRef.current.charCount++
+        const next = executeCommand(editorState, { raw: key, valid: true })
+        setEditorState(next)
+        return
+      }
+
+      // Arrow keys in insert mode: move cursor without damage
+      if (editorState.mode === 'insert' && key.startsWith('Arrow')) {
+        const motionMap: Record<string, string> = {
+          ArrowLeft: 'h',
+          ArrowDown: 'j',
+          ArrowUp: 'k',
+          ArrowRight: 'l',
         }
-    }
+        const motion = motionMap[key]
+        if (motion) {
+          const next = executeCommand(
+            { ...editorState, mode: 'normal' },
+            { raw: motion, motion: motion as 'h' | 'j' | 'k' | 'l', valid: true },
+          )
+          setEditorState({ ...next, mode: 'insert' })
+        }
+        return
+      }
 
-    const projectedStars = useMemo(() => {
-        const { stars } = evaluateAttempt(stage, damage, usedHint)
-        return stars
-    }, [stage, damage, usedHint])
+      // Track Backspace/Enter char count in insert mode
+      if (editorState.mode === 'insert') {
+        if (key === 'Backspace') {
+          if (insertRef.current)
+            insertRef.current.charCount = Math.max(0, insertRef.current.charCount - 1)
+        } else if (key === 'Enter') {
+          if (insertRef.current) insertRef.current.charCount++
+        }
+      }
 
-    const handleKey = useCallback(
-        (key: string) => {
-            if (status !== 'playing') return
+      // Sync parser with current editor mode (needed for visual mode d/x/y/c handling)
+      parser.setEditorMode(editorState.mode)
 
-            const parser = parserRef.current
+      const parseResult = parser.feed(key)
+      setParserBuffer(parser.getState() === 'idle' ? '' : parser.getDisplayBuffer())
 
-            // In insert mode, bypass parser for character input
-            // (parser handles Esc, Backspace, Enter, but regular chars go direct)
-            if (
-                editorState.mode === 'insert' &&
-                key !== 'Esc' &&
-                key !== 'Backspace' &&
-                key !== 'Enter' &&
-                key.length === 1
-            ) {
-                insertCharCount.current++
-                const next = executeCommand(editorState, { raw: key, valid: true })
-                setEditorState(next)
-                return
-            }
+      if (!parseResult) return // parser is accumulating (e.g., waiting for motion after 'd')
 
-            // Arrow keys in insert mode: move cursor without damage
-            if (editorState.mode === 'insert' && key.startsWith('Arrow')) {
-                const motionMap: Record<string, string> = {
-                    ArrowLeft: 'h',
-                    ArrowDown: 'j',
-                    ArrowUp: 'k',
-                    ArrowRight: 'l',
-                }
-                const motion = motionMap[key]
-                if (motion) {
-                    const next = executeCommand(
-                        { ...editorState, mode: 'normal' },
-                        { raw: motion, motion: motion as 'h' | 'j' | 'k' | 'l', valid: true },
-                    )
-                    setEditorState({ ...next, mode: 'insert' })
-                }
-                return
-            }
+      // --- inline handleParseResult ---
+      setLastInvalid(!parseResult.command.valid)
+      setCommandSeq((s) => s + 1)
 
-            // Track Backspace/Enter char count in insert mode
-            if (editorState.mode === 'insert') {
-                if (key === 'Backspace') {
-                    insertCharCount.current = Math.max(0, insertCharCount.current - 1)
-                } else if (key === 'Enter') {
-                    insertCharCount.current++
-                }
-            }
+      if (!parseResult.command.valid) {
+        // Invalid command — no damage, red flash
+        return
+      }
 
-            // Sync parser with current editor mode (needed for visual mode d/x/y/c handling)
-            parser.setEditorMode(editorState.mode)
+      const raw = parseResult.command.raw
+      setLastExecutedRaw(raw)
 
-            const parseResult = parser.feed(key)
-            setParserBuffer(parser.getState() === 'idle' ? '' : parser.getDisplayBuffer())
+      // ── Undo: restore damage to damageAtEntry (full rollback including movement damage) ──
+      if (raw === 'u') {
+        if (editorState.undoStack.length > 0) {
+          const op = editorState.undoStack[editorState.undoStack.length - 1]
+          setDamage(op.damageAtEntry)
+          setSpells((prev) => prev.slice(0, -1))
+        }
+        const next = executeCommand(editorState, parseResult.command)
+        setEditorState(next)
+        if (next.mode === 'normal' && isStageClear(next, stage)) {
+          setStatus('clear')
+        }
+        return
+      }
 
-            if (!parseResult) return // parser is accumulating (e.g., waiting for motion after 'd')
+      // ── Redo: re-add damage from redone operation ──
+      if (raw === 'Ctrl+R') {
+        if (editorState.redoStack.length > 0) {
+          const op = editorState.redoStack[editorState.redoStack.length - 1]
+          const newDamage = damage + op.damage
+          setDamage(newDamage)
+          setSpells((prev) => [...prev, { command: 'Ctrl+R', damage: op.damage }])
+          if (newDamage >= life) {
+            setStatus('dead')
+            return
+          }
+        }
+        const next = executeCommand(editorState, parseResult.command)
+        setEditorState(next)
+        return
+      }
 
-            // --- inline handleParseResult ---
-            setLastInvalid(!parseResult.command.valid)
-            setCommandSeq((s) => s + 1)
+      // ── Entering insert mode (i/a/I/A): defer damage to session finalize ──
+      if (
+        (raw === 'i' || raw === 'a' || raw === 'I' || raw === 'A' || raw === 'o' || raw === 'O') &&
+        editorState.mode === 'normal'
+      ) {
+        const next = executeCommand(editorState, parseResult.command)
+        insertRef.current = {
+          entryState: editorState,
+          charCount: 0,
+          command: raw,
+          damageAtEntry: damage,
+        }
+        setEditorState(next)
+        return
+      }
 
-            if (!parseResult.command.valid) {
-                // Invalid command — no damage, red flash
-                return
-            }
+      // ── Visual change (c): delete selection + enter insert ──
+      if (raw === 'c' && editorState.mode === 'visual') {
+        const next = executeCommand(editorState, parseResult.command)
+        insertRef.current = {
+          entryState: editorState,
+          charCount: 0,
+          command: 'c',
+          damageAtEntry: damage,
+        }
+        setEditorState(next)
+        return
+      }
 
-            const raw = parseResult.command.raw
-            setLastExecutedRaw(raw)
+      // ── Leaving insert mode (Esc): compute session damage ──
+      if (raw === 'Esc' && editorState.mode === 'insert') {
+        let next = executeCommand(editorState, parseResult.command)
+        const session = insertRef.current
+        if (session) {
+          const charCount = session.charCount
+          next = finalizeInsertSession(next, session.entryState, charCount)
+          next = stampDamageAtEntry(next, editorState, session.damageAtEntry)
+          insertRef.current = null
 
-            // ── Undo: restore damage to damageAtEntry (full rollback including movement damage) ──
-            if (raw === 'u') {
-                if (editorState.undoStack.length > 0) {
-                    const op = editorState.undoStack[editorState.undoStack.length - 1]
-                    setDamage(op.damageAtEntry)
-                    setSpells((prev) => prev.slice(0, -1))
-                }
-                const next = executeCommand(editorState, parseResult.command)
-                setEditorState(next)
-                if (next.mode === 'normal' && isStageClear(next, stage)) {
-                    setStatus('clear')
-                }
-                return
-            }
+          // Compute insert damage: 0 for empty session, ceil(charCount/5) otherwise
+          const insertDamage =
+            charCount === 0 && next.text === editorState.text
+              ? 0
+              : charCount <= 0
+                ? 1
+                : Math.ceil(charCount / 5)
+          const newDamage = damage + insertDamage
+          setDamage(newDamage)
+          setSpells((prev) => [
+            ...prev,
+            { command: session.command + '…Esc', damage: insertDamage },
+          ])
+          if (newDamage >= life) {
+            setStatus('dead')
+            return
+          }
+        }
+        setEditorState(next)
+        if (isStageClear(next, stage)) {
+          setStatus('clear')
+        }
+        return
+      }
 
-            // ── Redo: re-add damage from redone operation ──
-            if (raw === 'Ctrl+R') {
-                if (editorState.redoStack.length > 0) {
-                    const op = editorState.redoStack[editorState.redoStack.length - 1]
-                    const newDamage = damage + op.damage
-                    setDamage(newDamage)
-                    setSpells((prev) => [...prev, { command: 'Ctrl+R', damage: op.damage }])
-                    if (newDamage >= life) {
-                        setStatus('dead')
-                        return
-                    }
-                }
-                const next = executeCommand(editorState, parseResult.command)
-                setEditorState(next)
-                return
-            }
+      // ── Esc in visual mode: exit visual (free) ──
+      if (raw === 'Esc' && editorState.mode === 'visual') {
+        const next = executeCommand(editorState, parseResult.command)
+        setEditorState(next)
+        return
+      }
 
-            // ── Entering insert mode (i/a/I/A): defer damage to session finalize ──
-            if (
-                (raw === 'i' || raw === 'a' || raw === 'I' || raw === 'A' || raw === 'o' || raw === 'O') &&
-                editorState.mode === 'normal'
-            ) {
-                const next = executeCommand(editorState, parseResult.command)
-                insertEntryRef.current = editorState
-                insertCharCount.current = 0
-                insertCommandRef.current = raw
-                insertDamageAtEntryRef.current = damage
-                setEditorState(next)
-                return
-            }
+      // ── Esc in normal mode: free ──
+      if (raw === 'Esc') {
+        return
+      }
 
-            // ── Visual change (c): delete selection + enter insert ──
-            if (raw === 'c' && editorState.mode === 'visual') {
-                const next = executeCommand(editorState, parseResult.command)
-                insertEntryRef.current = editorState
-                insertCharCount.current = 0
-                insertCommandRef.current = 'c'
-                insertDamageAtEntryRef.current = damage
-                setEditorState(next)
-                return
-            }
-
-            // ── Leaving insert mode (Esc): compute session damage ──
-            if (raw === 'Esc' && editorState.mode === 'insert') {
-                let next = executeCommand(editorState, parseResult.command)
-                if (insertEntryRef.current) {
-                    const charCount = insertCharCount.current
-                    next = finalizeInsertSession(next, insertEntryRef.current, charCount)
-                    // Stamp damageAtEntry on the new undo entry
-                    next = stampDamageAtEntry(next, editorState, insertDamageAtEntryRef.current)
-                    insertEntryRef.current = null
-
-                    // Compute insert damage: 0 for empty session, ceil(charCount/5) otherwise
-                    const insertDamage =
-                        charCount === 0 && next.text === editorState.text
-                            ? 0
-                            : charCount <= 0
-                                ? 1
-                                : Math.ceil(charCount / 5)
-                    const newDamage = damage + insertDamage
-                    setDamage(newDamage)
-                    setSpells((prev) => [
-                        ...prev,
-                        { command: insertCommandRef.current + '…Esc', damage: insertDamage },
-                    ])
-                    if (newDamage >= life) {
-                        setStatus('dead')
-                        return
-                    }
-                }
-                setEditorState(next)
-                if (isStageClear(next, stage)) {
-                    setStatus('clear')
-                }
-                return
-            }
-
-            // ── Esc in visual mode: exit visual (free) ──
-            if (raw === 'Esc' && editorState.mode === 'visual') {
-                const next = executeCommand(editorState, parseResult.command)
-                setEditorState(next)
-                return
-            }
-
-            // ── Esc in normal mode: free ──
-            if (raw === 'Esc') {
-                return
-            }
-
-            // ── All other commands: add parser damage ──
-            const next = stampDamageAtEntry(
-                executeCommand(editorState, parseResult.command),
-                editorState,
-                damage,
-            )
-
-            // Skip damage if state didn't change (e.g., motion hitting wall)
-            // Still update state for register changes (e.g., yank)
-            if (
-                next.text === editorState.text &&
-                next.cursor.line === editorState.cursor.line &&
-                next.cursor.col === editorState.cursor.col &&
-                next.mode === editorState.mode &&
-                next.viewportTop === editorState.viewportTop
-            ) {
-                setEditorState(next)
-                return
-            }
-
-            const newDamage = damage + parseResult.damage
-            setDamage(newDamage)
-            setSpells((prev) => [...prev, { command: raw, damage: parseResult.damage }])
-
-            if (newDamage >= life) {
-                setStatus('dead')
-                return
-            }
-
-            setEditorState(next)
-
-            // Check clear (only in normal mode)
-            if (next.mode === 'normal' && isStageClear(next, stage)) {
-                setStatus('clear')
-            }
-        },
-        [status, editorState, damage, life, stage],
-    )
-
-    const reset = useCallback(() => {
-        setEditorState(createEditorState(stage.initialText, stage.initialCursor))
-        setDamage(0)
-        setUsedHint(false)
-        setStatus('playing')
-        setParserBuffer('')
-        setLastInvalid(false)
-        setLastExecutedRaw('')
-        insertEntryRef.current = null
-        insertCharCount.current = 0
-        insertCommandRef.current = ''
-        insertDamageAtEntryRef.current = 0
-        parserRef.current = new CommandParser(
-            stage.availableCommands,
-            undefined,
-            stage.visualCommands,
-            baseCommands as string[] | undefined,
-        )
-        setSpells([])
-    }, [stage, baseCommands])
-
-    const useHint = useCallback(() => {
-        setUsedHint(true)
-    }, [])
-
-    return {
+      // ── All other commands: add parser damage ──
+      const next = stampDamageAtEntry(
+        executeCommand(editorState, parseResult.command),
         editorState,
         damage,
-        life,
-        lifePercent,
-        projectedStars,
-        status,
-        parserBuffer,
-        usedHint,
-        lastInvalid,
-        spells,
-        lastExecutedRaw,
-        commandSeq,
-        handleKey,
-        reset,
-        useHint,
-    }
+      )
+
+      // Skip damage if state didn't change (e.g., motion hitting wall)
+      // Still update state for register changes (e.g., yank)
+      if (
+        next.text === editorState.text &&
+        next.cursor.line === editorState.cursor.line &&
+        next.cursor.col === editorState.cursor.col &&
+        next.mode === editorState.mode &&
+        next.viewportTop === editorState.viewportTop
+      ) {
+        setEditorState(next)
+        return
+      }
+
+      const newDamage = damage + parseResult.damage
+      setDamage(newDamage)
+      setSpells((prev) => [...prev, { command: raw, damage: parseResult.damage }])
+
+      if (newDamage >= life) {
+        setStatus('dead')
+        return
+      }
+
+      setEditorState(next)
+
+      // Check clear (only in normal mode)
+      if (next.mode === 'normal' && isStageClear(next, stage)) {
+        setStatus('clear')
+      }
+    },
+    [status, editorState, damage, life, stage],
+  )
+
+  const reset = useCallback(() => {
+    setEditorState(createEditorState(stage.initialText, stage.initialCursor))
+    setDamage(0)
+    setUsedHint(false)
+    setStatus('playing')
+    setParserBuffer('')
+    setLastInvalid(false)
+    setLastExecutedRaw('')
+    insertRef.current = null
+    parserRef.current = new CommandParser(
+      stage.availableCommands,
+      undefined,
+      stage.visualCommands,
+      baseCommands as string[] | undefined,
+    )
+    setSpells([])
+  }, [stage, baseCommands])
+
+  const useHint = useCallback(() => {
+    setUsedHint(true)
+  }, [])
+
+  return {
+    editorState,
+    damage,
+    life,
+    lifePercent,
+    projectedStars,
+    status,
+    parserBuffer,
+    usedHint,
+    lastInvalid,
+    spells,
+    lastExecutedRaw,
+    commandSeq,
+    handleKey,
+    reset,
+    useHint,
+  }
 }
