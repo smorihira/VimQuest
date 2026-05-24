@@ -395,9 +395,10 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
   // . — dot repeat
   if (raw === '.') {
     if (state.lastCommand) {
+      // Capture state before replay for undo (covers both deletion + insert)
+      const preReplayState = state
       let result = executeCommand(state, state.lastCommand)
       if (result.mode === 'insert' && state.lastInsertText) {
-        const entryState = { ...result }
         let charCount = 0
         for (const ch of state.lastInsertText) {
           if (ch === '\n') {
@@ -407,7 +408,7 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
           }
           charCount++
         }
-        result = finalizeInsertSession(result, entryState, charCount)
+        result = finalizeInsertSession(result, preReplayState, charCount)
         result = executeEscape(result)
         result = {
           ...result,

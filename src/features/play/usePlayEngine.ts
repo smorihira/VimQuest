@@ -9,6 +9,7 @@
 import { useState, useCallback, useRef, useMemo } from 'react'
 import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
+import type { Command } from '../../types/command'
 import { createEditorState } from '../../types/editor'
 import { CommandParser } from '../../engine/commandParser'
 import { executeCommand, finalizeInsertSession } from '../../engine/commandExecutor'
@@ -26,6 +27,8 @@ interface InsertSession {
   charCount: number
   command: string
   damageAtEntry: number
+  entryCommand: Command
+  insertText: string
 }
 
 /** Stamp damageAtEntry on the last undoStack operation (if stack grew) */
@@ -117,7 +120,10 @@ export function usePlayEngine(
         key !== 'Enter' &&
         key.length === 1
       ) {
-        if (insertRef.current) insertRef.current.charCount++
+        if (insertRef.current) {
+          insertRef.current.charCount++
+          insertRef.current.insertText += key
+        }
         const next = executeCommand(editorState, { raw: key, valid: true })
         setEditorState(next)
         return
@@ -145,10 +151,15 @@ export function usePlayEngine(
       // Track Backspace/Enter char count in insert mode
       if (editorState.mode === 'insert') {
         if (key === 'Backspace') {
-          if (insertRef.current)
+          if (insertRef.current) {
             insertRef.current.charCount = Math.max(0, insertRef.current.charCount - 1)
+            insertRef.current.insertText = insertRef.current.insertText.slice(0, -1)
+          }
         } else if (key === 'Enter') {
-          if (insertRef.current) insertRef.current.charCount++
+          if (insertRef.current) {
+            insertRef.current.charCount++
+            insertRef.current.insertText += '\n'
+          }
         }
       }
 
@@ -215,6 +226,8 @@ export function usePlayEngine(
           charCount: 0,
           command: raw,
           damageAtEntry: damage,
+          entryCommand: parseResult.command,
+          insertText: '',
         }
         setEditorState(next)
         return
@@ -228,6 +241,8 @@ export function usePlayEngine(
           charCount: 0,
           command: 'c',
           damageAtEntry: damage,
+          entryCommand: parseResult.command,
+          insertText: '',
         }
         setEditorState(next)
         return
@@ -241,6 +256,12 @@ export function usePlayEngine(
           const charCount = session.charCount
           next = finalizeInsertSession(next, session.entryState, charCount)
           next = stampDamageAtEntry(next, editorState, session.damageAtEntry)
+          // Set lastCommand + lastInsertText for dot repeat
+          next = {
+            ...next,
+            lastCommand: session.entryCommand,
+            lastInsertText: session.insertText,
+          }
           insertRef.current = null
 
           // Compute insert damage: 0 for empty session, ceil(charCount/5) otherwise
@@ -317,10 +338,20 @@ export function usePlayEngine(
           charCount: 0,
           command: raw,
           damageAtEntry: damage,
+          entryCommand: parseResult.command,
+          insertText: '',
         }
       }
 
-      setEditorState(next)
+      // Set lastCommand for dot repeat:
+      // - Skip '.' (it preserves its own lastCommand internally)
+      // - Only for commands that changed text and stayed in normal mode
+      const finalNext =
+        raw !== '.' && next.text !== editorState.text && next.mode !== 'insert'
+          ? { ...next, lastCommand: parseResult.command }
+          : next
+
+      setEditorState(finalNext)
 
       // Check clear (only in normal mode)
       if (next.mode === 'normal' && isStageClear(next, stage)) {
