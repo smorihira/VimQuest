@@ -27,7 +27,7 @@ export const N31_STAGES: Stage[] = [
   },
 
   // ── Practice: 複数レジスタの使い分け ──
-  // opt = 6 ("ayiw + w + "byiw + A + "ap + ' ' + "bp + Esc)
+  // opt = 9 ("ayiw(1)+w(1)+"byiw(1)+j(1)+$(1)+a+Esc(1)+"ap(1)+a+Esc(1)+"bp(1))
   {
     id: 'N31-P',
     nodeId: 'N31',
@@ -37,8 +37,8 @@ export const N31_STAGES: Stage[] = [
     initialText: 'foo bar\nbaz',
     goalText: 'foo bar\nbaz foo bar',
     initialCursor: { line: 0, col: 0 },
-    life: 12,
-    stars: [6, 8, 10],
+    life: 15,
+    stars: [9, 11, 13],
     availableCommands: ['y', 'p', 'P', '"a', '"b', '"0', 'A'],
     clearConditions: {
       registers: { a: 'foo', b: 'bar' },
