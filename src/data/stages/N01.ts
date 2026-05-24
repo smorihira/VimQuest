@@ -1,8 +1,8 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N01: 基礎訓練 (h/j/k/l/w/b/e/x/i/a)
- * ゲーム最初のノード。5ステージ構成のチュートリアルノード。
+ * N01: 基礎訓練 (h/j/k/l/w/b/e/W/B/E/0/^/$/gg/G/x/i/a)
+ * ゲーム最初のノード。8ステージ構成のチュートリアルノード。
  * 連続プレイ（ツリー非表示）。ライフ/☆評価なし。
  */
 
@@ -38,9 +38,9 @@ export const N01_STAGES: Stage[] = [
     life: 999,
     stars: [999, 999, 999],
     availableCommands: ['h', 'j', 'k', 'l'],
-    clearConditions: { cursor: { line: 2, col: 0 } },
-    hints: [{ cost: 1, commands: ['j', 'j'] }],
-    flavor: '3行目までカーソルを下ろせ',
+    clearConditions: { cursor: { line: 2, col: 9 } },
+    hints: [{ cost: 1, commands: ['j', 'j', 'l', 'l', 'l', 'l', 'l', 'l', 'l', 'l', 'l'] }],
+    flavor: '右下の e までカーソルを運べ',
   },
 
   // ── N01-3: 単語を飛べ ──
@@ -56,14 +56,68 @@ export const N01_STAGES: Stage[] = [
     life: 999,
     stars: [999, 999, 999],
     availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e'],
-    clearConditions: { cursor: { line: 0, col: 20 } },
-    hints: [{ cost: 1, commands: ['w', 'w', 'w', 'w'] }],
-    flavor: 'w で単語ジャンプ。jumps まで進め',
+    clearConditions: { cursor: { line: 0, col: 24 } },
+    hints: [{ cost: 1, commands: ['w', 'w', 'w', 'w', 'e'] }],
+    flavor: 'w と e で行の右端まで進め',
   },
 
-  // ── N01-4: 文字を消せ ──
+  // ── N01-4: WORDで飛べ ──
   {
     id: 'N01-4',
+    nodeId: 'N01',
+    type: 'tutorial',
+    title: 'WORDで飛べ',
+    language: 'javascript',
+    initialText: 'arr.push(x); return obj.key;',
+    goalText: 'arr.push(x); return obj.key;',
+    initialCursor: { line: 0, col: 0 },
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E'],
+    clearConditions: { cursor: { line: 0, col: 13 } },
+    hints: [{ cost: 1, commands: ['W'] }],
+    flavor: 'W は記号をまたいで空白区切りで飛ぶ。return まで一発だ',
+  },
+
+  // ── N01-5: 行頭末ジャンプ ──
+  {
+    id: 'N01-5',
+    nodeId: 'N01',
+    type: 'tutorial',
+    title: '行の端へ飛べ',
+    language: 'plaintext',
+    initialText: '    hello world',
+    goalText: '    hello world',
+    initialCursor: { line: 0, col: 8 },
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', '0', '^', '$'],
+    clearConditions: { cursor: { line: 0, col: 4 } },
+    hints: [{ cost: 1, commands: ['^'] }],
+    flavor: '^ で最初の文字、0 で行頭、$ で行末へ飛べる',
+  },
+
+  // ── N01-6: ファイルの端へ ──
+  {
+    id: 'N01-6',
+    nodeId: 'N01',
+    type: 'tutorial',
+    title: 'ファイルの端へ',
+    language: 'plaintext',
+    initialText: 'line 1\nline 2\nline 3\nline 4\nline 5',
+    goalText: 'line 1\nline 2\nline 3\nline 4\nline 5',
+    initialCursor: { line: 0, col: 0 },
+    life: 999,
+    stars: [999, 999, 999],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', 'W', 'B', 'E', '0', '^', '$', 'gg', 'G'],
+    clearConditions: { cursor: { line: 4, col: 0 } },
+    hints: [{ cost: 1, commands: ['G'] }],
+    flavor: 'G でファイル末尾、gg でファイル先頭へ一瞬で飛べる',
+  },
+
+  // ── N01-7: 文字を消せ ──
+  {
+    id: 'N01-7',
     nodeId: 'N01',
     type: 'tutorial',
     title: '文字を消せ',
@@ -78,9 +132,9 @@ export const N01_STAGES: Stage[] = [
     flavor: '余分な l を x で消せ',
   },
 
-  // ── N01-5: 文字を書け ──
+  // ── N01-8: 文字を書け ──
   {
-    id: 'N01-5',
+    id: 'N01-8',
     nodeId: 'N01',
     type: 'tutorial',
     title: '文字を書け',

@@ -1,63 +1,43 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N19: 行内ジャンプ (f, t, ;, ,)
- * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
+ * N19: 基本TextObj (iw, aw)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N19_STAGES: Stage[] = [
-  // ── Teach: f で文字へジャンプ ──
-  // opt = 1 (f()
+  // ── Teach: daw で単語ごと削除 ──
+  // opt = 2 (w + daw)
   {
     id: 'N19-T',
     nodeId: 'N19',
     type: 'teach',
-    title: '狙い撃て',
-    language: 'javascript',
-    initialText: 'const result = getValue(42);',
-    goalText: 'const result = getValue(42);',
+    title: '単語を掴め',
+    language: 'plaintext',
+    initialText: 'hello nice world',
+    goalText: 'hello world',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['f', 't'],
-    clearConditions: { cursor: { line: 0, col: 23 } },
-    hints: [{ cost: 1, commands: ['f('] }],
-    flavor: 'f( で ( まで一瞬でジャンプだ。www より速い',
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'daw'] }],
+    flavor: 'daw で周囲の空白ごと単語を消せる。dw より正確だ',
   },
 
-  // ── Practice: ; で f/t を繰り返す ──
-  // opt = 3 (f/ + ; + ;) → third '/' in path
+  // ── Practice: 複数単語削除 ──
+  // opt = 3 (w + daw + daw)
   {
     id: 'N19-P',
     nodeId: 'N19',
     type: 'practice',
-    title: '繰り返し撃て',
+    title: '不要語削除',
     language: 'plaintext',
-    initialText: 'path/to/the/file.txt',
-    goalText: 'path/to/the/file.txt',
+    initialText: 'remove bad ugly text here',
+    goalText: 'remove text here',
     initialCursor: { line: 0, col: 0 },
     life: 9,
     stars: [3, 5, 7],
-    availableCommands: ['f', 't'],
-    clearConditions: { cursor: { line: 0, col: 11 } },
-    hints: [{ cost: 1, commands: ['f/', ';', ';'] }],
-    flavor: 'f/ で最初の / へ。; で次の / に繰り返しジャンプだ',
-  },
-
-  // ── Challenge: f/t を使い分けて目標達成 ──
-  // opt = 3 (fr + l + x)
-  {
-    id: 'N19-C',
-    nodeId: 'N19',
-    type: 'challenge',
-    title: '精密射撃',
-    language: 'css',
-    initialText: 'style: rred;',
-    goalText: 'style: red;',
-    initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [3, 6, 9],
-    availableCommands: ['f', 't'],
-    hints: [{ cost: 1, commands: ['fr', 'l', 'x'] }],
-    flavor: 'f で素早く目標に接近し、余分な r を消せ',
+    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
+    flavor: '不要な形容詞を daw で消し去れ',
   },
 ]

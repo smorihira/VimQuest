@@ -1,46 +1,84 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N22: c+f/t (cf, ct)
- * 渇望→報酬サイクル #4: dw+i+入力 → cw で2手
- * Teach(T) + Practice(P) = 2ステージ
+ * N22: c+TextObj (ciw, ci", ca()
+ * ALL合流ノード: N25(delim) + N23(cf/ct)
+ * ★★★ 重要ノード — Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N22_STAGES: Stage[] = [
-  // ── Teach: ct で文字の手前まで変更 ──
-  // opt = 2 (w + ct;)  — change 'red' to 'blue'
+  // ── Teach: ciw で単語を置換 ──
+  // opt = 2 (w + ciw + 'count' + Esc)
   {
     id: 'N22-T',
     nodeId: 'N22',
     type: 'teach',
-    title: '書き換えろ',
-    language: 'css',
-    initialText: 'color: red;',
-    goalText: 'color: blue;',
+    title: '単語を変えろ',
+    language: 'javascript',
+    initialText: 'let value = 0;',
+    goalText: 'let count = 0;',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 5, 7],
-    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'w', 'ct;', 'blue', 'Esc'] }],
-    flavor: 'ct; で ; の手前まで消してInsertモードに。d+i が一体化した c の威力',
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'ciw', 'count', 'Esc'] }],
+    flavor: 'ciw で単語を消してそのままInsertモードへ。変数名を変えろ',
   },
 
-  // ── Practice: 複数行で cf/ct を使い分け ──
-  // opt = 5 (w+ct;+50px+Esc, j+w+ct;+80px+Esc)
+  // ── Practice: 複数の TextObj 変更 ──
+  // opt = 4 (ci"+#333+Esc, j+ci"+20px+Esc)
   {
     id: 'N22-P',
     nodeId: 'N22',
     type: 'practice',
-    title: '一括修正',
+    title: '属性を直せ',
     language: 'css',
-    initialText: 'width: 100px;\nheight: 200px;',
-    goalText: 'width: 50px;\nheight: 80px;',
+    initialText: 'color: "red";\nfont-size: "16px";',
+    goalText: 'color: "#333";\nfont-size: "20px";',
     initialCursor: { line: 0, col: 0 },
-    life: 14,
-    stars: [8, 10, 12],
-    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
+    life: 10,
+    stars: [4, 6, 8],
+    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't'],
+    hints: [{ cost: 1, commands: ['ci"', '#333', 'Esc', 'j', 'ci"', '20px', 'Esc'] }],
+    flavor: '2行の引用符内を ci" で書き換えろ',
+  },
+
+  // ── Challenge: JSON修正パズル ──
+  // opt = 8 (複数の ci" + ca( を駆使)
+  {
+    id: 'N22-C',
+    nodeId: 'N22',
+    type: 'challenge',
+    title: 'JSON外科',
+    language: 'json',
+    initialText:
+      '{\n' + '  "name": "Alice",\n' + '  "age": "twenty",\n' + '  "role": "user"\n' + '}',
+    goalText: '{\n' + '  "name": "Bob",\n' + '  "age": "30",\n' + '  "role": "admin"\n' + '}',
+    initialCursor: { line: 0, col: 0 },
+    life: 17,
+    stars: [9, 12, 15],
+    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'ca(', 'f', 't'],
     hints: [
-      { cost: 1, commands: ['w', 'w', 'ct;', '50px', 'Esc', 'j', 'b', 'ct;', '80px', 'Esc'] },
+      {
+        cost: 1,
+        commands: [
+          'j',
+          'fA',
+          'ci"',
+          'Bob',
+          'Esc',
+          'j',
+          'ft',
+          'ci"',
+          '30',
+          'Esc',
+          'j',
+          'fu',
+          'ci"',
+          'admin',
+          'Esc',
+        ],
+      },
     ],
-    flavor: 'ct; で値を書き換えろ。2行とも修正だ',
+    flavor: 'JSON の値を3箇所書き換えろ。ci" の腕の見せどころだ',
   },
 ]

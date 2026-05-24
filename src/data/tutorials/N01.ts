@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /**
  * N01 チュートリアル: 基礎訓練
- * 5ステージそれぞれに対応するチュートリアル。
+ * 8ステージそれぞれに対応するチュートリアル。
  */
 
 /** N01-1: 左右に動け (h/l) */
@@ -25,6 +25,10 @@ export const N01_1_TUTORIAL: Tutorial = {
         {
             message: '今度は h で左に戻れ',
             expectedKey: 'h',
+        },
+        {
+            message: '💡 Space を長押しするとゴール位置が浮かび上がる。目標を確認しろ',
+            expectedKey: null,
         },
         {
             message: 'よし。l で右端まで行ってみろ',
@@ -59,7 +63,11 @@ export const N01_2_TUTORIAL: Tutorial = {
             expectedKey: 'k',
         },
         {
-            message: 'hjkl の4方向を覚えたな。ステージをクリアしてみろ',
+            message: 'l で右にも動けるぞ',
+            expectedKey: 'l',
+        },
+        {
+            message: 'hjkl の4方向を覚えたな。右下のゴールまで行ってみろ',
             expectedKey: null,
         },
     ],
@@ -91,16 +99,96 @@ export const N01_3_TUTORIAL: Tutorial = {
             expectedKey: 'e',
         },
         {
-            message: 'w で "jumps" まで進め',
+            message: 'w で単語の先頭、e で末尾に飛ぶ。行の右端まで進め',
             expectedKey: null,
         },
     ],
 }
 
-/** N01-4: 文字を消せ (x + undo) */
+/** N01-4: WORDで飛べ (W/B/E) */
 export const N01_4_TUTORIAL: Tutorial = {
     nodeId: 'N01',
     stageId: 'N01-4',
+    initialSetup: {
+        text: 'arr.push(x); return obj.key;',
+        cursor: { line: 0, col: 0 },
+    },
+    steps: [
+        {
+            message: 'w を押してみろ。. で止まるだろう',
+            expectedKey: 'w',
+        },
+        {
+            message: '0 で行頭に戻れ',
+            expectedKey: '0',
+        },
+        {
+            message: '今度は W だ。空白まで一気に飛ぶ',
+            expectedKey: 'W',
+        },
+        {
+            message: 'W は記号をまたいで飛ぶ。return までたどり着いたな',
+            expectedKey: null,
+        },
+    ],
+}
+
+/** N01-5: 行の端へ飛べ (0/^/$) */
+export const N01_5_TUTORIAL: Tutorial = {
+    nodeId: 'N01',
+    stageId: 'N01-5',
+    initialSetup: {
+        text: '    hello world',
+        cursor: { line: 0, col: 8 },
+    },
+    steps: [
+        {
+            message: '$ で行末にジャンプだ',
+            expectedKey: '$',
+        },
+        {
+            message: '0 で行の先頭（列0）に戻れ',
+            expectedKey: '0',
+        },
+        {
+            message: '^ で最初の文字に飛ぶ。空白を飛ばしてくれる',
+            expectedKey: '^',
+        },
+        {
+            message: 'h に戻ったな。クリア条件も ^ だ',
+            expectedKey: null,
+        },
+    ],
+}
+
+/** N01-6: ファイルの端へ (gg/G) */
+export const N01_6_TUTORIAL: Tutorial = {
+    nodeId: 'N01',
+    stageId: 'N01-6',
+    initialSetup: {
+        text: 'line 1\nline 2\nline 3\nline 4\nline 5',
+        cursor: { line: 0, col: 0 },
+    },
+    steps: [
+        {
+            message: 'G でファイルの最終行にジャンプだ',
+            expectedKey: 'G',
+        },
+        {
+            message: 'gg で先頭行に戻れる',
+            expectedKey: 'g',
+        },
+        {
+            message: 'G で最終行に飛んでクリアしろ',
+            expectedKey: null,
+        },
+    ],
+}
+
+/** N01-7: 文字を消せ (x + undo) */
+export const N01_7_TUTORIAL: Tutorial = {
+    nodeId: 'N01',
+    stageId: 'N01-7',
     initialSetup: {
         text: 'hellllo world',
         cursor: { line: 0, col: 3 },
@@ -137,10 +225,10 @@ export const N01_4_TUTORIAL: Tutorial = {
     ],
 }
 
-/** N01-5: 文字を書け (i/a + Esc) */
-export const N01_5_TUTORIAL: Tutorial = {
+/** N01-8: 文字を書け (i/a + Esc) */
+export const N01_8_TUTORIAL: Tutorial = {
     nodeId: 'N01',
-    stageId: 'N01-5',
+    stageId: 'N01-8',
     initialSetup: {
         text: 'hllo worl',
         cursor: { line: 0, col: 1 },

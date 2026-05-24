@@ -1,25 +1,43 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N29: 大小文字変換 (gu, gU)
- * Teach(T) = 1ステージ
+ * N29: ヤンク (y + motion/textobj)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N29_STAGES: Stage[] = [
-  // ── Teach: gU + TextObj で大文字化 ──
-  // opt = 2 (w + gUiw)
+  // ── Teach: yiw でコピー → p でペースト ──
+  // opt = 3 (yiw + $ + p)
   {
     id: 'N29-T',
     nodeId: 'N29',
     type: 'teach',
-    title: '大文字にしろ',
-    language: 'javascript',
-    initialText: 'const max_size = 100;',
-    goalText: 'const MAX_SIZE = 100;',
+    title: 'コピーせよ',
+    language: 'plaintext',
+    initialText: 'hello world',
+    goalText: 'hello worldhello',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['diw', 'di"', 'gu', 'gU', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'gUiw'] }],
-    flavor: 'gU + TextObj で単語を大文字に変換できる',
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['diw', 'yiw', 'v', 'p', 'f', 't'],
+    hints: [{ cost: 1, commands: ['yiw', '$', 'p'] }],
+    flavor: 'yiw で単語をヤンク（コピー）し、p でペーストだ',
+  },
+
+  // ── Practice: yy で行コピー、p でペースト ──
+  // opt = 3 (j + yy + p)
+  {
+    id: 'N29-P',
+    nodeId: 'N29',
+    type: 'practice',
+    title: '行を複製',
+    language: 'javascript',
+    initialText: 'const a = 1;\nconst b = 2;',
+    goalText: 'const a = 1;\nconst b = 2;\nconst b = 2;',
+    initialCursor: { line: 0, col: 0 },
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['y', 'yy', 'v', 'V', 'p', 'P'],
+    hints: [{ cost: 1, commands: ['j', 'yy', 'p'] }],
+    flavor: 'yy で行全体をヤンクし、p で下に複製せよ',
   },
 ]

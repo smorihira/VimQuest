@@ -5,6 +5,9 @@ import {
     N01_3_TUTORIAL,
     N01_4_TUTORIAL,
     N01_5_TUTORIAL,
+    N01_6_TUTORIAL,
+    N01_7_TUTORIAL,
+    N01_8_TUTORIAL,
 } from './N01'
 
 /** All tutorials keyed by stage ID or node ID */
@@ -14,6 +17,9 @@ const TUTORIALS: Record<string, Tutorial> = {
     'N01-3': N01_3_TUTORIAL,
     'N01-4': N01_4_TUTORIAL,
     'N01-5': N01_5_TUTORIAL,
+    'N01-6': N01_6_TUTORIAL,
+    'N01-7': N01_7_TUTORIAL,
+    'N01-8': N01_8_TUTORIAL,
     // N15, N25, N33 will be added later
 }
 

@@ -1,26 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N09: ファイル移動 (gg, G)
+ * N9: カーソル下検索 (*, #)
  * Teach(T) = 1ステージ
  */
 export const N09_STAGES: Stage[] = [
-  // ── Teach: ファイル末尾へジャンプ ──
-  // opt = 1 (G) → cursor at last line
+  // ── Teach: カーソル下の単語を検索 ──
+  // opt = 1 (*)
   {
     id: 'N09-T',
     nodeId: 'N09',
     type: 'teach',
-    title: '末尾へ飛べ',
+    title: '同じ奴を探せ',
     language: 'javascript',
-    initialText: 'line 1\nline 2\nline 3\nline 4\n// ERROR: fix here',
-    goalText: 'line 1\nline 2\nline 3\nline 4\n// ERROR: fix here',
-    initialCursor: { line: 0, col: 0 },
+    initialText: 'let foo = 1;\nlet bar = 2;\nlet foo = 3;',
+    goalText: 'let foo = 1;\nlet bar = 2;\nlet foo = 3;',
+    initialCursor: { line: 0, col: 4 },
     life: 7,
     stars: [1, 2, 4],
-    availableCommands: ['gg', 'G', '0', '$'],
-    clearConditions: { cursor: { line: 4, col: 0 } },
-    hints: [{ cost: 1, commands: ['G'] }],
-    flavor: 'G でファイル末尾に一気にジャンプだ',
+    availableCommands: ['*', '#', '/'],
+    clearConditions: { cursor: { line: 2, col: 4 } },
+    hints: [{ cost: 1, commands: ['*'] }],
+    flavor: '* でカーソル下の単語を即検索。foo を見つけ出せ',
   },
 ]

@@ -1,25 +1,46 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N18: 行結合 (J)
- * Teach(T) = 1ステージ
+ * N18: c+f/t (cf, ct)
+ * 渇望→報酬サイクル #4: dw+i+入力 → cw で2手
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N18_STAGES: Stage[] = [
-  // ── Teach: 2行を1行に結合 ──
-  // opt = 1 (J)
+  // ── Teach: ct で文字の手前まで変更 ──
+  // opt = 2 (w + ct;)  — change 'red' to 'blue'
   {
     id: 'N18-T',
     nodeId: 'N18',
     type: 'teach',
-    title: '行をつなげ',
-    language: 'plaintext',
-    initialText: 'hello\nworld',
-    goalText: 'hello world',
+    title: '書き換えろ',
+    language: 'css',
+    initialText: 'color: red;',
+    goalText: 'color: blue;',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['dd', 'J', '0', '$', '^'],
-    hints: [{ cost: 1, commands: ['J'] }],
-    flavor: 'J で下の行を現在行に結合できる',
+    life: 10,
+    stars: [4, 5, 7],
+    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'w', 'ct;', 'blue', 'Esc'] }],
+    flavor: 'ct; で ; の手前まで消してInsertモードに。d+i が一体化した c の威力',
+  },
+
+  // ── Practice: 複数行で cf/ct を使い分け ──
+  // opt = 5 (w+ct;+50px+Esc, j+w+ct;+80px+Esc)
+  {
+    id: 'N18-P',
+    nodeId: 'N18',
+    type: 'practice',
+    title: '一括修正',
+    language: 'css',
+    initialText: 'width: 100px;\nheight: 200px;',
+    goalText: 'width: 50px;\nheight: 80px;',
+    initialCursor: { line: 0, col: 0 },
+    life: 14,
+    stars: [8, 10, 12],
+    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
+    hints: [
+      { cost: 1, commands: ['w', 'w', 'ct;', '50px', 'Esc', 'j', 'b', 'ct;', '80px', 'Esc'] },
+    ],
+    flavor: 'ct; で値を書き換えろ。2行とも修正だ',
   },
 ]

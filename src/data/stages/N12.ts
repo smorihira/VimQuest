@@ -1,55 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N12: 検索 (/, n, N)
- * Teach(T) + Practice(P) = 2ステージ
+ * N12: 行末削除 (d$, d0)
+ * Teach(T) = 1ステージ
  */
 export const N12_STAGES: Stage[] = [
-  // ── Teach: 検索でジャンプ ──
-  // opt = 1 (/error + Enter)
+  // ── Teach: 行末まで削除 ──
+  // opt = 3 (e + l + d$)
   {
     id: 'N12-T',
     nodeId: 'N12',
     type: 'teach',
-    title: '検索せよ',
+    title: '末尾を切れ',
     language: 'javascript',
-    initialText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
-    goalText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
+    initialText: 'return value; // temporary hack',
+    goalText: 'return value;',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['/', '0', '$'],
-    clearConditions: { cursor: { line: 2, col: 6 } },
-    hints: [{ cost: 1, commands: ['/error', 'Enter'] }],
-    flavor: '/ で検索開始。error を探し出せ',
-  },
-
-  // ── Practice: 検索 + n で次へ ──
-  // opt = 3 (/TODO + Enter, n, n)
-  {
-    id: 'N12-P',
-    nodeId: 'N12',
-    type: 'practice',
-    title: '全部見つけろ',
-    language: 'javascript',
-    initialText:
-      '// TODO: fix auth\n' +
-      'function login() {}\n' +
-      '// TODO: add validation\n' +
-      'function save() {}\n' +
-      '// TODO: write tests',
-    goalText:
-      '// TODO: fix auth\n' +
-      'function login() {}\n' +
-      '// TODO: add validation\n' +
-      'function save() {}\n' +
-      '// TODO: write tests',
-    initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['/', '0', '$'],
-    clearConditions: { cursor: { line: 4, col: 3 } },
-    hints: [{ cost: 1, commands: ['/TODO', 'Enter', 'n', 'n'] }],
-    flavor: '/TODO で検索して n で次のマッチへ。全3箇所の最後まで行け',
+    life: 11,
+    stars: [5, 6, 8],
+    availableCommands: ['dd', 'd$', 'd0', 'dw'],
+    hints: [{ cost: 1, commands: ['e', 'e', 'l', 'l', 'd$'] }],
+    flavor: 'コメントを d$ で行末まで一気に削除せよ',
   },
 ]

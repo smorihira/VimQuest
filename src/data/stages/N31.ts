@@ -1,45 +1,51 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N31: Visualモード (v, V)
+ * N31: レジスタ ("a〜"z, "0)
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N31_STAGES: Stage[] = [
-  // ── Teach: V で行選択して削除 ──
-  // opt = 2 (j + Vd)
+  // ── Teach: 名前付きレジスタに保存 ──
+  // opt = 3 ("ayiw + w + "ap)
   {
     id: 'N31-T',
     nodeId: 'N31',
     type: 'teach',
-    title: '選んで消せ',
-    language: 'javascript',
-    initialText: 'keep this\nremove this\nkeep this too',
-    goalText: 'keep this\nkeep this too',
+    title: 'レジスタ入門',
+    language: 'plaintext',
+    initialText: 'hello world',
+    goalText: 'hello worldhello',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
-    visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['j', 'V', 'd'] }],
-    flavor: 'V で行を選択、d で削除。Visual モードの基本だ',
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['y', 'p', 'P', '"a', '"0'],
+    hints: [{ cost: 1, commands: ['"ayiw', '$', '"ap'] }],
+    flavor: '"a で名前付きレジスタに保存。後から正確に貼り付けられる',
   },
 
-  // ── Practice: v で範囲選択して削除 ──
-  // opt = 4 (f<+v+f>+d)
+  // ── Practice: 複数レジスタの使い分け ──
+  // opt = 6 ("ayiw + w + "byiw + A + "ap + ' ' + "bp + Esc)
   {
     id: 'N31-P',
     nodeId: 'N31',
     type: 'practice',
-    title: '範囲狙撃',
-    language: 'html',
-    initialText: 'Hello <World> end',
-    goalText: 'Hello  end',
+    title: 'レジスタ活用',
+    language: 'plaintext',
+    initialText: 'foo bar\nbaz',
+    goalText: 'foo bar\nbaz foo bar',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 6, 8],
-    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
-    visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd'] }],
-    flavor: 'v で選択開始し、f でタグの終わりまで選択して d で消せ',
+    life: 12,
+    stars: [6, 8, 10],
+    availableCommands: ['y', 'p', 'P', '"a', '"b', '"0', 'A'],
+    clearConditions: {
+      registers: { a: 'foo', b: 'bar' },
+    },
+    hints: [
+      {
+        cost: 1,
+        commands: ['"ayiw', 'w', '"byiw', 'j', '$', 'a', ' ', 'Esc', '"ap', 'a', ' ', 'Esc', '"bp'],
+      },
+    ],
+    flavor: '"a と "b に別々の単語を保存し、組み合わせてペーストせよ',
   },
 ]

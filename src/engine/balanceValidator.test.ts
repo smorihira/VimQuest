@@ -24,8 +24,8 @@ const FORMULA: Record<StageType, { s2: number; s1: number; life: number }> = {
 const allStages = Object.values(ALL_STAGES)
 
 describe('Stage data integrity', () => {
-    it('has at least 54 stages', () => {
-        expect(allStages.length).toBeGreaterThanOrEqual(54)
+    it('has at least 50 stages', () => {
+        expect(allStages.length).toBeGreaterThanOrEqual(50)
     })
 
     it('all stage IDs are unique', () => {

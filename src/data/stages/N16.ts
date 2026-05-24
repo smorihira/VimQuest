@@ -1,25 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N16: 行末削除 (d$, d0)
+ * N16: 括弧ジャンプ (%)
  * Teach(T) = 1ステージ
  */
 export const N16_STAGES: Stage[] = [
-  // ── Teach: 行末まで削除 ──
-  // opt = 3 (e + l + d$)
+  // ── Teach: 対応する括弧へジャンプ ──
+  // opt = 2 (f{ + %)
   {
     id: 'N16-T',
     nodeId: 'N16',
     type: 'teach',
-    title: '末尾を切れ',
+    title: '対を見つけろ',
     language: 'javascript',
-    initialText: 'return value; // temporary hack',
-    goalText: 'return value;',
+    initialText: 'if (x > 0) { return x; }',
+    goalText: 'if (x > 0) { return x; }',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 6, 8],
-    availableCommands: ['dd', 'd$', 'd0', 'dw', '0', '$'],
-    hints: [{ cost: 1, commands: ['e', 'e', 'l', 'l', 'd$'] }],
-    flavor: 'コメントを d$ で行末まで一気に削除せよ',
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['%', 'f', 't'],
+    clearConditions: { cursor: { line: 0, col: 23 } },
+    hints: [{ cost: 1, commands: ['f{', '%'] }],
+    flavor: '% で対応する括弧にジャンプ。{ から } へ一瞬で飛べる',
   },
 ]

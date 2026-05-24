@@ -227,6 +227,10 @@
     color: var(--text-primary);
     min-width: 48px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     transition: all 0.25s ease;
 }
 

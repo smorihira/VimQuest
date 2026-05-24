@@ -1,45 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N25: d+TextObj (diw, di", da()
- * ALL合流ノード: N25(delim) + N15(dw)
- * 渇望→報酬サイクル #6: v+移動+d → diw 一発
- * Teach(T) + Practice(P) = 2ステージ
+ * N25: 大小文字変換 (gu, gU)
+ * Teach(T) = 1ステージ
  */
 export const N25_STAGES: Stage[] = [
-  // ── Teach: diw で単語をピンポイント削除 ──
-  // opt = 2 (w + diw)
+  // ── Teach: gU + TextObj で大文字化 ──
+  // opt = 2 (w + gUiw)
   {
     id: 'N25-T',
     nodeId: 'N25',
     type: 'teach',
-    title: '精密除去',
+    title: '大文字にしろ',
     language: 'javascript',
-    initialText: 'const temp = 42;',
-    goalText: 'const  = 42;',
+    initialText: 'const max_size = 100;',
+    goalText: 'const MAX_SIZE = 100;',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'di"', 'da(', 'f', 't', '0', '$'],
-    hints: [{ cost: 1, commands: ['w', 'diw'] }],
-    flavor: 'diw は単語だけを正確に消す。前後の空白は残る',
-  },
-
-  // ── Practice: 括弧内・引用符内の削除 ──
-  // opt = 4 (fv+diw, f"+di")
-  {
-    id: 'N25-P',
-    nodeId: 'N25',
-    type: 'practice',
-    title: '外科手術',
-    language: 'javascript',
-    initialText: 'alert("error: " + value);',
-    goalText: 'alert("" + value);',
-    initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 6, 8],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'di"', 'da(', 'f', 't', '0', '$'],
-    hints: [{ cost: 1, commands: ['f"', 'di"'] }],
-    flavor: '引用符の中身だけを di" で消せ。外側は残る',
+    availableCommands: ['diw', 'di"', 'gu', 'gU', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'gUiw'] }],
+    flavor: 'gU + TextObj で単語を大文字に変換できる',
   },
 ]
