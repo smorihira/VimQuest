@@ -397,6 +397,9 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
 
 function mapKey(e: KeyboardEvent): string | null {
   if (e.ctrlKey && e.key === 'r') return 'Ctrl+R'
+  if (e.ctrlKey && e.key === 'd') return 'Ctrl+d'
+  if (e.ctrlKey && e.key === 'u') return 'Ctrl+u'
+  if (e.ctrlKey && e.key === 'v') return 'Ctrl+v'
   if (e.ctrlKey || e.metaKey) return null
   if (e.key === 'Escape') return 'Esc'
   if (e.key === 'Backspace') return 'Backspace'
