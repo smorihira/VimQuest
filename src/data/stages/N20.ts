@@ -18,7 +18,7 @@ export const N20_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 14 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['diw', 'daw', 'di"', 'da"', 'ci"', 'f', 't'],
+    availableCommands: ['di"', 'da"', 'ci"', 'f', 't'],
     hints: [{ cost: 1, commands: ['ci"', 'blue', 'Esc'] }],
     flavor: 'ci" で引用符の中身だけを書き換えられる',
   },

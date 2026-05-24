@@ -385,6 +385,69 @@ export function executeSearchWordForward(state: EditorState): EditorState {
   return executeSearch(state, word)
 }
 
+/** Execute # — search for word under cursor backward */
+export function executeSearchWordBackward(state: EditorState): EditorState {
+  const ls = lines(state.text)
+  const line = ls[state.cursor.line]
+  const col = state.cursor.col
+
+  if (!isWordChar(line[col])) return state
+  let start = col
+  let end = col
+  while (start > 0 && isWordChar(line[start - 1])) start--
+  while (end < line.length - 1 && isWordChar(line[end + 1])) end++
+  const word = line.slice(start, end + 1)
+
+  return executeSearchBackward(state, word)
+}
+
+/** Execute backward search (used by #) */
+function executeSearchBackward(state: EditorState, pattern: string): EditorState {
+  if (!pattern) return state
+  const flat = state.text
+  const ls = lines(flat)
+
+  let curOffset = 0
+  for (let i = 0; i < state.cursor.line; i++) curOffset += ls[i].length + 1
+  curOffset += state.cursor.col
+
+  try {
+    const regex = new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
+    // Find last match before cursor
+    let lastMatch: number | null = null
+    let m: RegExpExecArray | null
+    while ((m = regex.exec(flat)) !== null) {
+      if (m.index < curOffset) lastMatch = m.index
+      else break
+    }
+    if (lastMatch !== null) {
+      return {
+        ...state,
+        cursor: offsetToPos(flat, lastMatch),
+        lastSearchPattern: pattern,
+        lastSearchDirection: 'backward',
+      }
+    }
+    // Wrap around: find last match in entire text
+    regex.lastIndex = 0
+    let wrapMatch: number | null = null
+    while ((m = regex.exec(flat)) !== null) {
+      wrapMatch = m.index
+    }
+    if (wrapMatch !== null) {
+      return {
+        ...state,
+        cursor: offsetToPos(flat, wrapMatch),
+        lastSearchPattern: pattern,
+        lastSearchDirection: 'backward',
+      }
+    }
+  } catch {
+    // Invalid pattern
+  }
+  return { ...state, lastSearchPattern: pattern, lastSearchDirection: 'backward' }
+}
+
 // ─── Scroll / Viewport ─────────────────────────────────────────────
 
 const VIEWPORT_HEIGHT = 16

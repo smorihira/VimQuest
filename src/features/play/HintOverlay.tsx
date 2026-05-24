@@ -113,7 +113,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
 
         {currentCmd && !isComplete && <div className="hint-current-label">→ {currentCmd}</div>}
 
-        {isComplete && <div className="hint-complete">☆3 達成！（{commands.length}ダメージ）</div>}
+        {isComplete && <div className="hint-complete">☆3 達成！（{stage.stars[0]}ダメージ）</div>}
       </div>
     </div>
   )

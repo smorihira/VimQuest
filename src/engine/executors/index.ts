@@ -57,6 +57,7 @@ export {
   executeSearchNext,
   executeSearchPrev,
   executeSearchWordForward,
+  executeSearchWordBackward,
   clampViewport,
   ensureCursorVisible,
   executeHalfPageDown,

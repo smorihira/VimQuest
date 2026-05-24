@@ -49,6 +49,7 @@ import {
   executeSearchNext,
   executeSearchPrev,
   executeSearchWordForward,
+  executeSearchWordBackward,
   ensureCursorVisible,
   executeHalfPageDown,
   executeHalfPageUp,
@@ -460,6 +461,7 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
     if (cmd.motion === 'n') return executeSearchNext(state)
     if (cmd.motion === 'N') return executeSearchPrev(state)
     if (cmd.motion === '*') return executeSearchWordForward(state)
+    if (cmd.motion === '#') return executeSearchWordBackward(state)
     return executeMotion(state, cmd)
   }
 

@@ -193,7 +193,7 @@ export function EditorView({
               <span className="goal-reg-label">レジスタ条件:</span>
               {Object.entries(goalRegisters).map(([key, val]) => (
                 <span key={key} className={`goal-reg${state.registers[key] === val ? ' met' : ''}`}>
-                  "{key} = {val}
+                  "{key || '"'} = {val}
                 </span>
               ))}
             </div>
@@ -206,7 +206,7 @@ export function EditorView({
                   key={key}
                   className={`goal-reg current${goalRegisters?.[key] === val ? ' met' : ''}`}
                 >
-                  "{key} = {val}
+                  "{key || '"'} = {val}
                 </span>
               ))}
             </div>
@@ -218,7 +218,7 @@ export function EditorView({
           <span className="goal-reg-label">レジスタ条件:</span>
           {Object.entries(goalRegisters).map(([key, val]) => (
             <span key={key} className={`goal-reg${state.registers[key] === val ? ' met' : ''}`}>
-              "{key} = {val}
+              "{key || '"'} = {val}
             </span>
           ))}
         </div>
@@ -228,7 +228,7 @@ export function EditorView({
           <span className="goal-reg-label">現レジスタ値:</span>
           {Object.entries(state.registers).map(([key, val]) => (
             <span key={key} className="goal-reg current">
-              "{key} = {val}
+              "{key || '"'} = {val}
             </span>
           ))}
         </div>

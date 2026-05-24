@@ -29,6 +29,7 @@ interface InsertSession {
   damageAtEntry: number
   entryCommand: Command
   insertText: string
+  paidEntry: boolean
 }
 
 /** Stamp damageAtEntry on the last undoStack operation (if stack grew) */
@@ -241,6 +242,7 @@ export function usePlayEngine(
           damageAtEntry: damage,
           entryCommand: parseResult.command,
           insertText: '',
+          paidEntry: false,
         }
         setEditorState(next)
         return
@@ -256,6 +258,7 @@ export function usePlayEngine(
           damageAtEntry: damage,
           entryCommand: parseResult.command,
           insertText: '',
+          paidEntry: false,
         }
         setEditorState(next)
         return
@@ -277,13 +280,11 @@ export function usePlayEngine(
           }
           insertRef.current = null
 
-          // Compute insert damage: 0 for empty session, ceil(charCount/5) otherwise
+          // Compute insert damage:
+          // Path A (paidEntry=false): always at least 1 (prevents i→Esc free-move exploit)
+          // Path B (paidEntry=true): entry already cost 1, so Esc is 0 when nothing typed
           const insertDamage =
-            charCount === 0 && next.text === editorState.text
-              ? 0
-              : charCount <= 0
-                ? 1
-                : Math.ceil(charCount / 5)
+            charCount <= 0 ? (session.paidEntry ? 0 : 1) : Math.ceil(charCount / 5)
           const newDamage = damage + insertDamage
           setDamage(newDamage)
           setSpells((prev) => [
@@ -353,6 +354,7 @@ export function usePlayEngine(
           damageAtEntry: damage,
           entryCommand: parseResult.command,
           insertText: '',
+          paidEntry: true,
         }
       }
 
