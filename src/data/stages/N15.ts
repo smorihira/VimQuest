@@ -5,23 +5,23 @@ import type { Stage } from '../../types/stage'
  * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N15_STAGES: Stage[] = [
-  // ── Teach: f で文字へジャンプ ──
-  // opt = 1 (f()
+  // ── Teach: f/t/;/, で行内ジャンプ ──
+  // opt = 2 (f; + ;)
   {
     id: 'N15-T',
     nodeId: 'N15',
     type: 'teach',
     title: '狙い撃て',
     language: 'javascript',
-    initialText: 'const result = getValue(42);',
-    goalText: 'const result = getValue(42);',
+    initialText: 'fn(a, b); fn(c, d);',
+    goalText: 'fn(a, b); fn(c, d);',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
+    life: 8,
+    stars: [2, 3, 5],
     availableCommands: ['f', 't'],
-    clearConditions: { cursor: { line: 0, col: 23 } },
-    hints: [{ cost: 1, commands: ['f('] }],
-    flavor: 'f( で ( まで一瞬でジャンプだ。www より速い',
+    clearConditions: { cursor: { line: 0, col: 18 } },
+    hints: [{ cost: 1, commands: ['f;', ';'] }],
+    flavor: 'f で狙った文字に一瞬で飛べ。; で繰り返しだ',
   },
 
   // ── Practice: ; で f/t を繰り返す ──

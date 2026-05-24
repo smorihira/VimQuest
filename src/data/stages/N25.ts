@@ -5,21 +5,21 @@ import type { Stage } from '../../types/stage'
  * Teach(T) = 1ステージ
  */
 export const N25_STAGES: Stage[] = [
-  // ── Teach: gU + TextObj で大文字化 ──
-  // opt = 2 (w + gUiw)
+  // ── Teach: gu / gU で大小文字変換 ──
+  // opt = 5 (guiw + w + gUiw + w + guiw)
   {
     id: 'N25-T',
     nodeId: 'N25',
     type: 'teach',
     title: '大文字にしろ',
     language: 'javascript',
-    initialText: 'const max_size = 100;',
-    goalText: 'const MAX_SIZE = 100;',
+    initialText: 'HELLO world BYE',
+    goalText: 'hello WORLD bye',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
+    life: 11,
+    stars: [5, 6, 8],
     availableCommands: ['diw', 'di"', 'gu', 'gU', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'gUiw'] }],
-    flavor: 'gU + TextObj で単語を大文字に変換できる',
+    hints: [{ cost: 1, commands: ['guiw', 'w', 'gUiw', 'w', 'guiw'] }],
+    flavor: 'gu で小文字、gU で大文字。TextObj と組み合わせろ',
   },
 ]

@@ -6,22 +6,34 @@ import type { Stage } from '../../types/stage'
  */
 export const N08_STAGES: Stage[] = [
   // ── Teach: 検索でジャンプ ──
-  // opt = 1 (/error + Enter)
+  // opt = 3 (/bug Enter + n + n)
   {
     id: 'N08-T',
     nodeId: 'N08',
     type: 'teach',
     title: '検索せよ',
     language: 'javascript',
-    initialText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
-    goalText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
+    initialText:
+      'const x = 1;\n' +
+      '// bug: fix later\n' +
+      'const y = 2;\n' +
+      '// bug: needs review\n' +
+      'const z = 3;\n' +
+      '// bug: critical',
+    goalText:
+      'const x = 1;\n' +
+      '// bug: fix later\n' +
+      'const y = 2;\n' +
+      '// bug: needs review\n' +
+      'const z = 3;\n' +
+      '// bug: critical',
     initialCursor: { line: 0, col: 0 },
-    life: 7,
-    stars: [1, 2, 4],
+    life: 9,
+    stars: [3, 4, 6],
     availableCommands: ['/'],
-    clearConditions: { cursor: { line: 2, col: 6 } },
-    hints: [{ cost: 1, commands: ['/error', 'Enter'] }],
-    flavor: '/ で検索開始。error を探し出せ',
+    clearConditions: { cursor: { line: 5, col: 3 } },
+    hints: [{ cost: 1, commands: ['/bug', 'Enter', 'n', 'n'] }],
+    flavor: '/ で検索開始。bug を全部見つけろ',
   },
 
   // ── Practice: 検索 + n で次へ ──

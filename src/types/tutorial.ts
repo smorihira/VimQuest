@@ -1,7 +1,7 @@
 import type { CursorPosition } from './editor'
 
 /** Step type determines input handling */
-export type TutorialStepType = 'key' | 'hold_space' | 'colon_command'
+export type TutorialStepType = 'key' | 'hold_space' | 'colon_command' | 'search'
 
 /** Single step in a tutorial sequence */
 export interface TutorialStep {
@@ -22,6 +22,8 @@ export interface TutorialStep {
   wrongKeyMessage?: string
   /** Colon command to wait for (e.g. ':h', ':e!'). Used when type === 'colon_command'. */
   colonCommand?: string
+  /** Search command to wait for (e.g. '/bug'). Used when type === 'search'. */
+  searchCommand?: string
 }
 
 /** Complete tutorial definition for a node or stage */

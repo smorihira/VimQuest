@@ -5,22 +5,22 @@ import type { Stage } from '../../types/stage'
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N19_STAGES: Stage[] = [
-  // ── Teach: daw で単語ごと削除 ──
-  // opt = 2 (w + daw)
+  // ── Teach: diw vs daw の違いを体験 ──
+  // opt = 3 (w + daw + daw)
   {
     id: 'N19-T',
     nodeId: 'N19',
     type: 'teach',
     title: '単語を掴め',
     language: 'plaintext',
-    initialText: 'hello nice world',
+    initialText: 'hello nice ugly world',
     goalText: 'hello world',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
+    life: 9,
+    stars: [3, 4, 6],
     availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw'] }],
-    flavor: 'daw で周囲の空白ごと単語を消せる。dw より正確だ',
+    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
+    flavor: 'daw で空白ごと単語を消せる。diw との違いを感じろ',
   },
 
   // ── Practice: 複数単語削除 ──

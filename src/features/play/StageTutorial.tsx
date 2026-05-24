@@ -6,6 +6,7 @@
  *   'key'           — wait for a specific key press (default)
  *   'hold_space'    — wait for Space hold then release (shows goal overlay)
  *   'colon_command' — wait for a :command input (e.g. :h, :e!)
+ *   'search'        — wait for a /pattern search input (e.g. /bug)
  */
 
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
@@ -49,6 +50,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
   const [wrongMessage, setWrongMessage] = useState<string | null>(null)
   const [spaceHeld, setSpaceHeld] = useState(false)
   const [colonBuffer, setColonBuffer] = useState('')
+  const [searchBuffer, setSearchBuffer] = useState('')
   const [showHint, setShowHint] = useState(false)
   const spaceDownTime = useRef(0)
   const spaceHeldRef = useRef(false)
@@ -60,6 +62,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
   const advance = useCallback(() => {
     setWrongMessage(null)
     setColonBuffer('')
+    setSearchBuffer('')
     keyBuffer.current = ''
     const nextIdx = stepIdx + 1
     if (nextIdx >= tutorial.steps.length) {
@@ -107,6 +110,69 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         }
         e.preventDefault()
         setWrongMessage('Space を長押ししろ')
+        return
+      }
+
+      // ── search step ──
+      if (st === 'search') {
+        e.preventDefault()
+        const target = step.searchCommand ?? '/pattern'
+
+        if (e.key === 'Escape') {
+          if (searchBuffer) {
+            setSearchBuffer('')
+            setWrongMessage(null)
+            return
+          }
+          playTick()
+          onComplete('skipped')
+          return
+        }
+
+        // Start search buffer
+        if (!searchBuffer && e.key === '/') {
+          playTick()
+          setSearchBuffer('/')
+          setWrongMessage(null)
+          return
+        }
+
+        if (searchBuffer) {
+          if (e.key === 'Enter') {
+            playTick()
+            if (searchBuffer === target) {
+              // Execute search via parser
+              const pattern = target.slice(1)
+              const keys = ['/', ...pattern.split(''), 'Enter']
+              const parsed = parseKeys(keys)
+              if (parsed) {
+                const next = executeCommand(editorState, parsed.command)
+                setEditorState(next)
+              }
+              advance()
+            } else {
+              setWrongMessage(
+                step.wrongKeyMessage ?? `${searchBuffer} ではない。${target} と入力しろ`,
+              )
+              setSearchBuffer('')
+            }
+            return
+          }
+          if (e.key === 'Backspace') {
+            const next = searchBuffer.slice(0, -1)
+            setSearchBuffer(next || '')
+            return
+          }
+          const key = mapKey(e)
+          if (key && key.length === 1) {
+            setSearchBuffer(searchBuffer + key)
+            return
+          }
+          return
+        }
+
+        // Not starting with /
+        setWrongMessage(`/ から入力しろ。${target} と入力してみろ`)
         return
       }
 
@@ -252,7 +318,17 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
       }
     },
-    [step, editorState, onComplete, colonBuffer, advance, initText, initCursor, stage],
+    [
+      step,
+      editorState,
+      onComplete,
+      colonBuffer,
+      searchBuffer,
+      advance,
+      initText,
+      initCursor,
+      stage,
+    ],
   )
 
   // ─── keyup handler (for hold_space) ────────────────────────
@@ -296,7 +372,9 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
       ? 'Space (長押し)'
       : stepType(step) === 'colon_command'
         ? `${step.colonCommand ?? ':h'} ↵`
-        : step.expectedKey)
+        : stepType(step) === 'search'
+          ? `${step.searchCommand ?? '/pattern'} ↵`
+          : step.expectedKey)
 
   return (
     <div className={`tutorial-screen${modeClass}`}>
@@ -336,10 +414,10 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         />
       </div>
 
-      {/* Colon command buffer */}
-      {colonBuffer && (
+      {/* Command-line buffer (colon / search) */}
+      {(colonBuffer || searchBuffer) && (
         <div className="colon-cmd">
-          {colonBuffer}
+          {colonBuffer || searchBuffer}
           <span className="colon-cursor">█</span>
         </div>
       )}
