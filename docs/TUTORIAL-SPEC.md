@@ -1,7 +1,7 @@
 # TUTORIAL-SPEC — インタラクティブチュートリアル仕様書
 
-> **バージョン**: 1.0  
-> **最終更新**: 2026-05-23  
+> **バージョン**: 1.1  
+> **最終更新**: 2026-05-24  
 > **根拠**: TUTORIAL-REVIEW.md（T1〜T10 全件確定）  
 > **関連**: STAGE-SPEC.md（ステージ設計）、UI-SPEC.md（UI仕様）、IMPL-SPEC.md（実装仕様）
 
@@ -95,10 +95,14 @@ Weapon Get画面はなし（N01にはWeaponの概念がない）。
 ### 4.1 TutorialStep型
 
 ```typescript
+type TutorialStepType = 'key' | 'hold_space' | 'colon_command'
+
 interface TutorialStep {
   message: string // ナビゲーターのセリフ
+  type?: TutorialStepType // ステップ種別（省略 = 'key'）
   expectedKey: string | null // 正解キー（null = 任意キーで次へ）
   acceptedKeys?: string[] // 受け付ける全キー（省略 = expectedKeyのみ）
+  colonCommand?: string // colon_command用: 期待するコマンド（':h', ':r', ':q!'）
   editorSetup?: {
     // ステップ開始時のエディタ状態（省略 = 前ステップ引き継ぎ）
     text: string
@@ -109,6 +113,7 @@ interface TutorialStep {
 
 interface Tutorial {
   nodeId: string // 対象ノードID
+  stageId?: string // 紐づくステージID（省略可）
   initialSetup: {
     // チュートリアル全体の初期状態
     text: string
@@ -120,6 +125,8 @@ interface Tutorial {
 
 ### 4.2 ステップ種別
 
+#### type = 'key'（デフォルト）
+
 | 種別         | expectedKey | acceptedKeys        | 用途                                      |
 | ------------ | ----------- | ------------------- | ----------------------------------------- |
 | **指示実行** | `'l'`       | 省略                | 「lを押せ」→ l のみ受付                   |
@@ -127,11 +134,71 @@ interface Tutorial {
 | **説明のみ** | `null`      | 省略                | 「覚えておけ」→ 任意キーで次へ            |
 | **自由練習** | `'Enter'`   | `['h','j','k','l']` | 「自由に動け。終わったらEnter」           |
 
-### 4.3 具体例: N01-4チュートリアル（x + undo導入）
+#### type = 'hold_space'
+
+| 項目           | 仕様                                                        |
+| -------------- | ----------------------------------------------------------- |
+| expectedKey    | `null`                                                      |
+| トリガー       | Space キーを500ms以上ホールドして離す                       |
+| ホールド中     | ゴールテキストオーバーレイを表示（プレイ画面のビジョンと同様） |
+| 離した時       | 500ms以上: 次のステップへ / 未満: 「もっと長く押せ」表示    |
+| その他キー     | 「Space を長押ししろ」と表示                                |
+
+#### type = 'colon_command'
+
+| 項目           | 仕様                                                        |
+| -------------- | ----------------------------------------------------------- |
+| expectedKey    | `null`                                                      |
+| colonCommand   | 期待するコマンド文字列（`:h`, `:r`, `:q!`）                 |
+| 入力方法       | `:` で入力開始 → 文字入力 → Enter で確定                    |
+| 正解時の効果   | `:h` → HintOverlayを表示（閉じたら次へ）、`:r` → エディタリセット → 次へ、`:q!` → チュートリアル終了 |
+| 不正解時       | コマンドをクリアし、期待コマンドを再表示                    |
+| Escape         | バッファ中: バッファクリア / 空: チュートリアルスキップ      |
+
+### 4.3 具体例: N01-1チュートリアル（基本移動 + UI操作導入）
+
+```typescript
+export const N01_1_TUTORIAL: Tutorial = {
+  stageId: 'N01-1',
+  nodeId: 'N01',
+  initialSetup: {
+    text: 'hello!',
+    cursor: { line: 0, col: 0 },
+  },
+  steps: [
+    { message: 'l を押してみろ', expectedKey: 'l' },
+    { message: 'もう一度 l だ', expectedKey: 'l' },
+    { message: '今度は h で左に戻れ', expectedKey: 'h' },
+    {
+      message: 'Space を長押ししてゴールを確認しろ。離すと戻る',
+      type: 'hold_space',
+      expectedKey: null,
+    },
+    {
+      message: 'ゴールが浮かんだだろう？ 困ったら :h で答えを再生できるぞ（☆1確定）。プレイ中は画面右下に表示されるキューブでもOKだ',
+      type: 'colon_command',
+      colonCommand: ':h',
+      expectedKey: null,
+    },
+    {
+      message: ':r でリトライだ。試してみろ',
+      type: 'colon_command',
+      colonCommand: ':r',
+      expectedKey: null,
+    },
+    {
+      message: ':q! でツリーに戻れる（Esc でも可）。さぁ、右端を目指せ',
+      expectedKey: null,
+    },
+  ],
+}
+```
+
+### 4.4 具体例: N01-4チュートリアル（x + undo導入）
 
 ```typescript
 export const N01_4_TUTORIAL: Tutorial = {
-  stageId: 'N01-4',  // N01ステージ別チュートリアル
+  stageId: 'N01-4',
   nodeId: 'N01',
   initialSetup: {
     text: 'hello world',
@@ -189,10 +256,12 @@ export const N01_4_TUTORIAL: Tutorial = {
 ├──────────────────────────────────────────────────┤
 │ [Skip ▸]                                         │
 │ ┌────┐                                           │
-│ │ 🗡 │ ナビゲーター: 「lを押してみろ！」             │
-│ └────┘                                           │
+│ │ ◇  │ ナビゲーター: 「lを押してみろ！」             │
+│ └────┘  （ミニ回転キューブ）                        │
 └──────────────────────────────────────────────────┘
 ```
+
+- ナビゲーターアイコンはプレイ画面の NavigatorCube と統一されたミニ3Dキューブ（CSS）
 
 ---
 
@@ -200,9 +269,11 @@ export const N01_4_TUTORIAL: Tutorial = {
 
 ### 6.0 サウンド
 
-チュートリアル中のキー入力には `playTick()` を再生する（正解キー・acceptedKeys内キーとも）。Skipボタン押下時も `playTick()` を再生。誤入力時のサウンドはなし（無視のみ）。
+チュートリアル中のキー入力には `playTick()` を再生する（正解キー・acceptedKeys内キーとも）。Skipボタン押下時も `playTick()` を再生。`:h` コマンド実行時は `playHint()` を再生。誤入力時のサウンドはなし（無視のみ）。
 
 ### 6.1 キー入力ルール
+
+#### type = 'key'（デフォルト）
 
 | 入力              | 挙動                               |
 | ----------------- | ---------------------------------- |
@@ -210,6 +281,24 @@ export const N01_4_TUTORIAL: Tutorial = {
 | `acceptedKeys` 内 | コマンド実行（ステップは進まない） |
 | それ以外のキー    | 無視 + ナビが期待キーを再表示      |
 | `Esc`（スキップ） | チュートリアル全体を終了           |
+| 修飾キー単体      | 無視（Shift/Alt/Ctrl/Meta）        |
+
+#### type = 'hold_space'
+
+| 入力              | 挙動                                       |
+| ----------------- | ------------------------------------------ |
+| Space 長押し+離す | 500ms以上: 次のステップへ / 未満: エラー表示 |
+| Esc               | チュートリアル全体を終了                   |
+| その他キー        | 「Space を長押ししろ」と表示               |
+
+#### type = 'colon_command'
+
+| 入力              | 挙動                                       |
+| ----------------- | ------------------------------------------ |
+| `:` → 文字 → Enter | colonCommandと一致: 効果実行 → 次へ       |
+| 不一致 + Enter    | エラー表示 + バッファクリア                |
+| Escape            | バッファ中: クリア / 空: スキップ          |
+| Backspace         | バッファ末尾削除                           |
 
 ### 6.2 誤入力時の表示
 

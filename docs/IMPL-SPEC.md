@@ -91,15 +91,15 @@ src/
 │   │       └── useTreeLayout.ts      # Dagreレイアウト計算
 │   │
 │   ├── play/
-│   │   ├── Play.tsx                  # ページ本体
-│   │   ├── components/
-│   │   │   ├── Editor.tsx            # テキスト表示（Shiki + カーソル）
-│   │   │   ├── StatusBar.tsx         # ライフ / ダメージ / モード
-│   │   │   ├── GoalPanel.tsx         # ゴールテキスト表示
-│   │   │   └── HandPanel.tsx         # 手札（使用可能コマンド）
-│   │   └── hooks/
-│   │       ├── useKeyboardInput.ts   # キーイベント取得→XStateへ
-│   │       └── usePlaySession.ts     # ゲームセッション管理
+│   │   ├── PlayScreen.tsx            # ページ本体
+│   │   ├── StageTutorial.tsx         # チュートリアル描画（SSOT）。PlayScreen・TutorialScreen両方から使用
+│   │   ├── EditorView.tsx            # テキスト表示（カーソル・ゴールオーバーレイ）
+│   │   ├── NavigatorCube.tsx         # 右下浮遊キューブ（ヒントトリガー）
+│   │   ├── NavigatorCube.css
+│   │   ├── HintOverlay.tsx           # ヒントデモ再生オーバーレイ
+│   │   ├── HintOverlay.css
+│   │   ├── usePlayEngine.ts          # ゲームセッション管理フック
+│   │   └── PlayScreen.css
 │   │
 │   ├── result/
 │   │   └── Result.tsx
@@ -111,9 +111,8 @@ src/
 │   │   └── WeaponGet.tsx
 │   │
 │   └── tutorial/
-│       ├── Tutorial.tsx              # チュートリアル画面
-│       └── components/
-│           └── NavigatorBar.tsx       # ナビゲーター会話バー
+│       ├── TutorialScreen.tsx        # スタンドアロンルート（StageTutorialの薄いラッパー）
+│       └── TutorialScreen.css        # チュートリアル共通スタイル（ミニキューブ含む）
 │
 ├── shared/                           # 2箇所以上で使う共有モジュール
 │   ├── hooks/

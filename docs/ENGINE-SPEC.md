@@ -584,6 +584,7 @@ Web Audio API によるシンセサイザー方式。音声ファイルを使わ
 | `playClear()`    | ステージクリア         | sine       | 523→659→784Hz   | 0.45s    |
 | `playLock()`     | ロック中ノードクリック | triangle   | 100Hz           | 0.1s     |
 | `playGameOver()` | ライフ0                | sawtooth   | 80Hz            | 0.4s     |
+| `playHint()`     | ヒント表示開始         | sine(tri)  | 880→1100→660Hz | 0.24s    |
 
 ### 9.3 トリガー詳細
 
@@ -600,6 +601,8 @@ Web Audio API によるシンセサイザー方式。音声ファイルを使わ
 | Skill Tree | ロック中ノードクリック | `playLock()`     |
 | Tutorial   | 全キー入力             | `playTick()`     |
 | Tutorial   | Skipボタン             | `playTick()`     |
+| Tutorial   | :h コマンド実行       | `playHint()`     |
+| Play       | ナビゲータークリック | `playHint()`     |
 
 ### 9.4 ミュート
 
