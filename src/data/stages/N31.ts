@@ -19,6 +19,9 @@ export const N31_STAGES: Stage[] = [
     life: 9,
     stars: [3, 4, 6],
     availableCommands: ['y', 'p', 'P', '"a', '"0'],
+    clearConditions: {
+      registers: { a: 'hello' },
+    },
     hints: [{ cost: 1, commands: ['"ayiw', '$', '"ap'] }],
     flavor: '"a で名前付きレジスタに保存。後から正確に貼り付けられる',
   },

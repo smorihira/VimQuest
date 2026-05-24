@@ -200,6 +200,28 @@ export function EditorView({
           )}
         </div>
       )}
+      {goalText === undefined && goalRegisters && (
+        <div className="editor-goal">
+          <div className="goal-registers">
+            <span className="goal-reg-label">レジスタ条件:</span>
+            {Object.entries(goalRegisters).map(([key, val]) => (
+              <span key={key} className={`goal-reg${state.registers[key] === val ? ' met' : ''}`}>
+                "{key} = {val}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+      {Object.keys(state.registers).length > 0 && (
+        <div className="editor-registers">
+          <span className="reg-label">Registers:</span>
+          {Object.entries(state.registers).map(([key, val]) => (
+            <span key={key} className={`reg-entry${goalRegisters?.[key] === val ? ' match' : ''}`}>
+              "{key} = {val}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
