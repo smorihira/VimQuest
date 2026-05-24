@@ -171,12 +171,8 @@ function PlayScreenInner({
       if (play.status !== 'playing') return
 
       // Space vision: hold Space in normal/visual mode to see goal
-      // Skip when parser is in search input mode (/ buffer)
-      if (
-        e.code === 'Space' &&
-        play.editorState.mode !== 'insert' &&
-        !play.parserBuffer.startsWith('/')
-      ) {
+      // Skip when parser is accumulating (operator-pending, search, etc.)
+      if (e.code === 'Space' && play.editorState.mode !== 'insert' && !play.parserBuffer) {
         e.preventDefault()
         setSpaceHeld(true)
         return
@@ -194,8 +190,8 @@ function PlayScreenInner({
       if (!key) return
 
       // :q! / :e! / :h — colon-command buffer in normal mode
-      // Skip when parser is in search input mode (parserBuffer starts with '/')
-      if (play.editorState.mode === 'normal' && !play.parserBuffer.startsWith('/')) {
+      // Skip when parser is accumulating (operator-pending, search, etc.)
+      if (play.editorState.mode === 'normal' && !play.parserBuffer) {
         if (key === ':') {
           setColonBuffer(':')
           return

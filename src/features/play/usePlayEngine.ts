@@ -309,6 +309,17 @@ export function usePlayEngine(
         return
       }
 
+      // If command transitioned into insert mode (cc, cw, C, s, S, etc.),
+      // create an insert session so undo/damage tracking works on Esc.
+      if (next.mode === 'insert' && editorState.mode !== 'insert') {
+        insertRef.current = {
+          entryState: editorState,
+          charCount: 0,
+          command: raw,
+          damageAtEntry: damage,
+        }
+      }
+
       setEditorState(next)
 
       // Check clear (only in normal mode)
