@@ -584,7 +584,7 @@ Web Audio API によるシンセサイザー方式。音声ファイルを使わ
 | `playClear()`    | ステージクリア         | sine       | 523→659→784Hz   | 0.45s    |
 | `playLock()`     | ロック中ノードクリック | triangle   | 100Hz           | 0.1s     |
 | `playGameOver()` | ライフ0                | sawtooth   | 80Hz            | 0.4s     |
-| `playHint()`     | ヒント表示開始         | sine(tri)  | 880→1100→660Hz | 0.24s    |
+| `playHint()`     | ヒント表示開始         | sine(tri)  | 880→1100→660Hz  | 0.24s    |
 
 ### 9.3 トリガー詳細
 
@@ -594,15 +594,15 @@ Web Audio API によるシンセサイザー方式。音声ファイルを使わ
 | Play       | Insert文字入力         | `playType()`     |
 | Play       | 無効キー入力           | `playError()`    |
 | Play       | `:q!` ボタン / Esc退出 | `playTick()`     |
-| Play       | `:r` リトライ          | `playTick()`     |
+| Play       | `:e!` リトライ         | `playTick()`     |
 | Play       | ステージクリア         | `playClear()`    |
 | Play       | ライフ0                | `playGameOver()` |
 | Result     | 星点灯演出             | `playStar()`     |
 | Skill Tree | ロック中ノードクリック | `playLock()`     |
 | Tutorial   | 全キー入力             | `playTick()`     |
 | Tutorial   | Skipボタン             | `playTick()`     |
-| Tutorial   | :h コマンド実行       | `playHint()`     |
-| Play       | ナビゲータークリック | `playHint()`     |
+| Tutorial   | :h コマンド実行        | `playHint()`     |
+| Play       | ナビゲータークリック   | `playHint()`     |
 
 ### 9.4 ミュート
 

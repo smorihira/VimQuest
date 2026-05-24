@@ -5,7 +5,7 @@
  * Supports three step types:
  *   'key'           — wait for a specific key press (default)
  *   'hold_space'    — wait for Space hold then release (shows goal overlay)
- *   'colon_command' — wait for a :command input (e.g. :h, :r)
+ *   'colon_command' — wait for a :command input (e.g. :h, :e!)
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react'
@@ -22,381 +22,377 @@ import { playTick, playHint } from '../../engine/sound'
 import '../tutorial/TutorialScreen.css'
 
 interface Props {
-    tutorial: Tutorial
-    /** Stage data for goal overlay + title. Optional for standalone tutorial route. */
-    stage?: Stage
-    onComplete: (status: TutorialStatus) => void
+  tutorial: Tutorial
+  /** Stage data for goal overlay + title. Optional for standalone tutorial route. */
+  stage?: Stage
+  onComplete: (status: TutorialStatus) => void
 }
 
 function stepType(step: TutorialStep) {
-    return step.type ?? 'key'
+  return step.type ?? 'key'
 }
 
 export function StageTutorial({ tutorial, stage, onComplete }: Props) {
-    const [stepIdx, setStepIdx] = useState(0)
-    const [editorState, setEditorState] = useState<EditorState>(() =>
-        createEditorState(tutorial.initialSetup.text, tutorial.initialSetup.cursor),
-    )
-    const [wrongMessage, setWrongMessage] = useState<string | null>(null)
-    const [spaceHeld, setSpaceHeld] = useState(false)
-    const [colonBuffer, setColonBuffer] = useState('')
-    const [showHint, setShowHint] = useState(false)
-    const spaceDownTime = useRef(0)
-    const spaceHeldRef = useRef(false)
-    const keyBuffer = useRef('')
+  const [stepIdx, setStepIdx] = useState(0)
+  const [editorState, setEditorState] = useState<EditorState>(() =>
+    createEditorState(tutorial.initialSetup.text, tutorial.initialSetup.cursor),
+  )
+  const [wrongMessage, setWrongMessage] = useState<string | null>(null)
+  const [spaceHeld, setSpaceHeld] = useState(false)
+  const [colonBuffer, setColonBuffer] = useState('')
+  const [showHint, setShowHint] = useState(false)
+  const spaceDownTime = useRef(0)
+  const spaceHeldRef = useRef(false)
+  const keyBuffer = useRef('')
 
-    const step = tutorial.steps[stepIdx] as TutorialStep | undefined
+  const step = tutorial.steps[stepIdx] as TutorialStep | undefined
 
-    // ─── Advance helper ────────────────────────────────────────
-    const advance = useCallback(() => {
-        setWrongMessage(null)
-        setColonBuffer('')
-        keyBuffer.current = ''
-        const nextIdx = stepIdx + 1
-        if (nextIdx >= tutorial.steps.length) {
-            onComplete('completed')
-        } else {
-            setStepIdx(nextIdx)
-            const nextStep = tutorial.steps[nextIdx]
-            if (nextStep?.editorSetup) {
-                setEditorState(
-                    createEditorState(nextStep.editorSetup.text, nextStep.editorSetup.cursor),
-                )
-            }
+  // ─── Advance helper ────────────────────────────────────────
+  const advance = useCallback(() => {
+    setWrongMessage(null)
+    setColonBuffer('')
+    keyBuffer.current = ''
+    const nextIdx = stepIdx + 1
+    if (nextIdx >= tutorial.steps.length) {
+      onComplete('completed')
+    } else {
+      setStepIdx(nextIdx)
+      const nextStep = tutorial.steps[nextIdx]
+      if (nextStep?.editorSetup) {
+        setEditorState(createEditorState(nextStep.editorSetup.text, nextStep.editorSetup.cursor))
+      }
+    }
+  }, [stepIdx, tutorial, onComplete])
+
+  // ─── keydown handler ───────────────────────────────────────
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!step) return
+
+      // Ignore bare modifier keys globally
+      if (e.key === 'Shift' || e.key === 'Alt' || e.key === 'Control' || e.key === 'Meta') {
+        return
+      }
+
+      const st = stepType(step)
+
+      // ── hold_space step ──
+      if (st === 'hold_space') {
+        if (e.code === 'Space') {
+          e.preventDefault()
+          if (!spaceHeldRef.current) {
+            spaceHeldRef.current = true
+            setSpaceHeld(true)
+            spaceDownTime.current = Date.now()
+            setWrongMessage(null)
+          }
+          return
         }
-    }, [stepIdx, tutorial, onComplete])
+        // Skip with Esc
+        if (e.key === 'Escape') {
+          e.preventDefault()
+          playTick()
+          onComplete('skipped')
+          return
+        }
+        e.preventDefault()
+        setWrongMessage('Space を長押ししろ')
+        return
+      }
 
-    // ─── keydown handler ───────────────────────────────────────
-    const handleKeyDown = useCallback(
-        (e: KeyboardEvent) => {
-            if (!step) return
+      // ── colon_command step ──
+      if (st === 'colon_command') {
+        e.preventDefault()
+        const target = step.colonCommand ?? ':h'
 
-            // Ignore bare modifier keys globally
-            if (e.key === 'Shift' || e.key === 'Alt' || e.key === 'Control' || e.key === 'Meta') {
-                return
-            }
+        if (e.key === 'Escape') {
+          if (colonBuffer) {
+            setColonBuffer('')
+            setWrongMessage(null)
+            return
+          }
+          playTick()
+          onComplete('skipped')
+          return
+        }
 
-            const st = stepType(step)
+        // Start colon buffer
+        if (!colonBuffer && e.key === ':') {
+          playTick()
+          setColonBuffer(':')
+          setWrongMessage(null)
+          return
+        }
 
-            // ── hold_space step ──
-            if (st === 'hold_space') {
-                if (e.code === 'Space') {
-                    e.preventDefault()
-                    if (!spaceHeldRef.current) {
-                        spaceHeldRef.current = true
-                        setSpaceHeld(true)
-                        spaceDownTime.current = Date.now()
-                        setWrongMessage(null)
-                    }
-                    return
-                }
-                // Skip with Esc
-                if (e.key === 'Escape') {
-                    e.preventDefault()
-                    playTick()
-                    onComplete('skipped')
-                    return
-                }
-                e.preventDefault()
-                setWrongMessage('Space を長押ししろ')
-                return
-            }
-
-            // ── colon_command step ──
-            if (st === 'colon_command') {
-                e.preventDefault()
-                const target = step.colonCommand ?? ':h'
-
-                if (e.key === 'Escape') {
-                    if (colonBuffer) {
-                        setColonBuffer('')
-                        setWrongMessage(null)
-                        return
-                    }
-                    playTick()
-                    onComplete('skipped')
-                    return
-                }
-
-                // Start colon buffer
-                if (!colonBuffer && e.key === ':') {
-                    playTick()
-                    setColonBuffer(':')
-                    setWrongMessage(null)
-                    return
-                }
-
-                if (colonBuffer) {
-                    if (e.key === 'Enter') {
-                        playTick()
-                        if (colonBuffer === target) {
-                            // Execute actual command effect
-                            if (target === ':r') {
-                                setEditorState(
-                                    createEditorState(
-                                        tutorial.initialSetup.text,
-                                        tutorial.initialSetup.cursor,
-                                    ),
-                                )
-                            } else if (target === ':q!') {
-                                onComplete('skipped')
-                                return
-                            } else if (target === ':h' && stage && stage.hints.length > 0) {
-                                playHint()
-                                setShowHint(true)
-                                return
-                            }
-                            advance()
-                        } else {
-                            setWrongMessage(
-                                step.wrongKeyMessage ??
-                                `${colonBuffer} ではない。${target} と入力しろ`,
-                            )
-                            setColonBuffer('')
-                        }
-                        return
-                    }
-                    if (e.key === 'Backspace') {
-                        const next = colonBuffer.slice(0, -1)
-                        setColonBuffer(next || '')
-                        return
-                    }
-                    const key = mapKey(e)
-                    if (key && key.length === 1) {
-                        setColonBuffer(colonBuffer + key)
-                        return
-                    }
-                    return
-                }
-
-                // Not starting with :
-                setWrongMessage(`: から入力しろ。${target} と入力してみろ`)
-                return
-            }
-
-            // ── default key step ──
-            e.preventDefault()
-
-            const key = mapKey(e)
-            if (!key) return
-
-            // Skip with Esc — but not if the current step expects Esc
-            if (key === 'Esc' && step.expectedKey !== 'Esc') {
-                playTick()
+        if (colonBuffer) {
+          if (e.key === 'Enter') {
+            playTick()
+            if (colonBuffer === target) {
+              // Execute actual command effect
+              if (target === ':e!') {
+                setEditorState(
+                  createEditorState(tutorial.initialSetup.text, tutorial.initialSetup.cursor),
+                )
+              } else if (target === ':q!') {
                 onComplete('skipped')
                 return
-            }
-
-            playTick()
-
-            // Info step (expectedKey === null) — any key advances
-            if (step.expectedKey === null) {
-                advance()
+              } else if (target === ':h' && stage && stage.hints.length > 0) {
+                playHint()
+                setShowHint(true)
                 return
-            }
-
-            // Check if key matches
-            const accepted = step.acceptedKeys
-                ? [...step.acceptedKeys, step.expectedKey]
-                : [step.expectedKey]
-
-            // Multi-key command handling (e.g. 'gg')
-            const isMultiKey = step.expectedKey && step.expectedKey.length > 1
-                && !step.expectedKey.includes('+')
-                && step.expectedKey !== 'Esc'
-                && step.expectedKey !== 'Enter'
-                && step.expectedKey !== 'Backspace'
-
-            if (isMultiKey) {
-                const buf = keyBuffer.current + key
-                if (step.expectedKey!.startsWith(buf)) {
-                    keyBuffer.current = buf
-                    if (buf === step.expectedKey) {
-                        setWrongMessage(null)
-                        const parsed = parseKeys(buf.split(''))
-                        if (parsed) {
-                            const next = executeCommand(editorState, parsed.command)
-                            setEditorState(next)
-                        }
-                        advance()
-                    }
-                    return
-                }
-                keyBuffer.current = ''
-                setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
-                return
-            }
-
-            if (accepted.includes(key)) {
-                setWrongMessage(null)
-                // Apply key to editor
-                if (editorState.mode === 'insert') {
-                    const next = executeCommand(editorState, { raw: key, valid: true })
-                    setEditorState(next)
-                } else {
-                    const parsed = parseKeys([key])
-                    if (parsed) {
-                        const next = executeCommand(editorState, parsed.command)
-                        setEditorState(next)
-                    }
-                }
-
-                if (key === step.expectedKey) {
-                    advance()
-                }
+              }
+              advance()
             } else {
-                setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
+              setWrongMessage(
+                step.wrongKeyMessage ?? `${colonBuffer} ではない。${target} と入力しろ`,
+              )
+              setColonBuffer('')
             }
-        },
-        [step, stepIdx, editorState, onComplete, colonBuffer, advance],
-    )
-
-    // ─── keyup handler (for hold_space) ────────────────────────
-    const handleKeyUp = useCallback(
-        (e: KeyboardEvent) => {
-            if (e.code === 'Space') {
-                spaceHeldRef.current = false
-                setSpaceHeld(false)
-                if (step && stepType(step) === 'hold_space') {
-                    const held = Date.now() - spaceDownTime.current
-                    if (held >= 500) {
-                        playTick()
-                        advance()
-                    } else {
-                        setWrongMessage('もっと長く押せ！ ゴールをよく見ろ')
-                    }
-                }
-            }
-        },
-        [step, advance],
-    )
-
-    useEffect(() => {
-        window.addEventListener('keydown', handleKeyDown)
-        window.addEventListener('keyup', handleKeyUp)
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown)
-            window.removeEventListener('keyup', handleKeyUp)
+            return
+          }
+          if (e.key === 'Backspace') {
+            const next = colonBuffer.slice(0, -1)
+            setColonBuffer(next || '')
+            return
+          }
+          const key = mapKey(e)
+          if (key && key.length === 1) {
+            setColonBuffer(colonBuffer + key)
+            return
+          }
+          return
         }
-    }, [handleKeyDown, handleKeyUp])
 
-    const modeClass = editorState.mode === 'insert' ? ' insert-mode' : ''
+        // Not starting with :
+        setWrongMessage(`: から入力しろ。${target} と入力してみろ`)
+        return
+      }
 
-    // Goal data for hold_space overlay
-    const showGoal = spaceHeld && step !== undefined && stepType(step) === 'hold_space'
+      // ── default key step ──
+      e.preventDefault()
 
-    // Key hint display
-    const keyHintText =
-        step &&
-        (stepType(step) === 'hold_space'
-            ? 'Space (長押し)'
-            : stepType(step) === 'colon_command'
-                ? `${step.colonCommand ?? ':h'} ↵`
-                : step.expectedKey)
+      const key = mapKey(e)
+      if (!key) return
 
-    return (
-        <div className={`tutorial-screen${modeClass}`}>
-            {/* Top Bar */}
-            <div className="tutorial-top-bar">
-                <div className="tutorial-top-left">
-                    <span className="tutorial-badge">TUTORIAL</span>
-                    <span className="tutorial-title">
-                        {stage ? `${stage.id}: ${stage.title}` : tutorial.nodeId}
-                    </span>
-                </div>
+      // Skip with Esc — but not if the current step expects Esc
+      if (key === 'Esc' && step.expectedKey !== 'Esc') {
+        playTick()
+        onComplete('skipped')
+        return
+      }
 
-                <div className="step-progress">
-                    {tutorial.steps.map((_, i) => (
-                        <div
-                            key={i}
-                            className={`step-dot${i < stepIdx ? ' done' : i === stepIdx ? ' current' : ''}`}
-                        />
-                    ))}
-                    <span className="step-label">
-                        {Math.min(stepIdx + 1, tutorial.steps.length)} / {tutorial.steps.length}
-                    </span>
-                </div>
+      playTick()
 
-                <span className={`tutorial-mode${editorState.mode === 'insert' ? ' insert' : ''}`}>
-                    {editorState.mode.toUpperCase()}
-                </span>
-            </div>
+      // Info step (expectedKey === null) — any key advances
+      if (step.expectedKey === null) {
+        advance()
+        return
+      }
 
-            {/* Editor */}
-            <div className="tutorial-editor-area">
-                <EditorView
-                    state={editorState}
-                    goalText={stage?.goalText}
-                    goalCursor={stage?.clearConditions?.cursor}
-                    showGoal={showGoal}
-                />
-            </div>
+      // Check if key matches
+      const accepted = step.acceptedKeys
+        ? [...step.acceptedKeys, step.expectedKey]
+        : [step.expectedKey]
 
-            {/* Colon command buffer */}
-            {colonBuffer && (
-                <div className="colon-cmd">
-                    {colonBuffer}
-                    <span className="colon-cursor">█</span>
-                </div>
-            )}
+      // Multi-key command handling (e.g. 'gg')
+      const isMultiKey =
+        step.expectedKey &&
+        step.expectedKey.length > 1 &&
+        !step.expectedKey.includes('+') &&
+        step.expectedKey !== 'Esc' &&
+        step.expectedKey !== 'Enter' &&
+        step.expectedKey !== 'Backspace'
 
-            {/* Hint Overlay */}
-            {showHint && stage && stage.hints.length > 0 && (
-                <HintOverlay
-                    stage={stage}
-                    onClose={() => {
-                        setShowHint(false)
-                        advance()
-                    }}
-                />
-            )}
+      if (isMultiKey) {
+        const buf = keyBuffer.current + key
+        if (step.expectedKey!.startsWith(buf)) {
+          keyBuffer.current = buf
+          if (buf === step.expectedKey) {
+            setWrongMessage(null)
+            const parsed = parseKeys(buf.split(''))
+            if (parsed) {
+              const next = executeCommand(editorState, parsed.command)
+              setEditorState(next)
+            }
+            advance()
+          }
+          return
+        }
+        keyBuffer.current = ''
+        setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
+        return
+      }
 
-            {/* Navigator Bar */}
-            <div className={`navigator-bar${wrongMessage ? ' wrong' : ''}`}>
-                <button
-                    className="skip-btn"
-                    onClick={() => {
-                        playTick()
-                        onComplete('skipped')
-                    }}
-                    title="Esc でスキップ"
-                >
-                    Skip ▸
-                </button>
-                <div className="navi-icon">
-                    <div className="mini-cube-wrapper">
-                        <div className="mini-cube">
-                            <div className="mini-face front" />
-                            <div className="mini-face back" />
-                            <div className="mini-face left" />
-                            <div className="mini-face right" />
-                            <div className="mini-face top" />
-                            <div className="mini-face bottom" />
-                        </div>
-                    </div>
-                </div>
-                <div className="navi-content">
-                    <div className="navi-name">ナビゲーター</div>
-                    <div className="navi-message">
-                        {wrongMessage ?? step?.message ?? 'チュートリアル完了！'}
-                    </div>
-                    {keyHintText && (
-                        <div className="navi-key-hint">
-                            <kbd>{keyHintText}</kbd>
-                        </div>
-                    )}
-                </div>
-            </div>
+      if (accepted.includes(key)) {
+        setWrongMessage(null)
+        // Apply key to editor
+        if (editorState.mode === 'insert') {
+          const next = executeCommand(editorState, { raw: key, valid: true })
+          setEditorState(next)
+        } else {
+          const parsed = parseKeys([key])
+          if (parsed) {
+            const next = executeCommand(editorState, parsed.command)
+            setEditorState(next)
+          }
+        }
+
+        if (key === step.expectedKey) {
+          advance()
+        }
+      } else {
+        setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
+      }
+    },
+    [step, stepIdx, editorState, onComplete, colonBuffer, advance],
+  )
+
+  // ─── keyup handler (for hold_space) ────────────────────────
+  const handleKeyUp = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        spaceHeldRef.current = false
+        setSpaceHeld(false)
+        if (step && stepType(step) === 'hold_space') {
+          const held = Date.now() - spaceDownTime.current
+          if (held >= 500) {
+            playTick()
+            advance()
+          } else {
+            setWrongMessage('もっと長く押せ！ ゴールをよく見ろ')
+          }
+        }
+      }
+    },
+    [step, advance],
+  )
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [handleKeyDown, handleKeyUp])
+
+  const modeClass = editorState.mode === 'insert' ? ' insert-mode' : ''
+
+  // Goal data for hold_space overlay
+  const showGoal = spaceHeld && step !== undefined && stepType(step) === 'hold_space'
+
+  // Key hint display
+  const keyHintText =
+    step &&
+    (stepType(step) === 'hold_space'
+      ? 'Space (長押し)'
+      : stepType(step) === 'colon_command'
+        ? `${step.colonCommand ?? ':h'} ↵`
+        : step.expectedKey)
+
+  return (
+    <div className={`tutorial-screen${modeClass}`}>
+      {/* Top Bar */}
+      <div className="tutorial-top-bar">
+        <div className="tutorial-top-left">
+          <span className="tutorial-badge">TUTORIAL</span>
+          <span className="tutorial-title">
+            {stage ? `${stage.id}: ${stage.title}` : tutorial.nodeId}
+          </span>
         </div>
-    )
+
+        <div className="step-progress">
+          {tutorial.steps.map((_, i) => (
+            <div
+              key={i}
+              className={`step-dot${i < stepIdx ? ' done' : i === stepIdx ? ' current' : ''}`}
+            />
+          ))}
+          <span className="step-label">
+            {Math.min(stepIdx + 1, tutorial.steps.length)} / {tutorial.steps.length}
+          </span>
+        </div>
+
+        <span className={`tutorial-mode${editorState.mode === 'insert' ? ' insert' : ''}`}>
+          {editorState.mode.toUpperCase()}
+        </span>
+      </div>
+
+      {/* Editor */}
+      <div className="tutorial-editor-area">
+        <EditorView
+          state={editorState}
+          goalText={stage?.goalText}
+          goalCursor={stage?.clearConditions?.cursor}
+          showGoal={showGoal}
+        />
+      </div>
+
+      {/* Colon command buffer */}
+      {colonBuffer && (
+        <div className="colon-cmd">
+          {colonBuffer}
+          <span className="colon-cursor">█</span>
+        </div>
+      )}
+
+      {/* Hint Overlay */}
+      {showHint && stage && stage.hints.length > 0 && (
+        <HintOverlay
+          stage={stage}
+          onClose={() => {
+            setShowHint(false)
+            advance()
+          }}
+        />
+      )}
+
+      {/* Navigator Bar */}
+      <div className={`navigator-bar${wrongMessage ? ' wrong' : ''}`}>
+        <button
+          className="skip-btn"
+          onClick={() => {
+            playTick()
+            onComplete('skipped')
+          }}
+          title="Esc でスキップ"
+        >
+          Skip ▸
+        </button>
+        <div className="navi-icon">
+          <div className="mini-cube-wrapper">
+            <div className="mini-cube">
+              <div className="mini-face front" />
+              <div className="mini-face back" />
+              <div className="mini-face left" />
+              <div className="mini-face right" />
+              <div className="mini-face top" />
+              <div className="mini-face bottom" />
+            </div>
+          </div>
+        </div>
+        <div className="navi-content">
+          <div className="navi-name">ナビゲーター</div>
+          <div className="navi-message">
+            {wrongMessage ?? step?.message ?? 'チュートリアル完了！'}
+          </div>
+          {keyHintText && (
+            <div className="navi-key-hint">
+              <kbd>{keyHintText}</kbd>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 function mapKey(e: KeyboardEvent): string | null {
-    if (e.ctrlKey && e.key === 'r') return 'Ctrl+R'
-    if (e.ctrlKey || e.metaKey) return null
-    if (e.key === 'Escape') return 'Esc'
-    if (e.key === 'Backspace') return 'Backspace'
-    if (e.key === 'Enter') return 'Enter'
-    if (e.key.length === 1) return e.key
-    return null
+  if (e.ctrlKey && e.key === 'r') return 'Ctrl+R'
+  if (e.ctrlKey || e.metaKey) return null
+  if (e.key === 'Escape') return 'Esc'
+  if (e.key === 'Backspace') return 'Backspace'
+  if (e.key === 'Enter') return 'Enter'
+  if (e.key.length === 1) return e.key
+  return null
 }
