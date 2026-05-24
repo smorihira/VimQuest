@@ -65,6 +65,8 @@ export function usePlayEngine(
     const insertCharCount = useRef(0)
     // Command that started the current insert session
     const insertCommandRef = useRef<string>('')
+    // Cumulative damage when insert session started (for damageAtEntry)
+    const insertDamageAtEntryRef = useRef(0)
 
     // Spell (command history) tracking
     const [spells, setSpells] = useState<SpellEntry[]>([])
@@ -81,6 +83,23 @@ export function usePlayEngine(
 
     const life = stage.life
     const lifePercent = Math.max(0, ((life - damage) / life) * 100)
+
+    /** Stamp damageAtEntry on the last undoStack operation (if stack grew) */
+    const stampDamageAtEntry = (
+        next: EditorState,
+        prev: EditorState,
+        damageAtEntry: number,
+    ): EditorState => {
+        if (next.undoStack.length <= prev.undoStack.length) return next
+        const lastOp = next.undoStack[next.undoStack.length - 1]
+        return {
+            ...next,
+            undoStack: [
+                ...next.undoStack.slice(0, -1),
+                { ...lastOp, damageAtEntry },
+            ],
+        }
+    }
 
     const projectedStars = useMemo(() => {
         const { stars } = evaluateAttempt(stage, damage, usedHint)
@@ -156,11 +175,11 @@ export function usePlayEngine(
             const raw = parseResult.command.raw
             setLastExecutedRaw(raw)
 
-            // ── Undo: restore damage from undone operation ──
+            // ── Undo: restore damage to damageAtEntry (full rollback including movement damage) ──
             if (raw === 'u') {
                 if (editorState.undoStack.length > 0) {
                     const op = editorState.undoStack[editorState.undoStack.length - 1]
-                    setDamage((prev) => Math.max(0, prev - op.damage))
+                    setDamage(op.damageAtEntry)
                     setSpells((prev) => prev.slice(0, -1))
                 }
                 const next = executeCommand(editorState, parseResult.command)
@@ -197,6 +216,7 @@ export function usePlayEngine(
                 insertEntryRef.current = editorState
                 insertCharCount.current = 0
                 insertCommandRef.current = raw
+                insertDamageAtEntryRef.current = damage
                 setEditorState(next)
                 return
             }
@@ -207,6 +227,7 @@ export function usePlayEngine(
                 insertEntryRef.current = editorState
                 insertCharCount.current = 0
                 insertCommandRef.current = 'c'
+                insertDamageAtEntryRef.current = damage
                 setEditorState(next)
                 return
             }
@@ -217,6 +238,8 @@ export function usePlayEngine(
                 if (insertEntryRef.current) {
                     const charCount = insertCharCount.current
                     next = finalizeInsertSession(next, insertEntryRef.current, charCount)
+                    // Stamp damageAtEntry on the new undo entry
+                    next = stampDamageAtEntry(next, editorState, insertDamageAtEntryRef.current)
                     insertEntryRef.current = null
 
                     // Compute insert damage: 0 for empty session, ceil(charCount/5) otherwise
@@ -257,7 +280,11 @@ export function usePlayEngine(
             }
 
             // ── All other commands: add parser damage ──
-            const next = executeCommand(editorState, parseResult.command)
+            const next = stampDamageAtEntry(
+                executeCommand(editorState, parseResult.command),
+                editorState,
+                damage,
+            )
 
             // Skip damage if state didn't change (e.g., motion hitting wall)
             // Still update state for register changes (e.g., yank)
@@ -302,6 +329,7 @@ export function usePlayEngine(
         insertEntryRef.current = null
         insertCharCount.current = 0
         insertCommandRef.current = ''
+        insertDamageAtEntryRef.current = 0
         parserRef.current = new CommandParser(
             stage.availableCommands,
             undefined,
