@@ -97,11 +97,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
         </div>
 
         <div className="hint-editor" ref={editorRef}>
-          <EditorView
-            state={editorState}
-            language={stage.language}
-            goalRegisters={stage.clearConditions?.registers}
-          />
+          <EditorView state={editorState} language={stage.language} />
         </div>
 
         <div className="hint-commands">

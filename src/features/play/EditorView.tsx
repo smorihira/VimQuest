@@ -198,25 +198,36 @@ export function EditorView({
               ))}
             </div>
           )}
+          {Object.keys(state.registers).length > 0 && (
+            <div className="goal-registers">
+              <span className="goal-reg-label">レジスタ:</span>
+              {Object.entries(state.registers).map(([key, val]) => (
+                <span
+                  key={key}
+                  className={`goal-reg current${goalRegisters?.[key] === val ? ' met' : ''}`}
+                >
+                  "{key} = {val}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
-      {goalText === undefined && goalRegisters && (
-        <div className="editor-goal">
-          <div className="goal-registers">
-            <span className="goal-reg-label">レジスタ条件:</span>
-            {Object.entries(goalRegisters).map(([key, val]) => (
-              <span key={key} className={`goal-reg${state.registers[key] === val ? ' met' : ''}`}>
-                "{key} = {val}
-              </span>
-            ))}
-          </div>
+      {goalRegisters && showGoal && (
+        <div className="goal-registers goal-registers-float">
+          <span className="goal-reg-label">レジスタ条件:</span>
+          {Object.entries(goalRegisters).map(([key, val]) => (
+            <span key={key} className={`goal-reg${state.registers[key] === val ? ' met' : ''}`}>
+              "{key} = {val}
+            </span>
+          ))}
         </div>
       )}
-      {Object.keys(state.registers).length > 0 && (
-        <div className="editor-registers">
-          <span className="reg-label">Registers:</span>
+      {goalText === undefined && !showGoal && Object.keys(state.registers).length > 0 && (
+        <div className="goal-registers goal-registers-standalone">
+          <span className="goal-reg-label">レジスタ:</span>
           {Object.entries(state.registers).map(([key, val]) => (
-            <span key={key} className={`reg-entry${goalRegisters?.[key] === val ? ' match' : ''}`}>
+            <span key={key} className="goal-reg current">
               "{key} = {val}
             </span>
           ))}
