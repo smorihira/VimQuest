@@ -304,6 +304,7 @@ function PlayScreenInner({
           goalText={stage.goalText}
           goalCursor={stage.clearConditions?.cursor}
           goalViewportTop={stage.clearConditions?.viewportTop}
+          goalRegisters={stage.clearConditions?.registers}
           showGoal={spaceHeld}
           language={stage.language}
         />
@@ -315,7 +316,6 @@ function PlayScreenInner({
         availableCommands={stage.availableCommands}
         visualCommands={stage.visualCommands}
         parserBuffer={play.parserBuffer}
-        lastExecutedRaw={play.lastExecutedRaw}
         showBase={showBase}
         baseExpanded={baseExpanded}
         setBaseExpanded={setBaseExpanded}

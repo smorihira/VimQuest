@@ -87,3 +87,47 @@ export function getCardHint(cmd: string): string | null {
   if (cmd === '/' || cmd === '*' || cmd === '#') return 'n N'
   return null
 }
+
+/**
+ * Build a display list from availableCommands,
+ * grouping operator combos (dw, de, db, dd → single "d" card with hint "w e b d").
+ */
+export function buildCardDisplayList(
+  commands: readonly string[],
+): Array<{ cmd: string; hint: string | null }> {
+  const OPERATOR_KEYS = ['d', 'c', 'y', '>', '<']
+
+  // First pass: group multi-char operator combos
+  const groups = new Map<string, string[]>()
+  for (const cmd of commands) {
+    const op = OPERATOR_KEYS.find((o) => cmd.startsWith(o) && cmd.length > o.length)
+    if (op) {
+      if (!groups.has(op)) groups.set(op, [])
+      groups.get(op)!.push(cmd.slice(op.length))
+    }
+  }
+
+  // Second pass: build display list preserving order
+  const result: Array<{ cmd: string; hint: string | null }> = []
+  const emitted = new Set<string>()
+
+  for (const cmd of commands) {
+    const op = OPERATOR_KEYS.find((o) => cmd.startsWith(o) && cmd.length > o.length)
+    if (op) {
+      if (!emitted.has(op)) {
+        emitted.add(op)
+        result.push({ cmd: op, hint: groups.get(op)!.join(' ') })
+      }
+    } else if (OPERATOR_KEYS.includes(cmd) && groups.has(cmd)) {
+      // Standalone operator merged into its group
+      if (!emitted.has(cmd)) {
+        emitted.add(cmd)
+        result.push({ cmd, hint: groups.get(cmd)!.join(' ') })
+      }
+    } else {
+      result.push({ cmd, hint: getCardHint(cmd) })
+    }
+  }
+
+  return result
+}

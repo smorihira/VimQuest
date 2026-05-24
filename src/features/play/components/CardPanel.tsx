@@ -4,14 +4,13 @@
 
 import { BASE_COMMANDS } from '../../../data/constants'
 import { playTick } from '../../../engine/sound'
-import { getCardClass, getCardHint, getPendingOperator } from '../commandMetadata'
+import { getCardClass, getPendingOperator, buildCardDisplayList } from '../commandMetadata'
 
 interface CardPanelProps {
   mode: string
   availableCommands: readonly string[]
   visualCommands?: readonly string[]
   parserBuffer: string
-  lastExecutedRaw: string
   showBase: boolean
   baseExpanded: boolean
   setBaseExpanded: (fn: (v: boolean) => boolean) => void
@@ -22,7 +21,6 @@ export function CardPanel({
   availableCommands,
   visualCommands,
   parserBuffer,
-  lastExecutedRaw,
   showBase,
   baseExpanded,
   setBaseExpanded,
@@ -64,31 +62,30 @@ export function CardPanel({
             </div>
           )}
           <div className="card-row">
-            {(mode === 'visual' && visualCommands
-              ? [
-                  ...availableCommands.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v'),
-                  ...visualCommands,
-                ]
-              : availableCommands
-            ).map((cmd) => {
+            {buildCardDisplayList(
+              mode === 'visual' && visualCommands
+                ? [
+                    ...availableCommands.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v'),
+                    ...visualCommands,
+                  ]
+                : availableCommands,
+            ).map((item) => {
+              const cmd = item.cmd
               const pendingOp = getPendingOperator(parserBuffer)
               const isOperator = ['d', 'c', 'y', '>', '<'].includes(cmd)
               const isTarget = !isOperator && !['u', 'Esc', '.'].includes(cmd)
               const isPending = pendingOp === cmd
               const isDisabled = pendingOp && isOperator && cmd !== pendingOp
-              const isMerged =
-                lastExecutedRaw.length > 1 && lastExecutedRaw.startsWith(cmd) && isOperator
 
               let cardState = ''
               if (isPending) cardState = ' card-pending'
               else if (pendingOp && isTarget) cardState = ' card-target'
               else if (isDisabled) cardState = ' card-disabled'
-              if (isMerged) cardState += ' card-merged'
 
               return (
                 <div key={cmd} className={`card ${getCardClass(cmd)}${cardState}`}>
-                  {isMerged ? lastExecutedRaw : cmd}
-                  {getCardHint(cmd) && <span className="card-hint">{getCardHint(cmd)}</span>}
+                  {cmd}
+                  {item.hint && <span className="card-hint">{item.hint}</span>}
                 </div>
               )
             })}

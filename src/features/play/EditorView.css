@@ -164,6 +164,40 @@
   background: rgba(124, 124, 255, 0.08);
 }
 
+/* ── Register conditions ───────────────────────────── */
+
+.goal-registers {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.goal-reg-label {
+  font-size: 10px;
+  color: var(--text-dim, #666);
+  letter-spacing: 0.5px;
+}
+
+.goal-reg {
+  font-family: var(--font-code);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 100, 100, 0.12);
+  color: rgba(255, 150, 150, 0.8);
+  border: 1px solid rgba(255, 100, 100, 0.2);
+  transition: all 0.3s ease;
+}
+
+.goal-reg.met {
+  background: rgba(68, 221, 170, 0.12);
+  color: rgba(68, 221, 170, 0.9);
+  border-color: rgba(68, 221, 170, 0.3);
+}
+
 /* ── Vision mode (Space hold) ──────────────────────── */
 
 .editor.vision-active {
