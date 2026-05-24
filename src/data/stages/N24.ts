@@ -1,43 +1,43 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N24: 基本TextObj (iw, aw)
+ * N24: デリミタTextObj (i", a", i', a', i(, a(, etc.)
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N24_STAGES: Stage[] = [
-  // ── Teach: daw で単語ごと削除 ──
-  // opt = 2 (w + daw)
+  // ── Teach: 引用符の中身を変更 ──
+  // opt = 1 (ci" + type 'blue' + Esc) — from anywhere in line
   {
     id: 'N24-T',
     nodeId: 'N24',
     type: 'teach',
-    title: '単語を掴め',
-    language: 'plaintext',
-    initialText: 'hello nice world',
-    goalText: 'hello world',
-    initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw'] }],
-    flavor: 'daw で周囲の空白ごと単語を消せる。dw より正確だ',
+    title: '中身を変えろ',
+    language: 'json',
+    initialText: '{ "color": "red" }',
+    goalText: '{ "color": "blue" }',
+    initialCursor: { line: 0, col: 14 },
+    life: 7,
+    stars: [1, 2, 4],
+    availableCommands: ['diw', 'daw', 'di"', 'da"', 'ci"', 'f', 't'],
+    hints: [{ cost: 1, commands: ['ci"', 'blue', 'Esc'] }],
+    flavor: 'ci" で引用符の中身だけを書き換えられる',
   },
 
-  // ── Practice: 複数単語削除 ──
-  // opt = 3 (w + daw + daw)
+  // ── Practice: 括弧・引用符を使い分け ──
+  // opt = 4 (ci"+new+Esc, w+ci(+y+Esc)
   {
     id: 'N24-P',
     nodeId: 'N24',
     type: 'practice',
-    title: '不要語削除',
-    language: 'plaintext',
-    initialText: 'remove bad ugly text here',
-    goalText: 'remove text here',
+    title: '中身総入替',
+    language: 'javascript',
+    initialText: 'log("old", getValue(x))',
+    goalText: 'log("new", getValue(y))',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
-    flavor: '不要な形容詞を daw で消し去れ',
+    life: 10,
+    stars: [4, 6, 8],
+    availableCommands: ['diw', 'daw', 'di"', 'da"', 'ci"', 'di(', 'da(', 'ci(', 'f', 't'],
+    hints: [{ cost: 1, commands: ['ci"', 'new', 'Esc', 'f(', 'l', 'ci(', 'y', 'Esc'] }],
+    flavor: '引用符の中と括弧の中、両方書き換えろ',
   },
 ]

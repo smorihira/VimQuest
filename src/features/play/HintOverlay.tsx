@@ -3,7 +3,7 @@
  * Shows commands being applied one by one from initial state.
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import { createEditorState } from '../../types/editor'
@@ -26,6 +26,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
         createEditorState(stage.initialText, stage.initialCursor),
     )
     const [currentCmd, setCurrentCmd] = useState('')
+    const editorRef = useRef<HTMLDivElement>(null)
 
     const applyCommand = useCallback(
         (cmdStr: string, state: EditorState): EditorState => {
@@ -94,6 +95,16 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
         return () => clearTimeout(timer)
     }, [step, commands, applyCommand])
 
+    // Auto-scroll to keep active line centered in hint editor
+    useEffect(() => {
+        const el = editorRef.current
+        if (!el) return
+        const activeLine = el.querySelector('.active-line')
+        if (activeLine) {
+            activeLine.scrollIntoView({ block: 'center', behavior: 'smooth' })
+        }
+    }, [editorState])
+
     // Close on Esc or click
     useEffect(() => {
         const handleKey = (e: KeyboardEvent) => {
@@ -121,7 +132,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
                     </button>
                 </div>
 
-                <div className="hint-editor">
+                <div className="hint-editor" ref={editorRef}>
                     <EditorView state={editorState} language={stage.language} />
                 </div>
 

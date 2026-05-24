@@ -323,6 +323,7 @@ function PlayScreenInner({
                     state={play.editorState}
                     goalText={stage.goalText}
                     goalCursor={stage.clearConditions?.cursor}
+                    goalViewportTop={stage.clearConditions?.viewportTop}
                     showGoal={spaceHeld}
                     language={stage.language}
                 />

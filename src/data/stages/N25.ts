@@ -1,43 +1,45 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N25: デリミタTextObj (i", a", i', a', i(, a(, etc.)
+ * N25: d+TextObj (diw, di", da()
+ * ALL合流ノード: N25(delim) + N15(dw)
+ * 渇望→報酬サイクル #6: v+移動+d → diw 一発
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N25_STAGES: Stage[] = [
-  // ── Teach: 引用符の中身を変更 ──
-  // opt = 1 (ci" + type 'blue' + Esc) — from anywhere in line
+  // ── Teach: diw で単語をピンポイント削除 ──
+  // opt = 2 (w + diw)
   {
     id: 'N25-T',
     nodeId: 'N25',
     type: 'teach',
-    title: '中身を変えろ',
-    language: 'json',
-    initialText: '{ "color": "red" }',
-    goalText: '{ "color": "blue" }',
-    initialCursor: { line: 0, col: 14 },
-    life: 7,
-    stars: [1, 2, 4],
-    availableCommands: ['diw', 'daw', 'di"', 'da"', 'ci"', 'f', 't'],
-    hints: [{ cost: 1, commands: ['ci"', 'blue', 'Esc'] }],
-    flavor: 'ci" で引用符の中身だけを書き換えられる',
+    title: '精密除去',
+    language: 'javascript',
+    initialText: 'const temp = 42;',
+    goalText: 'const  = 42;',
+    initialCursor: { line: 0, col: 0 },
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['dw', 'de', 'db', 'diw', 'di"', 'da(', 'f', 't', '0', '$'],
+    hints: [{ cost: 1, commands: ['w', 'diw'] }],
+    flavor: 'diw は単語だけを正確に消す。前後の空白は残る',
   },
 
-  // ── Practice: 括弧・引用符を使い分け ──
-  // opt = 4 (ci"+new+Esc, w+ci(+y+Esc)
+  // ── Practice: 括弧内・引用符内の削除 ──
+  // opt = 4 (fv+diw, f"+di")
   {
     id: 'N25-P',
     nodeId: 'N25',
     type: 'practice',
-    title: '中身総入替',
+    title: '外科手術',
     language: 'javascript',
-    initialText: 'log("old", getValue(x))',
-    goalText: 'log("new", getValue(y))',
+    initialText: 'alert("error: " + value);',
+    goalText: 'alert("" + value);',
     initialCursor: { line: 0, col: 0 },
     life: 10,
     stars: [4, 6, 8],
-    availableCommands: ['diw', 'daw', 'di"', 'da"', 'ci"', 'di(', 'da(', 'ci(', 'f', 't'],
-    hints: [{ cost: 1, commands: ['ci"', 'new', 'Esc', 'f(', 'l', 'ci(', 'y', 'Esc'] }],
-    flavor: '引用符の中と括弧の中、両方書き換えろ',
+    availableCommands: ['dw', 'de', 'db', 'diw', 'di"', 'da(', 'f', 't', '0', '$'],
+    hints: [{ cost: 1, commands: ['f"', 'di"'] }],
+    flavor: '引用符の中身だけを di" で消せ。外側は残る',
   },
 ]

@@ -1,45 +1,45 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N32: Visualモード (v, V)
+ * N32: 矩形選択 (Ctrl+v)
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N32_STAGES: Stage[] = [
-  // ── Teach: V で行選択して削除 ──
-  // opt = 2 (j + Vd)
+  // ── Teach: 矩形選択で列を削除 ──
+  // opt = 3 (Ctrl+v + jj + d)
   {
     id: 'N32-T',
     nodeId: 'N32',
     type: 'teach',
-    title: '選んで消せ',
-    language: 'javascript',
-    initialText: 'keep this\nremove this\nkeep this too',
-    goalText: 'keep this\nkeep this too',
+    title: '矩形で切れ',
+    language: 'plaintext',
+    initialText: 'X hello\nX world\nX test',
+    goalText: ' hello\n world\n test',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['v', 'V', 'Ctrl+v', '0', '$'],
     visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['j', 'V', 'd'] }],
-    flavor: 'V で行を選択、d で削除。Visual モードの基本だ',
+    hints: [{ cost: 1, commands: ['Ctrl+v', 'j', 'j', 'd'] }],
+    flavor: 'Ctrl+v で矩形選択。縦1列をまとめて消せる',
   },
 
-  // ── Practice: v で範囲選択して削除 ──
-  // opt = 4 (f<+v+f>+d)
+  // ── Practice: 矩形選択で接頭辞を除去 ──
+  // opt = 5 (Ctrl+v + jjj + ll + d)
   {
     id: 'N32-P',
     nodeId: 'N32',
     type: 'practice',
-    title: '範囲狙撃',
-    language: 'html',
-    initialText: 'Hello <World> end',
-    goalText: 'Hello  end',
+    title: '列を消せ',
+    language: 'plaintext',
+    initialText: '-- alpha\n-- beta\n-- gamma\n-- delta',
+    goalText: ' alpha\n beta\n gamma\n delta',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 6, 8],
-    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
+    life: 11,
+    stars: [5, 7, 9],
+    availableCommands: ['v', 'V', 'Ctrl+v', '0', '$'],
     visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd'] }],
-    flavor: 'v で選択開始し、f でタグの終わりまで選択して d で消せ',
+    hints: [{ cost: 1, commands: ['Ctrl+v', 'j', 'j', 'j', 'l', 'd'] }],
+    flavor: '全行の -- を矩形選択で一括削除せよ',
   },
 ]

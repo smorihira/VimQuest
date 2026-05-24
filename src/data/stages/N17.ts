@@ -1,25 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N17: 行末削除 (d$, d0)
+ * N17: Dショートカット (D)
+ * D = d$ のショートカット
  * Teach(T) = 1ステージ
  */
 export const N17_STAGES: Stage[] = [
-  // ── Teach: 行末まで削除 ──
-  // opt = 3 (e + l + d$)
+  // ── Teach: D で行末を切る ──
+  // opt = 1 (D) — cursor starts at cut point
   {
     id: 'N17-T',
     nodeId: 'N17',
     type: 'teach',
-    title: '末尾を切れ',
+    title: 'Dで断て',
     language: 'javascript',
-    initialText: 'return value; // temporary hack',
-    goalText: 'return value;',
-    initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 6, 8],
-    availableCommands: ['dd', 'd$', 'd0', 'dw', '0', '$'],
-    hints: [{ cost: 1, commands: ['e', 'e', 'l', 'l', 'd$'] }],
-    flavor: 'コメントを d$ で行末まで一気に削除せよ',
+    initialText: 'return null; // FIXME: remove this',
+    goalText: 'return null;',
+    initialCursor: { line: 0, col: 12 },
+    life: 7,
+    stars: [1, 2, 4],
+    availableCommands: ['dd', 'd$', 'd0', 'D', 'dw', '0', '$'],
+    hints: [{ cost: 1, commands: ['D'] }],
+    flavor: 'd$ と同じことが D 一文字でできる',
   },
 ]

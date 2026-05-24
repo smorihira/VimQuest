@@ -1,79 +1,55 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N12: 画面位置調整 (zz, zt, zb)
- * ビューポートコマンド。テキスト変更なし。
- * Teach(T) = 1ステージ
+ * N12: 検索 (/, n, N)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N12_STAGES: Stage[] = [
-  // ── Teach: 画面中央に合わせる ──
-  // opt = 2 (Ctrl+d + zz)
+  // ── Teach: 検索でジャンプ ──
+  // opt = 1 (/error + Enter)
   {
     id: 'N12-T',
     nodeId: 'N12',
     type: 'teach',
-    title: '画面を合わせろ',
+    title: '検索せよ',
+    language: 'javascript',
+    initialText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
+    goalText: 'const a = 1;\nconst b = 2;\nconst error = null;\nconst d = 4;',
+    initialCursor: { line: 0, col: 0 },
+    life: 7,
+    stars: [1, 2, 4],
+    availableCommands: ['/', '0', '$'],
+    clearConditions: { cursor: { line: 2, col: 6 } },
+    hints: [{ cost: 1, commands: ['/error', 'Enter'] }],
+    flavor: '/ で検索開始。error を探し出せ',
+  },
+
+  // ── Practice: 検索 + n で次へ ──
+  // opt = 3 (/TODO + Enter, n, n)
+  {
+    id: 'N12-P',
+    nodeId: 'N12',
+    type: 'practice',
+    title: '全部見つけろ',
     language: 'javascript',
     initialText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET: move cursor here\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
+      '// TODO: fix auth\n' +
+      'function login() {}\n' +
+      '// TODO: add validation\n' +
+      'function save() {}\n' +
+      '// TODO: write tests',
     goalText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET: move cursor here\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
+      '// TODO: fix auth\n' +
+      'function login() {}\n' +
+      '// TODO: add validation\n' +
+      'function save() {}\n' +
+      '// TODO: write tests',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['zz', 'zt', 'zb', 'Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 16, col: 0 } },
-    hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d'] }],
-    flavor: 'Ctrl+d で半ページ移動、zz で現在行を画面中央に合わせてみよう',
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['/', '0', '$'],
+    clearConditions: { cursor: { line: 4, col: 3 } },
+    hints: [{ cost: 1, commands: ['/TODO', 'Enter', 'n', 'n'] }],
+    flavor: '/TODO で検索して n で次のマッチへ。全3箇所の最後まで行け',
   },
 ]

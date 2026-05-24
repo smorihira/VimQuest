@@ -1,26 +1,86 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N28: 変更ショート (s, S, C)
- * s = cl, S = cc, C = c$
- * Teach(T) = 1ステージ
+ * N28: ドットリピート (.)
+ * ★★★ 最高峰ノード — Vim の真髄
+ * 渇望→報酬サイクル #5: 手動繰り返し → . 一発
+ * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N28_STAGES: Stage[] = [
-  // ── Teach: s で1文字置換＋Insert ──
-  // opt = 2 (fs + s + 'S' + Esc)
+  // ── Teach: . で直前の変更を繰り返す ──
+  // opt = 3 (ciw+yes+Esc, w+.)
   {
     id: 'N28-T',
     nodeId: 'N28',
     type: 'teach',
-    title: 'ショートカット',
+    title: 'リピート',
+    language: 'plaintext',
+    initialText: 'no no no',
+    goalText: 'yes yes yes',
+    initialCursor: { line: 0, col: 0 },
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['ciw', 's', '.', 'f', 't', '0', '$'],
+    hints: [{ cost: 1, commands: ['ciw', 'yes', 'Esc', 'w', '.', 'w', '.'] }],
+    flavor: 'ciw で最初の no を yes に変え、. で残りも一発だ',
+  },
+
+  // ── Practice: 複数行でドットリピート ──
+  // opt = 6 (j+^+ciw+let+Esc, j+^+., j+^+.)
+  {
+    id: 'N28-P',
+    nodeId: 'N28',
+    type: 'practice',
+    title: '連続リピート',
     language: 'javascript',
-    initialText: 'const result = null;',
-    goalText: 'const Result = null;',
-    initialCursor: { line: 0, col: 6 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['ciw', 's', 'S', 'C', 'f', 't', '0', '$'],
-    hints: [{ cost: 1, commands: ['s', 'R', 'Esc'] }],
-    flavor: 's で1文字消してすぐ入力。r より柔軟だ',
+    initialText:
+      'function setup() {\n' + '  var a = 1;\n' + '  var b = 2;\n' + '  var c = 3;\n' + '}',
+    goalText: 'function setup() {\n' + '  let a = 1;\n' + '  let b = 2;\n' + '  let c = 3;\n' + '}',
+    initialCursor: { line: 0, col: 0 },
+    life: 12,
+    stars: [6, 8, 10],
+    availableCommands: ['ciw', 's', '.', 'f', 't', '0', '$', '^'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['j', '^', 'ciw', 'let', 'Esc', 'j', '^', '.', 'j', '^', '.'],
+      },
+    ],
+    flavor: '全ての var を let に変えろ。. で繰り返せ',
+  },
+
+  // ── Challenge: 複合パズル ──
+  // opt = 10 (ciw + . による複数変更 + f/t 移動)
+  {
+    id: 'N28-C',
+    nodeId: 'N28',
+    type: 'challenge',
+    title: 'リファクタリング',
+    language: 'javascript',
+    initialText:
+      'function getUser(id) {\n' +
+      '  var name = fetch(id);\n' +
+      '  var age = fetch(id);\n' +
+      '  var role = fetch(id);\n' +
+      '  return { name: name, age: age, role: role };\n' +
+      '}',
+    goalText:
+      'function getUser(id) {\n' +
+      '  const name = fetch(id);\n' +
+      '  const age = fetch(id);\n' +
+      '  const role = fetch(id);\n' +
+      '  return { name: name, age: age, role: role };\n' +
+      '}',
+    initialCursor: { line: 0, col: 0 },
+    life: 18,
+    stars: [10, 13, 16],
+    availableCommands: ['ciw', 's', 'S', 'C', '.', 'f', 't', '0', '$', '^'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['j', '^', 'ciw', 'const', 'Esc', 'j', '^', '.', 'j', '^', '.'],
+      },
+    ],
+    flavor: 'var を const に統一しろ。. を使いこなせ',
   },
 ]

@@ -1,43 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N34: ヤンク (y + motion/textobj)
- * Teach(T) + Practice(P) = 2ステージ
+ * N34: ペースト (p, P)
+ * Teach(T) = 1ステージ
  */
 export const N34_STAGES: Stage[] = [
-  // ── Teach: yiw でコピー → p でペースト ──
-  // opt = 3 (yiw + $ + p)
+  // ── Teach: dd + P で行を移動 ──
+  // opt = 3 (jj + dd + P → move line 3 to line 2)
   {
     id: 'N34-T',
     nodeId: 'N34',
     type: 'teach',
-    title: 'コピーせよ',
+    title: '切り貼りせよ',
     language: 'plaintext',
-    initialText: 'hello world',
-    goalText: 'hello worldhello',
+    initialText: 'first\nthird\nsecond',
+    goalText: 'first\nsecond\nthird',
     initialCursor: { line: 0, col: 0 },
     life: 9,
     stars: [3, 4, 6],
-    availableCommands: ['diw', 'yiw', 'v', 'p', 'f', 't', '0', '$'],
-    hints: [{ cost: 1, commands: ['yiw', '$', 'p'] }],
-    flavor: 'yiw で単語をヤンク（コピー）し、p でペーストだ',
-  },
-
-  // ── Practice: yy で行コピー、p でペースト ──
-  // opt = 3 (j + yy + p)
-  {
-    id: 'N34-P',
-    nodeId: 'N34',
-    type: 'practice',
-    title: '行を複製',
-    language: 'javascript',
-    initialText: 'const a = 1;\nconst b = 2;',
-    goalText: 'const a = 1;\nconst b = 2;\nconst b = 2;',
-    initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['y', 'yy', 'v', 'V', 'p', 'P', '0', '$'],
-    hints: [{ cost: 1, commands: ['j', 'yy', 'p'] }],
-    flavor: 'yy で行全体をヤンクし、p で下に複製せよ',
+    availableCommands: ['y', 'yy', 'dd', 'p', 'P', '0', '$'],
+    hints: [{ cost: 1, commands: ['j', 'j', 'dd', 'P'] }],
+    flavor: 'dd で行を切り取り、P でカーソルの上にペーストだ',
   },
 ]

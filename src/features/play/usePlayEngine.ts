@@ -265,7 +265,8 @@ export function usePlayEngine(
                 next.text === editorState.text &&
                 next.cursor.line === editorState.cursor.line &&
                 next.cursor.col === editorState.cursor.col &&
-                next.mode === editorState.mode
+                next.mode === editorState.mode &&
+                next.viewportTop === editorState.viewportTop
             ) {
                 setEditorState(next)
                 return

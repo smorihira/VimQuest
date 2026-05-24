@@ -1,26 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N21: 括弧ジャンプ (%)
+ * N21: d+f/t (df, dt)
+ * ALL合流ノード: N20(f/t) + N15(dw)
  * Teach(T) = 1ステージ
  */
 export const N21_STAGES: Stage[] = [
-  // ── Teach: 対応する括弧へジャンプ ──
-  // opt = 2 (f{ + %)
+  // ── Teach: dt で指定文字の手前まで削除 ──
+  // opt = 2 (f: + dt;)
   {
     id: 'N21-T',
     nodeId: 'N21',
     type: 'teach',
-    title: '対を見つけろ',
-    language: 'javascript',
-    initialText: 'if (x > 0) { return x; }',
-    goalText: 'if (x > 0) { return x; }',
+    title: '範囲を断て',
+    language: 'css',
+    initialText: 'padding: 0px10px;',
+    goalText: 'padding: 10px;',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['%', 'f', 't'],
-    clearConditions: { cursor: { line: 0, col: 23 } },
-    hints: [{ cost: 1, commands: ['f{', '%'] }],
-    flavor: '% で対応する括弧にジャンプ。{ から } へ一瞬で飛べる',
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['dw', 'de', 'db', 'df', 'dt', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'w', 'dt1'] }],
+    flavor: 'dt で指定文字の手前まで削除。余分な部分だけ消せ',
   },
 ]

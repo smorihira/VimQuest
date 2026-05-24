@@ -23,6 +23,8 @@ export interface ClearCondition {
   cursor?: CursorPosition
   /** Specific registers must contain these values */
   registers?: Record<string, string>
+  /** Viewport top line must equal this value */
+  viewportTop?: number
 }
 
 /** Stage definition — static data in data/stages/ */

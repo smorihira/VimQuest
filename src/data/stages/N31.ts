@@ -1,25 +1,45 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N31: インデント (>>, <<)
- * Teach(T) = 1ステージ
+ * N31: Visualモード (v, V)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N31_STAGES: Stage[] = [
-  // ── Teach: >> でインデント追加 ──
-  // opt = 2 (j + >>)
+  // ── Teach: V で行選択して削除 ──
+  // opt = 2 (j + Vd)
   {
     id: 'N31-T',
     nodeId: 'N31',
     type: 'teach',
-    title: 'インデントせよ',
-    language: 'python',
-    initialText: 'if True:\nprint("hello")',
-    goalText: 'if True:\n  print("hello")',
+    title: '選んで消せ',
+    language: 'javascript',
+    initialText: 'keep this\nremove this\nkeep this too',
+    goalText: 'keep this\nkeep this too',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['>>', '<<', '0', '$'],
-    hints: [{ cost: 1, commands: ['j', '>>'] }],
-    flavor: '>> で行をインデント。Python のブロック構造を直せ',
+    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
+    visualCommands: ['d'],
+    hints: [{ cost: 1, commands: ['j', 'V', 'd'] }],
+    flavor: 'V で行を選択、d で削除。Visual モードの基本だ',
+  },
+
+  // ── Practice: v で範囲選択して削除 ──
+  // opt = 4 (f<+v+f>+d)
+  {
+    id: 'N31-P',
+    nodeId: 'N31',
+    type: 'practice',
+    title: '範囲狙撃',
+    language: 'html',
+    initialText: 'Hello <World> end',
+    goalText: 'Hello  end',
+    initialCursor: { line: 0, col: 0 },
+    life: 10,
+    stars: [4, 6, 8],
+    availableCommands: ['v', 'V', 'f', 't', '0', '$'],
+    visualCommands: ['d'],
+    hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd'] }],
+    flavor: 'v で選択開始し、f でタグの終わりまで選択して d で消せ',
   },
 ]

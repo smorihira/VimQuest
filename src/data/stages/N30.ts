@@ -1,25 +1,25 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N30: 大小文字変換 (gu, gU)
+ * N30: インデント (>>, <<)
  * Teach(T) = 1ステージ
  */
 export const N30_STAGES: Stage[] = [
-  // ── Teach: gU + TextObj で大文字化 ──
-  // opt = 2 (w + gUiw)
+  // ── Teach: >> でインデント追加 ──
+  // opt = 2 (j + >>)
   {
     id: 'N30-T',
     nodeId: 'N30',
     type: 'teach',
-    title: '大文字にしろ',
-    language: 'javascript',
-    initialText: 'const max_size = 100;',
-    goalText: 'const MAX_SIZE = 100;',
+    title: 'インデントせよ',
+    language: 'python',
+    initialText: 'if True:\nprint("hello")',
+    goalText: 'if True:\n  print("hello")',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['diw', 'di"', 'gu', 'gU', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'gUiw'] }],
-    flavor: 'gU + TextObj で単語を大文字に変換できる',
+    availableCommands: ['>>', '<<', '0', '$'],
+    hints: [{ cost: 1, commands: ['j', '>>'] }],
+    flavor: '>> で行をインデント。Python のブロック構造を直せ',
   },
 ]

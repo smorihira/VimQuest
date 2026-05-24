@@ -1,46 +1,43 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N23: c+f/t (cf, ct)
- * 渇望→報酬サイクル #4: dw+i+入力 → cw で2手
+ * N23: 基本TextObj (iw, aw)
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N23_STAGES: Stage[] = [
-  // ── Teach: ct で文字の手前まで変更 ──
-  // opt = 2 (w + ct;)  — change 'red' to 'blue'
+  // ── Teach: daw で単語ごと削除 ──
+  // opt = 2 (w + daw)
   {
     id: 'N23-T',
     nodeId: 'N23',
     type: 'teach',
-    title: '書き換えろ',
-    language: 'css',
-    initialText: 'color: red;',
-    goalText: 'color: blue;',
+    title: '単語を掴め',
+    language: 'plaintext',
+    initialText: 'hello nice world',
+    goalText: 'hello world',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 5, 7],
-    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'w', 'ct;', 'blue', 'Esc'] }],
-    flavor: 'ct; で ; の手前まで消してInsertモードに。d+i が一体化した c の威力',
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'daw'] }],
+    flavor: 'daw で周囲の空白ごと単語を消せる。dw より正確だ',
   },
 
-  // ── Practice: 複数行で cf/ct を使い分け ──
-  // opt = 5 (w+ct;+50px+Esc, j+w+ct;+80px+Esc)
+  // ── Practice: 複数単語削除 ──
+  // opt = 3 (w + daw + daw)
   {
     id: 'N23-P',
     nodeId: 'N23',
     type: 'practice',
-    title: '一括修正',
-    language: 'css',
-    initialText: 'width: 100px;\nheight: 200px;',
-    goalText: 'width: 50px;\nheight: 80px;',
+    title: '不要語削除',
+    language: 'plaintext',
+    initialText: 'remove bad ugly text here',
+    goalText: 'remove text here',
     initialCursor: { line: 0, col: 0 },
-    life: 14,
-    stars: [8, 10, 12],
-    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
-    hints: [
-      { cost: 1, commands: ['w', 'w', 'ct;', '50px', 'Esc', 'j', 'b', 'ct;', '80px', 'Esc'] },
-    ],
-    flavor: 'ct; で値を書き換えろ。2行とも修正だ',
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
+    flavor: '不要な形容詞を daw で消し去れ',
   },
 ]
