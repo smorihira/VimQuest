@@ -1,10 +1,15 @@
 import type { CursorPosition } from './editor'
 
+/** Step type determines input handling */
+export type TutorialStepType = 'key' | 'hold_space' | 'colon_command'
+
 /** Single step in a tutorial sequence */
 export interface TutorialStep {
     /** Navigator's dialogue message */
     message: string
-    /** Correct key to advance (null = any key) */
+    /** Step type (default: 'key') */
+    type?: TutorialStepType
+    /** Correct key to advance (null = any key). Ignored for hold_space / colon_command. */
     expectedKey: string | null
     /** Additional accepted keys (omit = expectedKey only) */
     acceptedKeys?: string[]
@@ -15,6 +20,8 @@ export interface TutorialStep {
     }
     /** Custom message for wrong key input (omit = default) */
     wrongKeyMessage?: string
+    /** Colon command to wait for (e.g. ':h', ':r'). Used when type === 'colon_command'. */
+    colonCommand?: string
 }
 
 /** Complete tutorial definition for a node or stage */

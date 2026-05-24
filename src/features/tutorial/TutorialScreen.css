@@ -194,3 +194,27 @@
     color: var(--danger);
     font-size: 18px;
 }
+
+/* Colon command buffer (shared with play screen) */
+.tutorial-screen .colon-cmd {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #111;
+    color: #e0e0e0;
+    font-family: var(--font-code);
+    font-size: 14px;
+    padding: 4px 12px;
+    z-index: 100;
+}
+
+.tutorial-screen .colon-cmd .colon-cursor {
+    animation: colon-blink 1s step-end infinite;
+}
+
+@keyframes colon-blink {
+    50% {
+        opacity: 0;
+    }
+}

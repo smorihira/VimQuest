@@ -27,19 +27,24 @@ export const N01_1_TUTORIAL: Tutorial = {
             expectedKey: 'h',
         },
         {
-            message: '💡 Space を長押しするとゴール位置が浮かび上がる。目標を確認しろ',
+            message: 'Space を長押ししてゴールを確認しろ。離すと戻る',
+            type: 'hold_space',
             expectedKey: null,
         },
         {
-            message: 'よし。l で右端まで行ってみろ',
+            message: 'ゴールが浮かんだだろう？ 次は :h と入力してみろ。答えが再生される（☆1確定）',
+            type: 'colon_command',
+            colonCommand: ':h',
             expectedKey: null,
         },
         {
-            message: '💡 困ったら :h と入力してみろ。答えが再生される。ただし ☆1 確定だ',
+            message: ':r でリトライだ。試してみろ',
+            type: 'colon_command',
+            colonCommand: ':r',
             expectedKey: null,
         },
         {
-            message: '💡 :q! でツリーに戻れる（Escでも可）。:r でリトライだ',
+            message: ':q! でツリーに戻れる（Esc でも可）。さぁ、右端を目指せ',
             expectedKey: null,
         },
     ],
