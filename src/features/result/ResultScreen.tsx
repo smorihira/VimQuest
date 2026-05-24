@@ -14,6 +14,9 @@ import type { StarRating } from '../../types/stage'
 import type { SpellEntry } from '../../types/spell'
 import './ResultScreen.css'
 import { playTick } from '../../engine/sound'
+import { ResultGuide } from './ResultGuide'
+
+const GUIDE_KEY = 'vimquest_result_guide_seen'
 
 interface LocationState {
   damage: number
@@ -120,6 +123,14 @@ export function ResultScreen() {
 
   const [focusIdx, setFocusIdx] = useState(actions.length - 1) // default to last (primary)
   const [prevActionsLen, setPrevActionsLen] = useState(actions.length)
+  const [showGuide, setShowGuide] = useState(false)
+
+  // Auto-show guide on first N01-1 clear
+  useEffect(() => {
+    if (stageId !== 'N01-1' || localStorage.getItem(GUIDE_KEY)) return
+    const timer = setTimeout(() => setShowGuide(true), 1200)
+    return () => clearTimeout(timer)
+  }, [stageId])
 
   // Always reset focus to the primary (last) action when actions list changes
   if (prevActionsLen !== actions.length) {
@@ -173,8 +184,12 @@ export function ResultScreen() {
           {stage.id} — {stage.title}
         </div>
 
+        <button className="guide-help-btn" onClick={() => setShowGuide(true)} title="画面の見方">
+          ?
+        </button>
+
         {/* Stars */}
-        <div className="stars-container">
+        <div className="stars-container" data-guide="stars">
           <div className="stars">
             {[0, 1, 2].map((i) => (
               <span
@@ -229,7 +244,7 @@ export function ResultScreen() {
         )}
 
         {/* Stats */}
-        <div className="stats">
+        <div className="stats" data-guide="stats">
           <div className="stat">
             <div className="stat-value">{state.damage}</div>
             <div className="stat-label">DAMAGE</div>
@@ -266,6 +281,14 @@ export function ResultScreen() {
           ))}
         </div>
       </div>
+      {showGuide && (
+        <ResultGuide
+          onComplete={() => {
+            setShowGuide(false)
+            localStorage.setItem(GUIDE_KEY, '1')
+          }}
+        />
+      )}
     </div>
   )
 }
