@@ -45,6 +45,10 @@ export const N01_1_TUTORIAL: Tutorial = {
       expectedKey: null,
     },
     {
+      message: '左上の 📖 ボタンでこのチュートリアルをいつでも見返せるぞ。ツリー画面からも OK だ',
+      expectedKey: null,
+    },
+    {
       message: ':q! でツリーに戻れる（Esc でも可）。さぁ、右端を目指せ',
       expectedKey: null,
     },

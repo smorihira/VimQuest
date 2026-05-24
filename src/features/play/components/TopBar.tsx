@@ -65,7 +65,7 @@ export function TopBar({
         )}
         {onTutorial && (
           <button
-            className="quit-btn tutorial-btn"
+            className="quit-btn"
             onClick={() => {
               playTick()
               onTutorial()
