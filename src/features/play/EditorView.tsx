@@ -200,7 +200,7 @@ export function EditorView({
           )}
           {Object.keys(state.registers).length > 0 && (
             <div className="goal-registers">
-              <span className="goal-reg-label">レジスタ:</span>
+              <span className="goal-reg-label">現レジスタ値:</span>
               {Object.entries(state.registers).map(([key, val]) => (
                 <span
                   key={key}
@@ -225,7 +225,7 @@ export function EditorView({
       )}
       {goalText === undefined && !showGoal && Object.keys(state.registers).length > 0 && (
         <div className="goal-registers goal-registers-standalone">
-          <span className="goal-reg-label">レジスタ:</span>
+          <span className="goal-reg-label">現レジスタ値:</span>
           {Object.entries(state.registers).map(([key, val]) => (
             <span key={key} className="goal-reg current">
               "{key} = {val}
