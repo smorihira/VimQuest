@@ -11,6 +11,12 @@ export function mapKeyEvent(e: KeyboardEvent): string | null {
     e.preventDefault()
     return 'Ctrl+v'
   }
+  if (e.ctrlKey && e.key === 'a') return 'Ctrl+a'
+  if (e.ctrlKey && e.key === 'x') return 'Ctrl+x'
+  if (e.ctrlKey && e.key === 'e') return 'Ctrl+e'
+  if (e.ctrlKey && e.key === 'y') return 'Ctrl+y'
+  if (e.ctrlKey && e.key === 'o') return 'Ctrl+o'
+  if (e.ctrlKey && e.key === 'i') return 'Ctrl+i'
 
   // Ignore other Ctrl/Meta combos
   if (e.ctrlKey || e.metaKey) return null

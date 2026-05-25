@@ -565,6 +565,12 @@ function mapKey(e: KeyboardEvent): string | null {
   if (e.ctrlKey && e.key === 'd') return 'Ctrl+d'
   if (e.ctrlKey && e.key === 'u') return 'Ctrl+u'
   if (e.ctrlKey && e.key === 'v') return 'Ctrl+v'
+  if (e.ctrlKey && e.key === 'a') return 'Ctrl+a'
+  if (e.ctrlKey && e.key === 'x') return 'Ctrl+x'
+  if (e.ctrlKey && e.key === 'e') return 'Ctrl+e'
+  if (e.ctrlKey && e.key === 'y') return 'Ctrl+y'
+  if (e.ctrlKey && e.key === 'o') return 'Ctrl+o'
+  if (e.ctrlKey && e.key === 'i') return 'Ctrl+i'
   if (e.ctrlKey || e.metaKey) return null
   if (e.key === 'Escape') return 'Esc'
   if (e.key === 'Backspace') return 'Backspace'
