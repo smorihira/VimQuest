@@ -208,25 +208,8 @@ describe('Hint Verification', () => {
 describe('Hint Damage Calculation', () => {
   const stages = Object.values(ALL_STAGES)
 
-  // Stages where hint damage != opt — stage design fixes needed (see TEST-DESIGN.md TODO)
-  const KNOWN_MISMATCHES = new Set([
-    'N10-T',
-    'N12-T',
-    'N13-T',
-    'N17-T',
-    'N18-T',
-    'N20-T',
-    'N21-T',
-    'N22-T',
-    'N24-T',
-    'N28-C',
-    'N28-T',
-    'N29-T',
-  ])
-
   for (const stage of stages) {
-    const testFn = KNOWN_MISMATCHES.has(stage.id) ? it.skip : it
-    testFn(`${stage.id}: hint damage === opt (opt=${stage.stars[0]})`, () => {
+    it(`${stage.id}: hint damage === opt (opt=${stage.stars[0]})`, () => {
       const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
       const baseCommands = showBase ? (BASE_COMMANDS as unknown as readonly string[]) : undefined
 

@@ -17,8 +17,8 @@ export const N18_STAGES: Stage[] = [
     initialText: 'color: red;\nsize: small;',
     goalText: 'color: blue;\nsize: large;',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 5, 7],
+    life: 14,
+    stars: [8, 9, 11],
     availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
     hints: [
       {

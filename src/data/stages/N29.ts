@@ -16,8 +16,8 @@ export const N29_STAGES: Stage[] = [
     initialText: 'hello world\nfoo bar',
     goalText: 'hello worldhello\nfoo barfoo',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 5, 7],
+    life: 14,
+    stars: [8, 9, 11],
     availableCommands: ['y', 'p', 'P', '"a', '"b', '"0'],
     clearConditions: {
       registers: { a: 'hello', b: 'foo' },

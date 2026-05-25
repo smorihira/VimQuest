@@ -8,23 +8,17 @@ import { useParams, useNavigate, useLocation } from 'react-router'
 import { useAtom } from 'jotai'
 import { getStage, getStagesByNode } from '../../data/stages'
 import { calculateStars, applyHintPenalty } from '../../engine/damageCalculator'
-import { computeProgressUpdate } from '../../engine/progressUpdater'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES, getSkillNode } from '../../data/skillTree'
 import type { StarRating } from '../../types/stage'
-import type { PlayMode } from '../../types/game'
 import type { SpellEntry } from '../../types/spell'
 import './ResultScreen.css'
 import { playTick } from '../../engine/sound'
-import { ResultGuide } from './ResultGuide'
-
-const GUIDE_KEY = 'vimquest_result_guide_seen'
 
 interface LocationState {
   damage: number
   usedHint: boolean
   spells?: SpellEntry[]
-  playMode?: PlayMode
 }
 
 export function ResultScreen() {
@@ -37,28 +31,58 @@ export function ResultScreen() {
 
   const state = (location.state as LocationState) ?? { damage: 0, usedHint: false, spells: [] }
   const spells = state.spells ?? []
-  const playMode = state.playMode ?? 'normal'
-  const practiceMode = playMode === 'practice'
-  const noScore = playMode !== 'normal'
   const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
   const stars = stage ? applyHintPenalty(rawStars, state.usedHint) : (0 as StarRating)
 
-  // Save progress once (skip in practice mode)
+  // Save progress once
   useEffect(() => {
-    if (!stage || saved.current || practiceMode) return
+    if (!stage || saved.current) return
     saved.current = true
 
-    setProgress((prev) =>
-      computeProgressUpdate(prev, {
-        stageId: stage.id,
-        nodeId: stage.nodeId,
-        damage: state.damage,
-        stars,
-        usedHint: state.usedHint,
-        playMode,
-        stageLife: stage.life,
-      }),
-    )
+    setProgress((prev) => {
+      const existing = prev.stageResults[stage.id]
+      const bestStars = existing
+        ? (Math.max(existing.bestStars, stars) as StarRating)
+        : (stars as StarRating)
+      const bestDamage = existing ? Math.min(existing.bestDamage, state.damage) : state.damage
+
+      const nextResults = {
+        ...prev.stageResults,
+        [stage.id]: {
+          stageId: stage.id,
+          bestStars,
+          bestDamage,
+          usedHint: existing ? existing.usedHint && state.usedHint : state.usedHint,
+        },
+      }
+
+      // Check if all stages in this node are now cleared → unlock dependents
+      const allNodeStages = getStagesByNode(stage.nodeId)
+      const allCleared = allNodeStages.every((s) => nextResults[s.id]?.bestStars >= 1)
+
+      let nextUnlocked = prev.unlockedNodes
+      if (allCleared) {
+        const dependents = SKILL_NODES.filter((n) => n.prerequisites.includes(stage.nodeId))
+          .filter((n) =>
+            n.prerequisites.every((pre) => {
+              const preStages = getStagesByNode(pre)
+              return preStages.every((s) => nextResults[s.id]?.bestStars >= 1)
+            }),
+          )
+          .map((n) => n.id)
+
+        const newNodes = dependents.filter((id) => !prev.unlockedNodes.includes(id))
+        if (newNodes.length > 0) {
+          nextUnlocked = [...prev.unlockedNodes, ...newNodes]
+        }
+      }
+
+      return {
+        ...prev,
+        stageResults: nextResults,
+        unlockedNodes: nextUnlocked,
+      }
+    })
   })
 
   // Find next stage in the same node
@@ -96,14 +120,6 @@ export function ResultScreen() {
 
   const [focusIdx, setFocusIdx] = useState(actions.length - 1) // default to last (primary)
   const [prevActionsLen, setPrevActionsLen] = useState(actions.length)
-  const [showGuide, setShowGuide] = useState(false)
-
-  // Auto-show guide on first N01-1 clear
-  useEffect(() => {
-    if (stageId !== 'N01-1' || localStorage.getItem(GUIDE_KEY)) return
-    const timer = setTimeout(() => setShowGuide(true), 1200)
-    return () => clearTimeout(timer)
-  }, [stageId])
 
   // Always reset focus to the primary (last) action when actions list changes
   if (prevActionsLen !== actions.length) {
@@ -152,45 +168,37 @@ export function ResultScreen() {
   return (
     <div className="result-screen">
       <div className="result-container">
-        <div className="clear-label">
-          {practiceMode ? 'P R A C T I C E' : 'S T A G E&nbsp;&nbsp;C L E A R'}
-        </div>
+        <div className="clear-label">S T A G E&nbsp;&nbsp;C L E A R</div>
         <div className="result-stage-name">
           {stage.id} — {stage.title}
         </div>
 
-        <button className="guide-help-btn" onClick={() => setShowGuide(true)} title="画面の見方">
-          ?
-        </button>
-
         {/* Stars */}
-        <div className="stars-container" data-guide="stars">
+        <div className="stars-container">
           <div className="stars">
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className={`star-result${!noScore && i < stars ? ' earned' : ''}`}
+                className={`star-result${i < stars ? ' earned' : ''}`}
                 style={{ animationDelay: `${i * 0.2}s` }}
               >
-                {!noScore && i < stars ? '★' : '☆'}
+                {i < stars ? '★' : '☆'}
               </span>
             ))}
           </div>
-          {!noScore && state.usedHint && (
+          {state.usedHint && (
             <div className="hint-notice">
               <span className="hint-label">ヒント使用</span>: ☆1確定
             </div>
           )}
           <div className="star-label">
-            {noScore
-              ? ''
-              : stars === 3
-                ? 'パーフェクト！'
-                : stars === 2
-                  ? 'よくできました！'
-                  : stars === 1
-                    ? 'クリア！'
-                    : ''}
+            {stars === 3
+              ? 'パーフェクト！'
+              : stars === 2
+                ? 'よくできました！'
+                : stars === 1
+                  ? 'クリア！'
+                  : ''}
           </div>
         </div>
 
@@ -221,30 +229,24 @@ export function ResultScreen() {
         )}
 
         {/* Stats */}
-        <div className="stats" data-guide="stats">
+        <div className="stats">
           <div className="stat">
-            <div className="stat-value">{noScore ? '—' : state.damage}</div>
+            <div className="stat-value">{state.damage}</div>
             <div className="stat-label">DAMAGE</div>
           </div>
           <div className="stat">
             <div className="stat-value">
-              {noScore ? '—' : `${stage.life - state.damage}/${stage.life}`}
+              {stage.life - state.damage}/{stage.life}
             </div>
             <div className="stat-label">LIFE</div>
           </div>
           <div className="stat">
             <div className="stat-value best-value">
-              {(() => {
-                const existing = progress.stageResults[stage.id]
-                if (noScore) {
-                  return existing && existing.bestDamage < stage.life ? existing.bestDamage : '—'
-                }
-                return existing?.bestDamage ?? state.damage
-              })()}
+              {progress.stageResults[stage.id]?.bestDamage ?? state.damage}
             </div>
             <div className="stat-label">BEST</div>
-            {!noScore &&
-              progress.stageResults[stage.id] &&
+            {progress.stageResults[stage.id] &&
+              state.damage <= progress.stageResults[stage.id].bestDamage &&
               state.damage < progress.stageResults[stage.id].bestDamage && (
                 <div className="new-best">NEW BEST!</div>
               )}
@@ -264,14 +266,6 @@ export function ResultScreen() {
           ))}
         </div>
       </div>
-      {showGuide && (
-        <ResultGuide
-          onComplete={() => {
-            setShowGuide(false)
-            localStorage.setItem(GUIDE_KEY, '1')
-          }}
-        />
-      )}
     </div>
   )
 }

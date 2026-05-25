@@ -162,26 +162,6 @@ describe('Skill tree integrity', () => {
   // i.e. it must be in: self node commands ∪ transitive prerequisite commands ∪ BASE_COMMANDS
   // Composite commands (e.g. "dw") are learnable if the operator ("d") appears in any learnable composite
   describe('C2: stage availableCommands are learnable', () => {
-    // Stages with known prerequisite chain gaps (see TEST-DESIGN.md)
-    // N19: uses d-operator but N10 not in prerequisites
-    // N20: uses d-operator but N10 not in prerequisites
-    // N27: visual d but d-operator (N10) not in prerequisites
-    // N28: uses v but N27 not in prerequisites
-    const KNOWN_PREREQ_GAPS = new Set([
-      'N19-T',
-      'N19-P',
-      'N20-T',
-      'N20-P',
-      'N27-1',
-      'N27-2',
-      'N27-3',
-      'N27-P',
-      'N28-T',
-      'N28-P',
-      'N28-C',
-      'N29-T',
-      'N29-P',
-    ])
     // Build transitive prerequisite commands for each node (cached)
     const learnableCache = new Map<string, Set<string>>()
     function getLearnableCommands(nodeId: string): Set<string> {
@@ -230,6 +210,11 @@ describe('Skill tree integrity', () => {
         return [...learnable].some((l) => l.length > 0 && l[0] === cmd[0])
       }
 
+      // Single-char operator (visual mode): d, c, y, etc.
+      if (cmd.length === 1 && OPERATOR_CHARS.has(cmd)) {
+        return [...learnable].some((l) => l.length > 0 && l[0] === cmd)
+      }
+
       // Doubled operator: >>, <<
       if (cmd.length === 2 && cmd[0] === cmd[1] && OPERATOR_CHARS.has(cmd[0])) {
         return [...learnable].some((l) => l[0] === cmd[0])
@@ -240,8 +225,6 @@ describe('Skill tree integrity', () => {
 
     const allStages = Object.values(ALL_STAGES)
     for (const stage of allStages) {
-      if (KNOWN_PREREQ_GAPS.has(stage.id)) continue
-
       it(`${stage.id}: availableCommands ⊆ learnable commands`, () => {
         const learnable = getLearnableCommands(stage.nodeId)
 

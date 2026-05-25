@@ -97,13 +97,19 @@ export const SKILL_NODES: SkillNodeDef[] = [
     stageCount: 2,
     prerequisites: ['N17'],
   },
-  { id: 'N19', name: '基本TextObj', commands: ['iw', 'aw'], stageCount: 2, prerequisites: ['N15'] },
+  {
+    id: 'N19',
+    name: '基本TextObj',
+    commands: ['iw', 'aw'],
+    stageCount: 2,
+    prerequisites: ['N15', 'N10'],
+  },
   {
     id: 'N20',
     name: 'デリミタTextObj',
     commands: ['i"', 'a"', "i'", "a'", 'i(', 'a(', 'i{', 'a{', 'i[', 'a[', 'i<', 'a<', 'it', 'at'],
     stageCount: 2,
-    prerequisites: ['N19'],
+    prerequisites: ['N19', 'N18'],
   },
   {
     id: 'N21',
@@ -140,9 +146,15 @@ export const SKILL_NODES: SkillNodeDef[] = [
     name: 'ヤンク＆ペースト',
     commands: ['y', 'p', 'P'],
     stageCount: 3,
-    prerequisites: ['N20'],
+    prerequisites: ['N27'],
   },
-  { id: 'N29', name: 'レジスタ', commands: ['"a', '"0'], stageCount: 2, prerequisites: ['N28'] },
+  {
+    id: 'N29',
+    name: 'レジスタ',
+    commands: ['"a', '"0'],
+    stageCount: 2,
+    prerequisites: ['N28', 'N02'],
+  },
 ]
 
 /** All edges derived from prerequisites */
