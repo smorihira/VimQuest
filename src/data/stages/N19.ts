@@ -1,43 +1,30 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N19: 基本TextObj (iw, aw)
- * Teach(T) + Practice(P) = 2ステージ
+ * N19: インデント (>>, <<)
+ * Teach(T) = 1ステージ
  */
 export const N19_STAGES: Stage[] = [
-  // ── Teach: diw vs daw の違いを体験 ──
-  // opt = 3 (w + daw + daw)
+  // ── Teach: >> と << でインデント調整 ──
+  // opt = 6 (j + >> + j + >> + j + <<)
   {
     id: 'N19-T',
     nodeId: 'N19',
     type: 'teach',
-    title: '単語を掴め',
-    language: 'plaintext',
-    initialText: 'hello nice ugly world',
-    goalText: 'hello world',
+    title: 'インデントせよ',
+    language: 'python',
+    initialText: 'def greet():\nprint("hi")\nprint("bye")\n  return None',
+    goalText: 'def greet():\n  print("hi")\n  print("bye")\nreturn None',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
-    flavor: 'daw で空白ごと単語を消せる。diw との違いを感じろ',
-  },
-
-  // ── Practice: 複数単語削除 ──
-  // opt = 3 (w + daw + daw)
-  {
-    id: 'N19-P',
-    nodeId: 'N19',
-    type: 'practice',
-    title: '不要語削除',
-    language: 'plaintext',
-    initialText: 'remove bad ugly text here',
-    goalText: 'remove text here',
-    initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
-    flavor: '不要な形容詞を daw で消し去れ',
+    life: 12,
+    stars: [6, 7, 9],
+    availableCommands: ['>>', '<<'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['j', '>>', 'j', '>>', 'j', '<<'],
+      },
+    ],
+    flavor: '>> でインデント追加、<< で削除。Python の構造を直せ',
   },
 ]

@@ -1,28 +1,28 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N15-T: 狙い撃て (f, t, ;, ,) */
+/** N15-T: 単語を掴め (iw, aw) */
 export const N15_T_TUTORIAL: Tutorial = {
   nodeId: 'N15',
   stageId: 'N15-T',
   steps: [
     {
-      message: 'f( と押せ。行内の ( に一瞬でジャンプ',
-      expectedKey: 'f(',
+      message: 'w で次の単語に移動しろ',
+      expectedKey: 'w',
     },
     {
-      message: '; を押せ。直前の f を繰り返す',
-      expectedKey: ';',
+      message: 'diw と押せ。単語だけ消える…が空白が残る',
+      expectedKey: 'diw',
     },
     {
-      message: ', を押せ。逆方向に繰り返す',
-      expectedKey: ',',
+      message: 'u で元に戻せ。今度は daw を試そう',
+      expectedKey: 'u',
     },
     {
-      message: 't) と押せ。) の1文字手前に止まる',
-      expectedKey: 't)',
+      message: 'daw と押せ。空白ごとスッキリ消える',
+      expectedKey: 'daw',
     },
     {
-      message: 'f で直接、t で手前。; で繰り返し、, で逆方向だ',
+      message: 'daw は空白ごと消す。残りの不要語も daw で消せ',
       expectedKey: null,
     },
   ],

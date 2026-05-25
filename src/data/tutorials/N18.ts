@@ -1,76 +1,40 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N18-T: 書き換えろ (cf/ct 比較) */
+/** N18-T: トグルせよ (~) */
 export const N18_T_TUTORIAL: Tutorial = {
   nodeId: 'N18',
   stageId: 'N18-T',
   steps: [
     {
-      message: 'w で値の部分に向かえ',
+      message: '~ を押せ。大文字と小文字を入れ替えるぞ',
+      expectedKey: '~',
+    },
+    {
+      message: '~ は大小トグル+カーソル前進。W も小文字に直せ',
+      expectedKey: null,
+    },
+  ],
+}
+
+/** N18-Ta: 大文字にしろ (gu, gU) */
+export const N18_Ta_TUTORIAL: Tutorial = {
+  nodeId: 'N18',
+  stageId: 'N18-Ta',
+  steps: [
+    {
+      message: 'guiw と押せ。カーソル下の単語が小文字になる',
+      expectedKey: 'guiw',
+    },
+    {
+      message: 'w で次の単語へ',
       expectedKey: 'w',
     },
     {
-      message: 'もう一回 w',
-      expectedKey: 'w',
+      message: 'gUiw と押せ。今度は大文字になる',
+      expectedKey: 'gUiw',
     },
     {
-      message: 'cf; と押せ。";" まで消えて Insert に入る',
-      expectedKey: 'cf;',
-    },
-    {
-      message: 'blue; と打て（";" も消えたので自分で打つ）',
-      expectedKey: 'b',
-    },
-    {
-      message: 'l',
-      expectedKey: 'l',
-    },
-    {
-      message: 'u',
-      expectedKey: 'u',
-    },
-    {
-      message: 'e',
-      expectedKey: 'e',
-    },
-    {
-      message: ';',
-      expectedKey: ';',
-    },
-    {
-      message: 'Esc で確定',
-      expectedKey: 'Esc',
-    },
-    {
-      message: 'u で戻す。今度は ct; を試そう',
-      expectedKey: 'u',
-    },
-    {
-      message: 'ct; と押せ。";" の手前まで消える',
-      expectedKey: 'ct;',
-    },
-    {
-      message: 'blue と打て（";" は残っている）',
-      expectedKey: 'b',
-    },
-    {
-      message: 'l',
-      expectedKey: 'l',
-    },
-    {
-      message: 'u',
-      expectedKey: 'u',
-    },
-    {
-      message: 'e',
-      expectedKey: 'e',
-    },
-    {
-      message: 'Esc で確定',
-      expectedKey: 'Esc',
-    },
-    {
-      message: 'cf は文字ごと、ct は手前まで。2行目も直せ',
+      message: 'gu で小文字、gU で大文字。残りも直せ',
       expectedKey: null,
     },
   ],

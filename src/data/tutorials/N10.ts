@@ -1,28 +1,36 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N10-T: 単語を消せ (dw/de の違い) */
+/** N10-T: リピートせよ (I + .) */
 export const N10_T_TUTORIAL: Tutorial = {
   nodeId: 'N10',
   stageId: 'N10-T',
   steps: [
     {
-      message: 'w で "this" に移動しろ',
-      expectedKey: 'w',
+      message: 'I で行頭に移動し Insert モードに入れ',
+      expectedKey: 'I',
     },
     {
-      message: 'de と押せ。単語だけ消える…が空白が残る',
-      expectedKey: 'de',
+      message: '* (アスタリスク+スペース) と打て',
+      expectedKey: '*',
     },
     {
-      message: 'u で元に戻せ。今度は dw を試そう',
-      expectedKey: 'u',
+      message: 'スペースを打て',
+      expectedKey: ' ',
     },
     {
-      message: 'dw と押せ。空白ごとスッキリ消える',
-      expectedKey: 'dw',
+      message: 'Esc で Normal に戻れ',
+      expectedKey: 'Esc',
     },
     {
-      message: 'dw は空白ごと、de は単語だけ。残りの不要語も消せ',
+      message: 'j で次の行へ',
+      expectedKey: 'j',
+    },
+    {
+      message: '. を押せ。直前の I + "* " が一発で繰り返される',
+      expectedKey: '.',
+    },
+    {
+      message: '. は直前の変更操作を丸ごと繰り返す。Vim の奥義だ。j + . で最後の行も片付けろ',
       expectedKey: null,
     },
   ],

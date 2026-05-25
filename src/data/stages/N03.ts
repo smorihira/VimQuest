@@ -1,30 +1,26 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N03: 新行Insert (o, O)
+ * N03: 1文字置換 (r)
+ * 渇望→報酬サイクル #2: x+i → r 一発
  * Teach(T) = 1ステージ
  */
 export const N03_STAGES: Stage[] = [
-  // ── Teach: 上下に行を追加 (O で上、o で下) ──
-  // opt = 5 (O…Esc(1) + j(1) + o…Esc(1) + j(1) + o…Esc(1))
+  // ── Teach: typo を直す (2行分) ──
+  // opt = 4 (l + re + j + ro)
   {
     id: 'N03-T',
     nodeId: 'N03',
     type: 'teach',
-    title: '行を足せ',
+    title: '一文字直せ',
     language: 'plaintext',
-    initialText: 'B\nD',
-    goalText: 'A\nB\nC\nD\nE',
+    initialText: 'hallo\nwarld',
+    goalText: 'hello\nworld',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 6, 8],
-    availableCommands: ['o', 'O', 'I', 'A'],
-    hints: [
-      {
-        cost: 1,
-        commands: ['O', 'A', 'Esc', 'j', 'o', 'C', 'Esc', 'j', 'o', 'E', 'Esc'],
-      },
-    ],
-    flavor: 'O で上に、o で下に新行を作れ',
+    life: 10,
+    stars: [4, 5, 7],
+    availableCommands: ['r'],
+    hints: [{ cost: 1, commands: ['l', 're', 'j', 'ro'] }],
+    flavor: 'r で 1 文字だけ置換。x+i より速いぞ',
   },
 ]

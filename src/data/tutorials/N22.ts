@@ -1,44 +1,24 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N22-T: 単語を変えろ (ciw) */
+/** N22-T: レジスタ入門 ("a レジスタでヤンク→ペースト) */
 export const N22_T_TUTORIAL: Tutorial = {
   nodeId: 'N22',
   stageId: 'N22-T',
   steps: [
     {
-      message: 'w で "value" に移動しろ',
-      expectedKey: 'w',
+      message: '"ayiw と押せ。"hello" を "a レジスタに保存',
+      expectedKey: '"ayiw',
     },
     {
-      message: 'ciw と押せ。単語が消えて Insert に入る',
-      expectedKey: 'ciw',
+      message: '$ で行末に移動',
+      expectedKey: '$',
     },
     {
-      message: 'count と打て',
-      expectedKey: 'c',
+      message: '"ap と押せ。"a レジスタの中身がペーストされる',
+      expectedKey: '"ap',
     },
     {
-      message: 'o',
-      expectedKey: 'o',
-    },
-    {
-      message: 'u',
-      expectedKey: 'u',
-    },
-    {
-      message: 'n',
-      expectedKey: 'n',
-    },
-    {
-      message: 't',
-      expectedKey: 't',
-    },
-    {
-      message: 'Esc で確定',
-      expectedKey: 'Esc',
-    },
-    {
-      message: 'ciw で単語をそのまま置換。残りも直せ',
+      message: '"a に保存→"ap で呼び出し。2行目も "b レジスタで同じことをやれ',
       expectedKey: null,
     },
   ],

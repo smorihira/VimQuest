@@ -1,44 +1,66 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N13: ショートカット (D, C, S)
- * D = d$, C = c$, S = cc
- * Teach(T) + Practice(P) = 2ステージ
+ * N13: operator+f/t (df, dt, cf, ct)
  */
 export const N13_STAGES: Stage[] = [
-  // ── Teach: D で行末を切る（2行） ──
-  // opt = 3 (自力: j+l+D) → ☆3=3, ☆2=4, ☆1=6, life=9
+  // ── Teach: dt で指定文字の手前まで削除（2箇所修正） ──
+  // opt = 2 (自力: w+dt2) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N13-T',
     nodeId: 'N13',
     type: 'teach',
-    title: 'Dで断て',
-    language: 'javascript',
-    initialText: 'let a = 1; // fixme\nlet b = 2; // todo',
-    goalText: 'let a = 1;\nlet b = 2;',
-    initialCursor: { line: 0, col: 10 },
-    life: 10,
-    stars: [4, 5, 7],
-    availableCommands: ['dd', 'd$', 'd0', 'D'],
-    hints: [{ cost: 1, commands: ['D', 'j', 'l', 'D'] }],
-    flavor: 'D は d$ のショートカット。行末まで一発で消せ',
+    title: '範囲を断て',
+    language: 'css',
+    initialText: 'padding: 0px10px 0px20px;',
+    goalText: 'padding: 10px 20px;',
+    initialCursor: { line: 0, col: 0 },
+    life: 11,
+    stars: [5, 6, 8],
+    availableCommands: ['dw', 'de', 'db', 'df', 'dt', 'f', 't'],
+    hints: [{ cost: 1, commands: ['w', 'w', 'dt1', 'w', 'dt2'] }],
+    flavor: 'dt で指定文字の手前まで削除。余分な部分だけ消せ',
   },
-
-  // ── Teach a: C/S を体験（2行） ──
-  // opt = 3 (C+ok;+Esc+j+S+new+Esc) → ☆3=3, ☆2=4, ☆1=6, life=9
+  // ── Teach: cf/ct の違いを体験（2行） ──
+  // opt = 4 (自力: j+w+w+ct;…large…Esc) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N13-Ta',
     nodeId: 'N13',
     type: 'teach',
-    title: 'C/Sで書き換え',
-    language: 'javascript',
-    initialText: 'let x = bad;\nold line',
-    goalText: 'let x = ok;\nnew',
-    initialCursor: { line: 0, col: 8 },
-    life: 9,
-    stars: [3, 4, 6],
-    availableCommands: ['D', 'C', 'S', 'f', 't'],
-    hints: [{ cost: 1, commands: ['C', 'ok;', 'Esc', 'j', 'S', 'new', 'Esc'] }],
-    flavor: 'C は行末まで変更、S は行全体を変更するショートカットだ',
+    title: '書き換えろ',
+    language: 'css',
+    initialText: 'color: red;\nsize: small;',
+    goalText: 'color: blue;\nsize: large;',
+    initialCursor: { line: 0, col: 0 },
+    life: 14,
+    stars: [8, 9, 11],
+    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['w', 'w', 'ct;', 'blue', 'Esc', 'j', '0', 'w', 'w', 'ct;', 'large', 'Esc'],
+      },
+    ],
+    flavor: 'cf は文字ごと、ct は手前まで変更。使い分けろ',
+  },
+
+  // ── Practice: 複数行で cf/ct を使い分け ──
+  // opt = 6 (w+w+ct;…50px…Esc(1) + j+b+ct;…80px…Esc(1))
+  {
+    id: 'N13-P',
+    nodeId: 'N13',
+    type: 'practice',
+    title: '一括修正',
+    language: 'css',
+    initialText: 'width: 100px;\nheight: 200px;',
+    goalText: 'width: 50px;\nheight: 80px;',
+    initialCursor: { line: 0, col: 0 },
+    life: 12,
+    stars: [6, 8, 10],
+    availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
+    hints: [
+      { cost: 1, commands: ['w', 'w', 'ct;', '50px', 'Esc', 'j', 'b', 'ct;', '80px', 'Esc'] },
+    ],
+    flavor: 'ct; で値を書き換えろ。2行とも修正だ',
   },
 ]

@@ -1,16 +1,28 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N12-T: 末尾を切れ (d0, d$) */
+/** N12-T: 対を見つけろ (%) */
 export const N12_T_TUTORIAL: Tutorial = {
   nodeId: 'N12',
   stageId: 'N12-T',
   steps: [
     {
-      message: 'd0 を押せ。カーソルから行頭まで一気に消える',
-      expectedKey: 'd0',
+      message: 'f{ と押せ。行内の { に直接飛べる',
+      expectedKey: 'f{',
     },
     {
-      message: 'd0 は行頭まで、d$ は行末まで削除。残りのコメントも d$ で消せ',
+      message: '% を押せ。対応する } にジャンプする',
+      expectedKey: '%',
+    },
+    {
+      message: 'j で2行目に移動',
+      expectedKey: 'j',
+    },
+    {
+      message: 'もう一度 %。今度は } から { へ飛ぶ',
+      expectedKey: '%',
+    },
+    {
+      message: '% で括弧の対を自在に行き来できる。これが Vim の括弧ジャンプだ',
       expectedKey: null,
     },
   ],

@@ -1,28 +1,64 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N07-T: 画面を合わせろ (zz, zt, zb) */
+/** N07-T: 単語を消せ (dw/de の違い) */
 export const N07_T_TUTORIAL: Tutorial = {
   nodeId: 'N07',
   stageId: 'N07-T',
   steps: [
     {
-      message: 'Ctrl+d で半ページ下へ飛べ',
-      expectedKey: 'Ctrl+d',
+      message: 'w で "this" に移動しろ',
+      expectedKey: 'w',
     },
     {
-      message: 'zz を押せ。カーソル行が画面中央に来る',
-      expectedKey: 'zz',
+      message: 'de と押せ。単語だけ消える…が空白が残る',
+      expectedKey: 'de',
     },
     {
-      message: 'zt を押せ。今度はカーソル行が画面上端に来る',
-      expectedKey: 'zt',
+      message: 'u で元に戻せ。今度は dw を試そう',
+      expectedKey: 'u',
     },
     {
-      message: 'zb を押せ。画面下端に配置する',
-      expectedKey: 'zb',
+      message: 'dw と押せ。空白ごとスッキリ消える',
+      expectedKey: 'dw',
     },
     {
-      message: '3つの画面調整を覚えた。TARGET 行で zz を決めろ',
+      message: 'dw は空白ごと、de は単語だけ。残りの不要語も消せ',
+      expectedKey: null,
+    },
+  ],
+}
+
+/** N07-Ta: 行を消せ (dd) */
+export const N07_Ta_TUTORIAL: Tutorial = {
+  nodeId: 'N07',
+  stageId: 'N07-Ta',
+  steps: [
+    {
+      message: 'j でデバッグ行に移動しろ',
+      expectedKey: 'j',
+    },
+    {
+      message: 'dd を押せ。行まるごと消える',
+      expectedKey: 'dd',
+    },
+    {
+      message: 'dd は行削除。もう1本のデバッグ行も消せ',
+      expectedKey: null,
+    },
+  ],
+}
+
+/** N07-Tb: 末尾を切れ (d0, d$) */
+export const N07_Tb_TUTORIAL: Tutorial = {
+  nodeId: 'N07',
+  stageId: 'N07-Tb',
+  steps: [
+    {
+      message: 'd0 を押せ。カーソルから行頭まで一気に消える',
+      expectedKey: 'd0',
+    },
+    {
+      message: 'd0 は行頭まで、d$ は行末まで削除。残りのコメントも d$ で消せ',
       expectedKey: null,
     },
   ],

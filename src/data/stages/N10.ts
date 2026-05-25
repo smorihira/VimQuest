@@ -1,63 +1,70 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N10: オペレータ+モーション (dw/de/db)
- * Vim文法の核心「動詞+対象」を初体験。
+ * N10: ドットリピート (.)
+ * ★★★ 最高峰ノード — Vim の真髄
+ * 渇望→報酬サイクル #5: 手動繰り返し → . 一発
  * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
-
 export const N10_STAGES: Stage[] = [
-  // ── Teach: dw/de の違いを体験 ──
-  // opt = 2 (自力: dw×2) → ☆3=2, ☆2=3, ☆1=5, life=8
+  // ── Teach: I で行頭挿入 → . で繰り返し ──
+  // opt = 7 (I + '* ' + Esc + j + . + j + .)
   {
     id: 'N10-T',
     nodeId: 'N10',
     type: 'teach',
-    title: '単語を消せ',
+    title: 'リピートせよ',
     language: 'plaintext',
-    initialText: 'delete this ugly old word',
-    goalText: 'delete word',
+    initialText: 'apple\nbanana\ncherry',
+    goalText: '* apple\n* banana\n* cherry',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 5, 7],
-    availableCommands: ['dw', 'de', 'db'],
-    hints: [{ cost: 1, commands: ['w', 'dw', 'dw', 'dw'] }],
-    flavor: '不要な単語を dw で消せ',
+    life: 11,
+    stars: [5, 6, 8],
+    availableCommands: ['I', 'A', '.'],
+    hints: [{ cost: 1, commands: ['I', '* ', 'Esc', 'j', '.', 'j', '.'] }],
+    flavor: 'I で行頭に挿入。. で同じ操作を次の行にも一発リピート',
   },
 
-  // ── Practice: 複数単語を効率的に消す ──
-  // opt = 4 (wdwwdw等) → ☆3=4, ☆2=6, ☆1=8, life=10
+  // ── Practice: A で行末追加 → . で繰り返し ──
+  // opt = 7 (A + ';' + Esc + j + . + j + .)
   {
     id: 'N10-P',
     nodeId: 'N10',
     type: 'practice',
-    title: '連続削除',
-    language: 'javascript',
-    initialText: 'const very extremely important value = 42',
-    goalText: 'const value = 42',
+    title: '一括追加',
+    language: 'css',
+    initialText: 'width: 100px\nheight: 50px\ncolor: red',
+    goalText: 'width: 100px;\nheight: 50px;\ncolor: red;',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 6, 8],
-    availableCommands: ['dw', 'de', 'db'],
-    hints: [{ cost: 1, commands: ['w', 'dw', 'dw', 'dw'] }],
-    flavor: '余計な修飾語を dw で消し去れ',
+    life: 11,
+    stars: [5, 7, 9],
+    availableCommands: ['I', 'A', '.'],
+    hints: [{ cost: 1, commands: ['A', ';', 'Esc', 'j', '.', 'j', '.'] }],
+    flavor: 'A で行末にセミコロンを追加、. で残りも一発だ',
   },
 
-  // ── Challenge: 複数行で dw/de/db を使い分け ──
-  // opt = 5 → ☆3=5, ☆2=8, ☆1=11, life=13
+  // ── Challenge: dd + . でデバッグ行を一掃 ──
+  // opt = 7 (dd + j + . + j + . + j + .)
   {
     id: 'N10-C',
     nodeId: 'N10',
     type: 'challenge',
-    title: '精密削除',
-    language: 'css',
-    initialText: 'body {\n  color: dark red;\n  background: light blue;\n}',
-    goalText: 'body {\n  color: red;\n  background: blue;\n}',
+    title: 'デバッグ一掃',
+    language: 'javascript',
+    initialText:
+      '// debug\n' +
+      'const a = 1;\n' +
+      '// debug\n' +
+      'const b = 2;\n' +
+      '// debug\n' +
+      'const c = 3;\n' +
+      '// debug',
+    goalText: 'const a = 1;\nconst b = 2;\nconst c = 3;',
     initialCursor: { line: 0, col: 0 },
-    life: 18,
-    stars: [10, 13, 16],
-    availableCommands: ['dw', 'de', 'db'],
-    hints: [{ cost: 1, commands: ['j', 'w', 'w', 'w', 'dw', 'j', 'b', 'w', 'w', 'dw'] }],
-    flavor: 'dark と light の接頭辞だけを正確に削れ',
+    life: 15,
+    stars: [7, 10, 13],
+    availableCommands: ['dd', '.'],
+    hints: [{ cost: 1, commands: ['dd', 'j', '.', 'j', '.', 'j', '.'] }],
+    flavor: 'dd でデバッグ行を消し、j で飛ばして . で繰り返せ',
   },
 ]

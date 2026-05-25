@@ -1,84 +1,54 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N22: c+TextObj (ciw, ci", ca()
- * ALL合流ノード: N25(delim) + N23(cf/ct)
- * ★★★ 重要ノード — Teach(T) + Practice(P) + Challenge(C) = 3ステージ
+ * N22: レジスタ ("a〜"z, "0)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N22_STAGES: Stage[] = [
-  // ── Teach: ciw で単語置換（2箇所） ──
-  // opt = 3 (自力: w+w+ciw…new…Esc) → ☆3=3, ☆2=4, ☆1=6, life=9
+  // ── Teach: 名前付きレジスタ（2行でヤンク→ペースト全フロー） ──
+  // opt = 4 (自力: j+"byiw+$+"bp) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N22-T',
     nodeId: 'N22',
     type: 'teach',
-    title: '単語を変えろ',
-    language: 'javascript',
-    initialText: 'let value = old;',
-    goalText: 'let count = new;',
+    title: 'レジスタ入門',
+    language: 'plaintext',
+    initialText: 'hello world\nfoo bar',
+    goalText: 'hello worldhello\nfoo barfoo',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 6, 8],
-    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'ciw', 'count', 'Esc', 'w', 'w', 'ciw', 'new', 'Esc'] }],
-    flavor: 'ciw で単語を消してそのままInsertモードへ。変数名を変えろ',
+    life: 14,
+    stars: [8, 9, 11],
+    availableCommands: ['y', 'p', 'P', '"a', '"b', '"0'],
+    clearConditions: {
+      registers: { a: 'hello', b: 'foo' },
+    },
+    hints: [{ cost: 1, commands: ['"ayiw', '$', '"ap', 'j', '0', '"byiw', '$', '"bp'] }],
+    flavor: '"a で名前付きレジスタに保存。後から正確に貼り付けられる',
   },
 
-  // ── Practice: 複数の TextObj 変更 ──
-  // opt = 3 (ci"…#333…Esc(1) + j(1) + ci"…20px…Esc(1))
+  // ── Practice: 複数レジスタの使い分け ──
+  // opt = 9 ("ayiw(1)+w(1)+"byiw(1)+j(1)+$(1)+a+Esc(1)+"ap(1)+a+Esc(1)+"bp(1))
   {
     id: 'N22-P',
     nodeId: 'N22',
     type: 'practice',
-    title: '属性を直せ',
-    language: 'css',
-    initialText: 'color: "red";\nfont-size: "16px";',
-    goalText: 'color: "#333";\nfont-size: "20px";',
+    title: 'レジスタ活用',
+    language: 'plaintext',
+    initialText: 'foo bar\nbaz',
+    goalText: 'foo bar\nbaz foo bar',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'f', 't'],
-    hints: [{ cost: 1, commands: ['ci"', '#333', 'Esc', 'j', 'ci"', '20px', 'Esc'] }],
-    flavor: '2行の引用符内を ci" で書き換えろ',
-  },
-
-  // ── Challenge: JSON修正パズル ──
-  // opt = 9 (j+fA+ci"…Bob…Esc(1) + j+ft+ci"…30…Esc(1) + j+fu+ci"…admin…Esc(1))
-  {
-    id: 'N22-C',
-    nodeId: 'N22',
-    type: 'challenge',
-    title: 'JSON外科',
-    language: 'json',
-    initialText:
-      '{\n' + '  "name": "Alice",\n' + '  "age": "twenty",\n' + '  "role": "user"\n' + '}',
-    goalText: '{\n' + '  "name": "Bob",\n' + '  "age": "30",\n' + '  "role": "admin"\n' + '}',
-    initialCursor: { line: 0, col: 0 },
-    life: 17,
-    stars: [9, 12, 15],
-    availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'f', 't'],
+    life: 15,
+    stars: [9, 11, 13],
+    availableCommands: ['y', 'p', 'P', '"a', '"b', '"0', 'A'],
+    clearConditions: {
+      registers: { a: 'foo', b: 'bar' },
+    },
     hints: [
       {
         cost: 1,
-        commands: [
-          'j',
-          'fA',
-          'ci"',
-          'Bob',
-          'Esc',
-          'j',
-          'ft',
-          'ci"',
-          '30',
-          'Esc',
-          'j',
-          'fu',
-          'ci"',
-          'admin',
-          'Esc',
-        ],
+        commands: ['"ayiw', 'w', '"byiw', 'j', '$', 'a', ' ', 'Esc', '"ap', 'a', ' ', 'Esc', '"bp'],
       },
     ],
-    flavor: 'JSON の値を3箇所書き換えろ。ci" の腕の見せどころだ',
+    flavor: '"a と "b に別々の単語を保存し、組み合わせてペーストせよ',
   },
 ]

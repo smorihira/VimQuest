@@ -1,28 +1,36 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N16-T: 対を見つけろ (%) */
+/** N16-T: 中身を変えろ (ci") */
 export const N16_T_TUTORIAL: Tutorial = {
   nodeId: 'N16',
   stageId: 'N16-T',
   steps: [
     {
-      message: 'f{ と押せ。行内の { に直接飛べる',
-      expectedKey: 'f{',
+      message: 'ci" と押せ。引用符の中身が消えて Insert に入る',
+      expectedKey: 'ci"',
     },
     {
-      message: '% を押せ。対応する } にジャンプする',
-      expectedKey: '%',
+      message: 'blue と打て',
+      expectedKey: 'b',
     },
     {
-      message: 'j で2行目に移動',
-      expectedKey: 'j',
+      message: 'l',
+      expectedKey: 'l',
     },
     {
-      message: 'もう一度 %。今度は } から { へ飛ぶ',
-      expectedKey: '%',
+      message: 'u',
+      expectedKey: 'u',
     },
     {
-      message: '% で括弧の対を自在に行き来できる。これが Vim の括弧ジャンプだ',
+      message: 'e',
+      expectedKey: 'e',
+    },
+    {
+      message: 'Esc で確定',
+      expectedKey: 'Esc',
+    },
+    {
+      message: 'ci" でデリミタ内を一発置換。残りも直せ',
       expectedKey: null,
     },
   ],

@@ -1,20 +1,20 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N04-T: 一文字直せ (r) */
+/** N04-T: ページを飛べ (Ctrl+d, Ctrl+u) */
 export const N04_T_TUTORIAL: Tutorial = {
   nodeId: 'N04',
   stageId: 'N04-T',
   steps: [
     {
-      message: 'l で a の上にカーソルを移動しろ',
-      expectedKey: 'l',
+      message: 'Ctrl+d を押せ。半ページ分カーソルが下に飛ぶ',
+      expectedKey: 'Ctrl+d',
     },
     {
-      message: 'r を押してから e と打て。1文字だけ入れ替える',
-      expectedKey: 're',
+      message: 'Ctrl+u を押せ。今度は上に戻る',
+      expectedKey: 'Ctrl+u',
     },
     {
-      message: 'r は Insert に入らず1文字置換。2行目の typo も直せ',
+      message: 'Ctrl+d で下、Ctrl+u で上。目標行まで飛べ',
       expectedKey: null,
     },
   ],

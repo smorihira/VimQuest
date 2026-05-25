@@ -1,72 +1,86 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N6: 半ページ移動 (Ctrl+d, Ctrl+u)
- * Teach(T) = 1ステージ
+ * N06: 検索 (/, n, N, *, #)
  */
 export const N06_STAGES: Stage[] = [
-  // ── Teach: 半ページジャンプ ──
-  // opt = 2 (Ctrl+d + Ctrl+d)
+  // ── Teach: 検索でジャンプ ──
+  // opt = 3 (/bug Enter + n + n)
   {
     id: 'N06-T',
     nodeId: 'N06',
     type: 'teach',
-    title: 'ページを飛べ',
+    title: '検索せよ',
     language: 'javascript',
     initialText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
+      'const x = 1;\n' +
+      '// bug: fix later\n' +
+      'const y = 2;\n' +
+      '// bug: needs review\n' +
+      'const z = 3;\n' +
+      '// bug: critical',
     goalText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
+      'const x = 1;\n' +
+      '// bug: fix later\n' +
+      'const y = 2;\n' +
+      '// bug: needs review\n' +
+      'const z = 3;\n' +
+      '// bug: critical',
     initialCursor: { line: 0, col: 0 },
+    life: 9,
+    stars: [3, 4, 6],
+    availableCommands: ['/'],
+    clearConditions: { cursor: { line: 5, col: 3 } },
+    hints: [{ cost: 1, commands: ['/bug', 'Enter', 'n', 'n'] }],
+    flavor: '/ で検索開始。bug を全部見つけろ',
+  },
+
+  // ── Practice: 検索 + n で次へ ──
+  // opt = 3 (/TODO + Enter, n, n)
+  {
+    id: 'N06-P',
+    nodeId: 'N06',
+    type: 'practice',
+    title: '全部見つけろ',
+    language: 'javascript',
+    initialText:
+      '// TODO: fix auth\n' +
+      'function login() {}\n' +
+      '// TODO: add validation\n' +
+      'function save() {}\n' +
+      '// TODO: write tests',
+    goalText:
+      '// TODO: fix auth\n' +
+      'function login() {}\n' +
+      '// TODO: add validation\n' +
+      'function save() {}\n' +
+      '// TODO: write tests',
+    initialCursor: { line: 0, col: 0 },
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['/'],
+    clearConditions: { cursor: { line: 4, col: 3 } },
+    hints: [{ cost: 1, commands: ['/TODO', 'Enter', 'n', 'n'] }],
+    flavor: '/TODO で検索して n で次のマッチへ。全3箇所の最後まで行け',
+  },
+  // ── Teach: カーソル下の単語を検索 (5行、最後の foo へ) ──
+  // opt = 2 (* + *)
+  {
+    id: 'N06-Ta',
+    nodeId: 'N06',
+    type: 'teach',
+    title: '同じ奴を探せ',
+    language: 'javascript',
+    initialText:
+      'let foo = 1;\n' + 'let bar = 2;\n' + 'let foo = 3;\n' + 'let baz = 4;\n' + 'let foo = 5;',
+    goalText:
+      'let foo = 1;\n' + 'let bar = 2;\n' + 'let foo = 3;\n' + 'let baz = 4;\n' + 'let foo = 5;',
+    initialCursor: { line: 0, col: 4 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 16, col: 0 } },
-    hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d'] }],
-    flavor: 'j 連打より Ctrl+d で半ページ分ジャンプだ',
+    availableCommands: ['*', '#', '/'],
+    clearConditions: { cursor: { line: 4, col: 4 } },
+    hints: [{ cost: 1, commands: ['*', '*'] }],
+    flavor: '* でカーソル下の単語を即検索。最後の foo を見つけ出せ',
   },
 ]

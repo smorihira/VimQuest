@@ -1,28 +1,32 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N19-T: 単語を掴め (iw, aw) */
+/** N19-T: インデントせよ (>>, <<) */
 export const N19_T_TUTORIAL: Tutorial = {
   nodeId: 'N19',
   stageId: 'N19-T',
   steps: [
     {
-      message: 'w で次の単語に移動しろ',
-      expectedKey: 'w',
+      message: 'j で print の行に移動しろ',
+      expectedKey: 'j',
     },
     {
-      message: 'diw と押せ。単語だけ消える…が空白が残る',
-      expectedKey: 'diw',
+      message: '>> と押せ。インデントを追加する',
+      expectedKey: '>>',
     },
     {
-      message: 'u で元に戻せ。今度は daw を試そう',
-      expectedKey: 'u',
+      message: 'j を2回押して return の行に移動しろ',
+      expectedKey: 'j',
     },
     {
-      message: 'daw と押せ。空白ごとスッキリ消える',
-      expectedKey: 'daw',
+      message: 'もう一回 j',
+      expectedKey: 'j',
     },
     {
-      message: 'daw は空白ごと消す。残りの不要語も daw で消せ',
+      message: '<< と押せ。今度はインデントを削除する',
+      expectedKey: '<<',
+    },
+    {
+      message: '>> で追加、<< で削除。残りの行も直せ',
       expectedKey: null,
     },
   ],

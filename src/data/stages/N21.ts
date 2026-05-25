@@ -1,45 +1,61 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N21: d+TextObj (diw, di", da()
- * ALL合流ノード: N25(delim) + N15(dw)
- * 渇望→報酬サイクル #6: v+移動+d → diw 一発
- * Teach(T) + Practice(P) = 2ステージ
+ * N21: ヤンク＆ペースト (y + motion/textobj, p, P)
+ * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N21_STAGES: Stage[] = [
-  // ── Teach: diw で単語削除（3単語） ──
-  // opt = 2 (自力: diw×2) → ☆3=2, ☆2=3, ☆1=5, life=8
+  // ── Teach: yiw でコピー → p でペースト（2行） ──
+  // opt = 2 (自力: $+p) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N21-T',
     nodeId: 'N21',
     type: 'teach',
-    title: '精密除去',
-    language: 'javascript',
-    initialText: 'const temp old = 42;',
-    goalText: 'const   = 42;',
+    title: 'コピーせよ',
+    language: 'plaintext',
+    initialText: 'hello world\nfoo bar',
+    goalText: 'hello worldhello\nfoo barfoo',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 5, 7],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'diw', 'w', 'diw'] }],
-    flavor: 'diw は単語だけを正確に消す。前後の空白は残る',
+    life: 14,
+    stars: [8, 9, 11],
+    availableCommands: ['yiw', 'v', 'p', 'f', 't'],
+    hints: [{ cost: 1, commands: ['yiw', '$', 'p', 'j', '0', 'yiw', '$', 'p'] }],
+    flavor: 'yiw で単語をヤンク（コピー）し、p でペーストだ',
   },
 
-  // ── Practice: 括弧内・引用符内の削除 ──
-  // opt = 2 (f"+di")
+  // ── Practice: yy で行コピー、p でペースト ──
+  // opt = 3 (j + yy + p)
   {
     id: 'N21-P',
     nodeId: 'N21',
     type: 'practice',
-    title: '外科手術',
+    title: '行を複製',
     language: 'javascript',
-    initialText: 'alert("error: " + value);',
-    goalText: 'alert("" + value);',
+    initialText: 'const a = 1;\nconst b = 2;',
+    goalText: 'const a = 1;\nconst b = 2;\nconst b = 2;',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 4, 6],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'di"', 'f', 't'],
-    hints: [{ cost: 1, commands: ['f"', 'di"'] }],
-    flavor: '引用符の中身だけを di" で消せ。外側は残る',
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['y', 'yy', 'v', 'V', 'p', 'P'],
+    hints: [{ cost: 1, commands: ['j', 'yy', 'p'] }],
+    flavor: 'yy で行全体をヤンクし、p で下に複製せよ',
+  },
+
+  // ── Challenge: dd + P で行を移動 ──
+  // opt = 3 (jj + dd + P)
+  {
+    id: 'N21-C',
+    nodeId: 'N21',
+    type: 'challenge',
+    title: '切り貼りせよ',
+    language: 'plaintext',
+    initialText: 'first\nthird\nsecond',
+    goalText: 'first\nsecond\nthird',
+    initialCursor: { line: 0, col: 0 },
+    life: 12,
+    stars: [4, 7, 10],
+    availableCommands: ['y', 'yy', 'dd', 'p', 'P'],
+    hints: [{ cost: 1, commands: ['j', 'j', 'dd', 'P'] }],
+    flavor: 'dd で行を切り取り、P でカーソルの上にペーストだ',
   },
 ]

@@ -1,20 +1,24 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N21-T: 精密除去 (diw) */
+/** N21-T: コピーせよ (yiw + p) */
 export const N21_T_TUTORIAL: Tutorial = {
   nodeId: 'N21',
   stageId: 'N21-T',
   steps: [
     {
-      message: 'w で "temp" に移動しろ',
-      expectedKey: 'w',
+      message: 'yiw と押せ。カーソル下の単語をヤンク（コピー）',
+      expectedKey: 'yiw',
     },
     {
-      message: 'diw と押せ。単語だけ消えて空白は残る',
-      expectedKey: 'diw',
+      message: '$ で行末に移動',
+      expectedKey: '$',
     },
     {
-      message: 'diw は空白を残して単語だけ消す。残りも消せ',
+      message: 'p でヤンクした内容をペースト',
+      expectedKey: 'p',
+    },
+    {
+      message: 'yiw でコピー、p でペースト。2行目も同じことをやれ',
       expectedKey: null,
     },
   ],
