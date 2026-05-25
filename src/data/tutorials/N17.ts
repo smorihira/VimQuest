@@ -1,64 +1,36 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N17-T: 精密除去 (diw) */
+/** N17-T: 中身を変えろ (ci") */
 export const N17_T_TUTORIAL: Tutorial = {
   nodeId: 'N17',
   stageId: 'N17-T',
   steps: [
     {
-      message: 'w で "temp" に移動しろ',
-      expectedKey: 'w',
+      message: 'ci" と押せ。引用符の中身が消えて Insert に入る',
+      expectedKey: 'ci"',
     },
     {
-      message: 'diw と押せ。単語だけ消えて空白は残る',
-      expectedKey: 'diw',
+      message: 'blue と打て',
+      expectedKey: 'b',
     },
     {
-      message: 'diw は空白を残して単語だけ消す。残りも消せ',
-      expectedKey: null,
-    },
-  ],
-}
-
-/** N17-Ta: 単語を変えろ (ciw) */
-export const N17_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N17',
-  stageId: 'N17-Ta',
-  steps: [
-    {
-      message: 'w で "value" に移動しろ',
-      expectedKey: 'w',
-    },
-    {
-      message: 'ciw と押せ。単語が消えて Insert に入る',
-      expectedKey: 'ciw',
-    },
-    {
-      message: 'count と打て',
-      expectedKey: 'c',
-    },
-    {
-      message: 'o',
-      expectedKey: 'o',
+      message: 'l',
+      expectedKey: 'l',
     },
     {
       message: 'u',
       expectedKey: 'u',
     },
     {
-      message: 'n',
-      expectedKey: 'n',
-    },
-    {
-      message: 't',
-      expectedKey: 't',
+      message: 'e',
+      expectedKey: 'e',
     },
     {
       message: 'Esc で確定',
       expectedKey: 'Esc',
     },
     {
-      message: 'ciw で単語をそのまま置換。残りも直せ',
+      message: 'ci" でデリミタ内を一発置換。残りも直せ',
       expectedKey: null,
     },
   ],

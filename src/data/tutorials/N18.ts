@@ -1,40 +1,64 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N18-T: トグルせよ (~) */
+/** N18-T: 精密除去 (diw) */
 export const N18_T_TUTORIAL: Tutorial = {
   nodeId: 'N18',
   stageId: 'N18-T',
   steps: [
     {
-      message: '~ を押せ。大文字と小文字を入れ替えるぞ',
-      expectedKey: '~',
+      message: 'w で "temp" に移動しろ',
+      expectedKey: 'w',
     },
     {
-      message: '~ は大小トグル+カーソル前進。W も小文字に直せ',
+      message: 'diw と押せ。単語だけ消えて空白は残る',
+      expectedKey: 'diw',
+    },
+    {
+      message: 'diw は空白を残して単語だけ消す。残りも消せ',
       expectedKey: null,
     },
   ],
 }
 
-/** N18-Ta: 大文字にしろ (gu, gU) */
+/** N18-Ta: 単語を変えろ (ciw) */
 export const N18_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N18',
   stageId: 'N18-Ta',
   steps: [
     {
-      message: 'guiw と押せ。カーソル下の単語が小文字になる',
-      expectedKey: 'guiw',
-    },
-    {
-      message: 'w で次の単語へ',
+      message: 'w で "value" に移動しろ',
       expectedKey: 'w',
     },
     {
-      message: 'gUiw と押せ。今度は大文字になる',
-      expectedKey: 'gUiw',
+      message: 'ciw と押せ。単語が消えて Insert に入る',
+      expectedKey: 'ciw',
     },
     {
-      message: 'gu で小文字、gU で大文字。残りも直せ',
+      message: 'count と打て',
+      expectedKey: 'c',
+    },
+    {
+      message: 'o',
+      expectedKey: 'o',
+    },
+    {
+      message: 'u',
+      expectedKey: 'u',
+    },
+    {
+      message: 'n',
+      expectedKey: 'n',
+    },
+    {
+      message: 't',
+      expectedKey: 't',
+    },
+    {
+      message: 'Esc で確定',
+      expectedKey: 'Esc',
+    },
+    {
+      message: 'ciw で単語をそのまま置換。残りも直せ',
       expectedKey: null,
     },
   ],

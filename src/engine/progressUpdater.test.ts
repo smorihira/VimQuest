@@ -243,16 +243,16 @@ describe('D3: practice mode is not saved by computeProgressUpdate', () => {
 // ── D4: All stages in node cleared → dependent nodes unlocked ──
 
 describe('D4: node unlock when all stages cleared', () => {
-  it('clearing all stages in N07 unlocks N09 (N09 depends only on N07)', () => {
-    // Clear all N07 stages except N07-C, then clear N07-C to trigger unlock
-    const n07Stages = getStagesByNode('N07')
+  it('clearing all stages in N08 unlocks N10 (N10 depends only on N08)', () => {
+    // Clear all N08 stages except N08-C, then clear N08-C to trigger unlock
+    const n07Stages = getStagesByNode('N08')
     const allButLast: Record<string, StageResult> = {}
-    for (const s of n07Stages.filter((s) => s.id !== 'N07-C')) {
+    for (const s of n07Stages.filter((s) => s.id !== 'N08-C')) {
       allButLast[s.id] = makeResult(s.id, 3 as StarRating, 1)
     }
 
     const prev = makeProgress({
-      unlockedNodes: ['N01', 'N07'],
+      unlockedNodes: ['N01', 'N08'],
       stageResults: {
         ...clearNodeStages('N01'),
         ...allButLast,
@@ -260,8 +260,8 @@ describe('D4: node unlock when all stages cleared', () => {
     })
 
     const next = computeProgressUpdate(prev, {
-      stageId: 'N07-C',
-      nodeId: 'N07',
+      stageId: 'N08-C',
+      nodeId: 'N08',
       damage: 3,
       stars: 2 as StarRating,
       usedHint: false,
@@ -269,7 +269,7 @@ describe('D4: node unlock when all stages cleared', () => {
       stageLife: 10,
     })
 
-    expect(next.unlockedNodes).toContain('N09')
+    expect(next.unlockedNodes).toContain('N10')
   })
 
   it('does not unlock node when not all stages in node are cleared', () => {

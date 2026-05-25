@@ -1,63 +1,70 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N11: 行内ジャンプ (f, t, ;, ,)
+ * N11: ドットリピート (.)
+ * ★★★ 最高峰ノード — Vim の真髄
+ * 渇望→報酬サイクル #5: 手動繰り返し → . 一発
  * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N11_STAGES: Stage[] = [
-  // ── Teach: f/t/;/, で行内ジャンプ ──
-  // opt = 2 (f; + ;)
+  // ── Teach: I で行頭挿入 → . で繰り返し ──
+  // opt = 7 (I + '* ' + Esc + j + . + j + .)
   {
     id: 'N11-T',
     nodeId: 'N11',
     type: 'teach',
-    title: '狙い撃て',
-    language: 'javascript',
-    initialText: 'fn(a, b); fn(c, d);',
-    goalText: 'fn(a, b); fn(c, d);',
+    title: 'リピートせよ',
+    language: 'plaintext',
+    initialText: 'apple\nbanana\ncherry',
+    goalText: '* apple\n* banana\n* cherry',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['f', 't'],
-    clearConditions: { cursor: { line: 0, col: 18 } },
-    hints: [{ cost: 1, commands: ['f;', ';'] }],
-    flavor: 'f で狙った文字に一瞬で飛べ。; で繰り返しだ',
+    life: 11,
+    stars: [5, 6, 8],
+    availableCommands: ['I', 'A', '.'],
+    hints: [{ cost: 1, commands: ['I', '* ', 'Esc', 'j', '.', 'j', '.'] }],
+    flavor: 'I で行頭に挿入。. で同じ操作を次の行にも一発リピート',
   },
 
-  // ── Practice: ; で f/t を繰り返す ──
-  // opt = 3 (f/ + ; + ;) → third '/' in path
+  // ── Practice: A で行末追加 → . で繰り返し ──
+  // opt = 7 (A + ';' + Esc + j + . + j + .)
   {
     id: 'N11-P',
     nodeId: 'N11',
     type: 'practice',
-    title: '繰り返し撃て',
-    language: 'plaintext',
-    initialText: 'path/to/the/file.txt',
-    goalText: 'path/to/the/file.txt',
+    title: '一括追加',
+    language: 'css',
+    initialText: 'width: 100px\nheight: 50px\ncolor: red',
+    goalText: 'width: 100px;\nheight: 50px;\ncolor: red;',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['f', 't'],
-    clearConditions: { cursor: { line: 0, col: 11 } },
-    hints: [{ cost: 1, commands: ['f/', ';', ';'] }],
-    flavor: 'f/ で最初の / へ。; で次の / に繰り返しジャンプだ',
+    life: 11,
+    stars: [5, 7, 9],
+    availableCommands: ['I', 'A', '.'],
+    hints: [{ cost: 1, commands: ['A', ';', 'Esc', 'j', '.', 'j', '.'] }],
+    flavor: 'A で行末にセミコロンを追加、. で残りも一発だ',
   },
 
-  // ── Challenge: f/t を使い分けて目標達成 ──
-  // opt = 3 (fr + l + x)
+  // ── Challenge: dd + . でデバッグ行を一掃 ──
+  // opt = 7 (dd + j + . + j + . + j + .)
   {
     id: 'N11-C',
     nodeId: 'N11',
     type: 'challenge',
-    title: '精密射撃',
-    language: 'css',
-    initialText: 'style: rred;',
-    goalText: 'style: red;',
+    title: 'デバッグ一掃',
+    language: 'javascript',
+    initialText:
+      '// debug\n' +
+      'const a = 1;\n' +
+      '// debug\n' +
+      'const b = 2;\n' +
+      '// debug\n' +
+      'const c = 3;\n' +
+      '// debug',
+    goalText: 'const a = 1;\nconst b = 2;\nconst c = 3;',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [3, 6, 9],
-    availableCommands: ['f', 't'],
-    hints: [{ cost: 1, commands: ['fr', 'l', 'x'] }],
-    flavor: 'f で素早く目標に接近し、余分な r を消せ',
+    life: 15,
+    stars: [7, 10, 13],
+    availableCommands: ['dd', '.'],
+    hints: [{ cost: 1, commands: ['dd', 'j', '.', 'j', '.', 'j', '.'] }],
+    flavor: 'dd でデバッグ行を消し、j で飛ばして . で繰り返せ',
   },
 ]

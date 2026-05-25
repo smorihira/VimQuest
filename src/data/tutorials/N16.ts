@@ -1,36 +1,28 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N16-T: 中身を変えろ (ci") */
+/** N16-T: 単語を掴め (iw, aw) */
 export const N16_T_TUTORIAL: Tutorial = {
   nodeId: 'N16',
   stageId: 'N16-T',
   steps: [
     {
-      message: 'ci" と押せ。引用符の中身が消えて Insert に入る',
-      expectedKey: 'ci"',
+      message: 'w で次の単語に移動しろ',
+      expectedKey: 'w',
     },
     {
-      message: 'blue と打て',
-      expectedKey: 'b',
+      message: 'diw と押せ。単語だけ消える…が空白が残る',
+      expectedKey: 'diw',
     },
     {
-      message: 'l',
-      expectedKey: 'l',
-    },
-    {
-      message: 'u',
+      message: 'u で元に戻せ。今度は daw を試そう',
       expectedKey: 'u',
     },
     {
-      message: 'e',
-      expectedKey: 'e',
+      message: 'daw と押せ。空白ごとスッキリ消える',
+      expectedKey: 'daw',
     },
     {
-      message: 'Esc で確定',
-      expectedKey: 'Esc',
-    },
-    {
-      message: 'ci" でデリミタ内を一発置換。残りも直せ',
+      message: 'daw は空白ごと消す。残りの不要語も daw で消せ',
       expectedKey: null,
     },
   ],

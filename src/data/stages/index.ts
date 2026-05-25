@@ -6,14 +6,14 @@ import { N04_STAGES } from './N04'
 import { N05_STAGES } from './N05'
 import { N06_STAGES } from './N06'
 import { N07_STAGES } from './N07'
-// N08 (cオペレータ) は未実装
-import { N09_STAGES } from './N09'
+import { N08_STAGES } from './N08'
+// N09 (cオペレータ) は未実装
 import { N10_STAGES } from './N10'
 import { N11_STAGES } from './N11'
 import { N12_STAGES } from './N12'
 import { N13_STAGES } from './N13'
-// N14 (数値操作 Ctrl+a/x) は未実装
-import { N15_STAGES } from './N15'
+import { N14_STAGES } from './N14'
+// N15 (数値操作 Ctrl+a/x) は未実装
 import { N16_STAGES } from './N16'
 import { N17_STAGES } from './N17'
 import { N18_STAGES } from './N18'
@@ -30,12 +30,12 @@ const ALL_STAGE_ARRAYS: Stage[][] = [
   N05_STAGES,
   N06_STAGES,
   N07_STAGES,
-  N09_STAGES,
+  N08_STAGES,
   N10_STAGES,
   N11_STAGES,
   N12_STAGES,
   N13_STAGES,
-  N15_STAGES,
+  N14_STAGES,
   N16_STAGES,
   N17_STAGES,
   N18_STAGES,

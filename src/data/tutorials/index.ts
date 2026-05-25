@@ -16,19 +16,21 @@ import { N03_T_TUTORIAL } from './N03'
 import { N04_T_TUTORIAL } from './N04'
 import { N05_T_TUTORIAL } from './N05'
 import { N06_T_TUTORIAL, N06_Ta_TUTORIAL } from './N06'
-import { N07_T_TUTORIAL, N07_Ta_TUTORIAL, N07_Tb_TUTORIAL } from './N07'
-import { N09_T_TUTORIAL, N09_Ta_TUTORIAL, N09_Tb_TUTORIAL } from './N09'
-import { N10_T_TUTORIAL } from './N10'
+import { N07_T_TUTORIAL } from './N07'
+import { N08_T_TUTORIAL, N08_Ta_TUTORIAL, N08_Tb_TUTORIAL } from './N08'
+// N09 (cオペレータ) は未実装
+import { N10_T_TUTORIAL, N10_Ta_TUTORIAL, N10_Tb_TUTORIAL } from './N10'
 import { N11_T_TUTORIAL } from './N11'
 import { N12_T_TUTORIAL } from './N12'
-import { N13_T_TUTORIAL, N13_Ta_TUTORIAL } from './N13'
-import { N15_T_TUTORIAL } from './N15'
+import { N13_T_TUTORIAL } from './N13'
+import { N14_T_TUTORIAL, N14_Ta_TUTORIAL } from './N14'
+// N15 (数値操作 Ctrl+a/x) は未実装
 import { N16_T_TUTORIAL } from './N16'
-import { N17_T_TUTORIAL, N17_Ta_TUTORIAL } from './N17'
+import { N17_T_TUTORIAL } from './N17'
 import { N18_T_TUTORIAL, N18_Ta_TUTORIAL } from './N18'
-import { N19_T_TUTORIAL } from './N19'
-import { N20_T_TUTORIAL, N20_Ta_TUTORIAL, N20_Tb_TUTORIAL } from './N20'
-import { N21_T_TUTORIAL } from './N21'
+import { N19_T_TUTORIAL, N19_Ta_TUTORIAL } from './N19'
+import { N20_T_TUTORIAL } from './N20'
+import { N21_T_TUTORIAL, N21_Ta_TUTORIAL, N21_Tb_TUTORIAL } from './N21'
 import { N22_T_TUTORIAL } from './N22'
 
 /** All tutorials keyed by stage ID or node ID */
@@ -51,27 +53,27 @@ const TUTORIALS: Record<string, Tutorial> = {
   'N06-T': N06_T_TUTORIAL,
   'N06-Ta': N06_Ta_TUTORIAL,
   'N07-T': N07_T_TUTORIAL,
-  'N07-Ta': N07_Ta_TUTORIAL,
-  'N07-Tb': N07_Tb_TUTORIAL,
-  'N09-T': N09_T_TUTORIAL,
-  'N09-Ta': N09_Ta_TUTORIAL,
-  'N09-Tb': N09_Tb_TUTORIAL,
+  'N08-T': N08_T_TUTORIAL,
+  'N08-Ta': N08_Ta_TUTORIAL,
+  'N08-Tb': N08_Tb_TUTORIAL,
   'N10-T': N10_T_TUTORIAL,
+  'N10-Ta': N10_Ta_TUTORIAL,
+  'N10-Tb': N10_Tb_TUTORIAL,
   'N11-T': N11_T_TUTORIAL,
   'N12-T': N12_T_TUTORIAL,
   'N13-T': N13_T_TUTORIAL,
-  'N13-Ta': N13_Ta_TUTORIAL,
-  'N15-T': N15_T_TUTORIAL,
+  'N14-T': N14_T_TUTORIAL,
+  'N14-Ta': N14_Ta_TUTORIAL,
   'N16-T': N16_T_TUTORIAL,
   'N17-T': N17_T_TUTORIAL,
-  'N17-Ta': N17_Ta_TUTORIAL,
   'N18-T': N18_T_TUTORIAL,
   'N18-Ta': N18_Ta_TUTORIAL,
   'N19-T': N19_T_TUTORIAL,
+  'N19-Ta': N19_Ta_TUTORIAL,
   'N20-T': N20_T_TUTORIAL,
-  'N20-Ta': N20_Ta_TUTORIAL,
-  'N20-Tb': N20_Tb_TUTORIAL,
   'N21-T': N21_T_TUTORIAL,
+  'N21-Ta': N21_Ta_TUTORIAL,
+  'N21-Tb': N21_Tb_TUTORIAL,
   'N22-T': N22_T_TUTORIAL,
 }
 

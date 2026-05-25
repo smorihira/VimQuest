@@ -1,28 +1,28 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N12-T: 対を見つけろ (%) */
+/** N12-T: 狙い撃て (f, t, ;, ,) */
 export const N12_T_TUTORIAL: Tutorial = {
   nodeId: 'N12',
   stageId: 'N12-T',
   steps: [
     {
-      message: 'f{ と押せ。行内の { に直接飛べる',
-      expectedKey: 'f{',
+      message: 'f( と押せ。行内の ( に一瞬でジャンプ',
+      expectedKey: 'f(',
     },
     {
-      message: '% を押せ。対応する } にジャンプする',
-      expectedKey: '%',
+      message: '; を押せ。直前の f を繰り返す',
+      expectedKey: ';',
     },
     {
-      message: 'j で2行目に移動',
-      expectedKey: 'j',
+      message: ', を押せ。逆方向に繰り返す',
+      expectedKey: ',',
     },
     {
-      message: 'もう一度 %。今度は } から { へ飛ぶ',
-      expectedKey: '%',
+      message: 't) と押せ。) の1文字手前に止まる',
+      expectedKey: 't)',
     },
     {
-      message: '% で括弧の対を自在に行き来できる。これが Vim の括弧ジャンプだ',
+      message: 'f で直接、t で手前。; で繰り返し、, で逆方向だ',
       expectedKey: null,
     },
   ],
