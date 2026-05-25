@@ -13,7 +13,7 @@ export type {
   StageResult,
 } from './stage'
 
-export type { TutorialStatus, GameProgress, SkillNodeDef, SkillTreeEdge } from './game'
+export type { TutorialStatus, PlayMode, GameProgress, SkillNodeDef, SkillTreeEdge } from './game'
 export { SAVE_KEY, createInitialProgress } from './game'
 
 export type { TutorialStep, Tutorial } from './tutorial'

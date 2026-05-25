@@ -89,12 +89,6 @@ export function SkillTreeScreen() {
         return
       }
 
-      // If tutorial exists and not completed, go to tutorial
-      if (hasTutorial(node.id) && !progress.tutorialStatus[node.id]) {
-        navigate(`/tutorial/${node.id}`)
-        return
-      }
-
       // Show stage selector
       setStageFocusIdx(0)
       setSelectedNode(node)

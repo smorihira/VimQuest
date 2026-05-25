@@ -3,6 +3,9 @@ import type { StageResult } from './stage'
 /** Tutorial completion state */
 export type TutorialStatus = 'completed' | 'skipped'
 
+/** How a play session was initiated */
+export type PlayMode = 'normal' | 'fromTutorial' | 'practice'
+
 /** Persisted game progress (saved to LocalStorage) */
 export interface GameProgress {
   /** Data format version for migrations */

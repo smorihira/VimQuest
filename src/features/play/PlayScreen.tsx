@@ -1,22 +1,22 @@
 /**
  * PlayScreen — main game play screen.
  * Manages keyboard input, displays editor + HUD + hand cards.
- * If the stage has a tutorial, shows it before entering play phase.
+ * If the stage has a tutorial, redirects to TutorialScreen.
  */
 
 import { useEffect, useCallback, useState } from 'react'
-import { useParams, useNavigate, useLocation } from 'react-router'
-import { useAtomValue, useSetAtom } from 'jotai'
+import { useParams, useNavigate, useLocation, Navigate } from 'react-router'
+import { useAtomValue } from 'jotai'
 import { getStage } from '../../data/stages'
 import { getTutorial } from '../../data/tutorials'
 import { BASE_COMMANDS } from '../../data/constants'
 import { gameProgressAtom } from '../../store/atoms'
 import type { EditorState } from '../../types/editor'
+import type { PlayMode } from '../../types/game'
 import { usePlayEngine } from './usePlayEngine'
 import { EditorView } from './EditorView'
 import { NavigatorCube } from './NavigatorCube'
 import { HintOverlay } from './HintOverlay'
-import { StageTutorial } from './StageTutorial'
 import { TopBar } from './components/TopBar'
 import { CardPanel } from './components/CardPanel'
 import { mapKeyEvent } from './commandMetadata'
@@ -37,19 +37,6 @@ export function PlayScreen() {
   const location = useLocation()
   const stage = stageId ? getStage(stageId) : undefined
   const progress = useAtomValue(gameProgressAtom)
-  const setProgress = useSetAtom(gameProgressAtom)
-  const [tutorialResult, setTutorialResult] = useState<{
-    done: boolean
-    editorState?: EditorState
-  }>({ done: false })
-
-  // Check if navigated from TutorialScreen review
-  const locationState = location.state as {
-    practiceMode?: boolean
-    reviewEditorState?: EditorState
-  } | null
-  const practiceFromReview = locationState?.practiceMode ?? false
-  const reviewEditorState = locationState?.reviewEditorState
 
   if (!stage) {
     return <div className="play-error">Stage not found: {stageId}</div>
@@ -58,46 +45,24 @@ export function PlayScreen() {
   const tutorial = getTutorial(stage.id, stage.nodeId)
   const alreadyDone = progress.tutorialStatus[stage.id] != null
 
-  // Practice play after review tutorial (from TutorialScreen) — must check before showTutorial
-  if (practiceFromReview) {
-    return (
-      <PlayScreenInner
-        stage={stage}
-        navigate={navigate}
-        hasStageTutorial={!!tutorial}
-        initialEditorState={reviewEditorState}
-        practiceMode
-      />
-    )
+  // Redirect to TutorialScreen if tutorial exists and not done
+  if (tutorial && !alreadyDone) {
+    return <Navigate to={`/tutorial/${stage.id}`} replace />
   }
 
-  const showTutorial = tutorial && !alreadyDone && !tutorialResult.done
-
-  if (showTutorial) {
-    return (
-      <StageTutorial
-        tutorial={tutorial}
-        stage={stage}
-        onComplete={(status, editorState) => {
-          setTutorialResult({ done: true, editorState })
-          setProgress((prev) => ({
-            ...prev,
-            tutorialStatus: {
-              ...prev.tutorialStatus,
-              [stage.id]: status,
-            },
-          }))
-        }}
-      />
-    )
-  }
+  // Read play mode from location state (set by TutorialScreen after completion)
+  const locationState = location.state as {
+    playMode?: PlayMode
+    editorState?: EditorState
+  } | null
 
   return (
     <PlayScreenInner
       stage={stage}
       navigate={navigate}
       hasStageTutorial={!!tutorial}
-      initialEditorState={tutorialResult.editorState}
+      playMode={locationState?.playMode ?? 'normal'}
+      initialEditorState={locationState?.editorState}
     />
   )
 }
@@ -106,18 +71,17 @@ function PlayScreenInner({
   stage,
   navigate,
   hasStageTutorial,
+  playMode,
   initialEditorState,
-  practiceMode,
 }: {
   stage: NonNullable<ReturnType<typeof getStage>>
   navigate: ReturnType<typeof useNavigate>
   hasStageTutorial: boolean
+  playMode: PlayMode
   initialEditorState?: EditorState
-  practiceMode?: boolean
 }) {
   const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
   const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined, initialEditorState)
-  const fromTutorial = !!initialEditorState
   const [spaceHeld, setSpaceHeld] = useState(false)
   const [muted, setMutedState] = useState(isMuted())
   const [showHint, setShowHint] = useState(false)
@@ -155,8 +119,7 @@ function PlayScreenInner({
             damage: play.damage,
             usedHint: play.usedHint,
             spells: play.spells,
-            fromTutorial,
-            practiceMode: practiceMode || undefined,
+            playMode,
           },
         })
       }, 600)

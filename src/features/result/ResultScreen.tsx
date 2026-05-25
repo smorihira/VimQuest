@@ -11,6 +11,7 @@ import { calculateStars, applyHintPenalty } from '../../engine/damageCalculator'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES, getSkillNode } from '../../data/skillTree'
 import type { StarRating } from '../../types/stage'
+import type { PlayMode } from '../../types/game'
 import type { SpellEntry } from '../../types/spell'
 import './ResultScreen.css'
 import { playTick } from '../../engine/sound'
@@ -22,8 +23,7 @@ interface LocationState {
   damage: number
   usedHint: boolean
   spells?: SpellEntry[]
-  fromTutorial?: boolean
-  practiceMode?: boolean
+  playMode?: PlayMode
 }
 
 export function ResultScreen() {
@@ -36,9 +36,10 @@ export function ResultScreen() {
 
   const state = (location.state as LocationState) ?? { damage: 0, usedHint: false, spells: [] }
   const spells = state.spells ?? []
-  const fromTutorial = !!state.fromTutorial
-  const practiceMode = !!state.practiceMode
-  const noScore = fromTutorial || practiceMode
+  const playMode = state.playMode ?? 'normal'
+  const fromTutorial = playMode === 'fromTutorial'
+  const practiceMode = playMode === 'practice'
+  const noScore = playMode !== 'normal'
   const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
   const stars = stage ? applyHintPenalty(rawStars, state.usedHint) : (0 as StarRating)
 

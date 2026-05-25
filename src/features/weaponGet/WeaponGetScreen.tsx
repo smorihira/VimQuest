@@ -15,15 +15,13 @@ export function WeaponGetScreen() {
   const navigate = useNavigate()
   const node = nodeId ? getSkillNode(nodeId) : undefined
 
-  const isTutorialNode = node ? hasTutorial(node.id) : false
   const stages = node ? getStagesByNode(node.id) : []
   const firstStage = stages[0]
+  const firstStageHasTutorial = firstStage ? hasTutorial(firstStage.id, node!.id) : false
 
   const handleProceed = () => {
     if (!node) return
-    if (isTutorialNode) {
-      navigate(`/tutorial/${node.id}`)
-    } else if (firstStage) {
+    if (firstStage) {
       navigate(`/play/${firstStage.id}`)
     } else {
       navigate('/tree', { state: { nodeId: node?.id } })
@@ -81,7 +79,7 @@ export function WeaponGetScreen() {
           ))}
         </div>
 
-        {isTutorialNode ? (
+        {firstStageHasTutorial ? (
           <div className="tutorial-section">
             <div className="tutorial-preview-msg">ステップごとに使い方を練習しましょう</div>
             <button className="tutorial-btn" onClick={handleProceed}>

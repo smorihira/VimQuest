@@ -1,14 +1,14 @@
 /**
- * TutorialScreen — standalone route wrapper for StageTutorial.
- * Accepts stageId or nodeId as route param. Delegates to StageTutorial (SSOT).
+ * TutorialScreen — the single source of truth for tutorial completion.
+ * Saves tutorialStatus and navigates to PlayScreen with appropriate PlayMode.
  */
 
 import { useParams, useNavigate } from 'react-router'
 import { useSetAtom } from 'jotai'
 import { getTutorial } from '../../data/tutorials'
-import { getStage, getStagesByNode } from '../../data/stages'
+import { getStage } from '../../data/stages'
 import { gameProgressAtom } from '../../store/atoms'
-import type { TutorialStatus } from '../../types/game'
+import type { TutorialStatus, PlayMode } from '../../types/game'
 import type { EditorState } from '../../types/editor'
 import { StageTutorial } from '../play/StageTutorial'
 import './TutorialScreen.css'
@@ -18,8 +18,7 @@ export function TutorialScreen() {
   const navigate = useNavigate()
   const setProgress = useSetAtom(gameProgressAtom)
 
-  // Try stageId first, then nodeId fallback
-  const tutorial = id ? (getTutorial(id) ?? getTutorial(id, id)) : undefined
+  const tutorial = id ? getTutorial(id) : undefined
   const isReview = new URLSearchParams(window.location.search).get('review') === '1'
 
   if (!tutorial) {
@@ -29,7 +28,7 @@ export function TutorialScreen() {
   const stage = getStage(tutorial.stageId)
 
   const handleComplete = (status: TutorialStatus, editorState?: EditorState) => {
-    // Always save tutorialStatus so the tutorial won't replay on normal play
+    // Save tutorialStatus (SSOT — only place this is written)
     setProgress((prev) => ({
       ...prev,
       tutorialStatus: {
@@ -38,21 +37,11 @@ export function TutorialScreen() {
       },
     }))
 
-    if (isReview) {
-      // Navigate to play screen in practice mode with editor state from tutorial
-      navigate(`/play/${tutorial.stageId}`, {
-        state: { practiceMode: true, reviewEditorState: editorState },
-        replace: true,
-      })
-      return
-    }
-
-    const stages = getStagesByNode(tutorial.nodeId)
-    if (stages.length > 0) {
-      navigate(`/play/${stages[0].id}`)
-    } else {
-      navigate('/tree')
-    }
+    const playMode: PlayMode = isReview ? 'practice' : 'fromTutorial'
+    navigate(`/play/${tutorial.stageId}`, {
+      state: { playMode, editorState },
+      replace: true,
+    })
   }
 
   return (
