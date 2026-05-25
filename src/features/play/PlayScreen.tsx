@@ -222,13 +222,6 @@ function PlayScreenInner({
         }
       }
 
-      // ? key toggles base row
-      if (key === '?' && play.editorState.mode === 'normal' && showBase) {
-        setBaseExpanded((v) => !v)
-        playTick()
-        return
-      }
-
       // Esc in normal mode with no pending parser input → exit stage
       if (key === 'Esc' && play.editorState.mode === 'normal' && !play.parserBuffer) {
         playTick()
@@ -264,7 +257,7 @@ function PlayScreenInner({
         : ''
 
   // Search mode uses colon-style bottom bar (same as :q!, :e!, :h)
-  const isSearchMode = play.parserBuffer.startsWith('/')
+  const isSearchMode = play.parserBuffer.startsWith('/') || play.parserBuffer.startsWith('?')
   const searchBuffer = isSearchMode ? play.parserBuffer : ''
   const cardParserBuffer = isSearchMode ? '' : play.parserBuffer
 
