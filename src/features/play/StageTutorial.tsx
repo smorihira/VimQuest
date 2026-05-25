@@ -16,7 +16,7 @@ import type { EditorState } from '../../types/editor'
 import type { TutorialStatus } from '../../types/game'
 import { createEditorState } from '../../types/editor'
 import { executeCommand, finalizeInsertSession } from '../../engine/commandExecutor'
-import { parseKeys } from '../../engine/commandParser'
+import { parseKeys, CommandParser } from '../../engine/commandParser'
 import { EditorView } from './EditorView'
 import { HintOverlay } from './HintOverlay'
 import { playTick, playHint } from '../../engine/sound'
@@ -329,6 +329,25 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
               insertEntryRef.current.charCount++
             }
           }
+        } else if (editorState.mode === 'visual') {
+          // Visual mode: use parser with editor mode set so d/y/c are standalone
+          const parser = new CommandParser()
+          parser.setEditorMode('visual')
+          const parsed = parser.feed(key)
+          if (parsed) {
+            const next = executeCommand(editorState, parsed.command)
+            if (next.mode === 'insert') {
+              insertEntryRef.current = { entryState: editorState, charCount: 0 }
+            }
+            setEditorState(next)
+          } else {
+            // Motion keys (j/k/h/l etc.) — parse normally
+            const motionParsed = parseKeys([key])
+            if (motionParsed) {
+              const next = executeCommand(editorState, motionParsed.command)
+              setEditorState(next)
+            }
+          }
         } else {
           const parsed = parseKeys([key])
           if (parsed) {
@@ -389,7 +408,12 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
     }
   }, [handleKeyDown, handleKeyUp])
 
-  const modeClass = editorState.mode === 'insert' ? ' insert-mode' : ''
+  const modeClass =
+    editorState.mode === 'insert'
+      ? ' insert-mode'
+      : editorState.mode === 'visual'
+        ? ' visual-mode'
+        : ''
 
   // Goal data for hold_space overlay
   const showGoal = spaceHeld && step !== undefined && stepType(step) === 'hold_space'

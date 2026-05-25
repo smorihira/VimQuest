@@ -10,8 +10,8 @@ export const N29_T_TUTORIAL: Tutorial = {
       expectedKey: 'yiw',
     },
     {
-      message: 'e で単語の末尾に移動',
-      expectedKey: 'e',
+      message: '$ で行末に移動',
+      expectedKey: '$',
     },
     {
       message: 'p でヤンクした内容をペースト',

@@ -14,11 +14,15 @@ export const N28_T_TUTORIAL: Tutorial = {
       expectedKey: 'j',
     },
     {
-      message: 'Esc で選択を解除',
-      expectedKey: 'Esc',
+      message: 'もう一度 j で3行目まで選択',
+      expectedKey: 'j',
     },
     {
-      message: 'Ctrl+v で矩形選択、j で範囲拡大、d で削除。全3行の X を一度に消せ',
+      message: 'd で選択範囲を削除',
+      expectedKey: 'd',
+    },
+    {
+      message: 'Ctrl+v で矩形選択 → j で範囲拡大 → d で削除。残りの3行も同じ要領で消せ',
       expectedKey: null,
     },
   ],

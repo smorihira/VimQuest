@@ -12,6 +12,10 @@
   background: var(--bg-insert, #2e1a1a);
 }
 
+.tutorial-screen.visual-mode {
+  background: var(--bg-visual, #2a1a3e);
+}
+
 /* Top Bar */
 .tutorial-top-bar {
   display: flex;
