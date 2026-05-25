@@ -37,6 +37,11 @@ export type Motion =
   | '#'
   | 'gj'
   | 'gk'
+  | '{'
+  | '}'
+  | 'H'
+  | 'M'
+  | 'L'
 
 /** Text objects (always paired with i/a prefix in raw input) */
 export type TextObject =
@@ -87,6 +92,9 @@ export interface Command {
 
   /** Search pattern for / command */
   searchPattern?: string
+
+  /** Search direction for / and ? commands */
+  searchDirection?: 'forward' | 'backward'
 
   /** Register name for " prefix (e.g., 'a' for "a) */
   register?: string

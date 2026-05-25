@@ -327,15 +327,21 @@ export function executeSearch(state: EditorState, pattern: string): EditorState 
   return { ...state, lastSearchPattern: pattern, lastSearchDirection: 'forward' }
 }
 
-/** Execute n — repeat search forward */
+/** Execute n — repeat search in same direction */
 export function executeSearchNext(state: EditorState): EditorState {
   if (!state.lastSearchPattern) return state
+  if (state.lastSearchDirection === 'backward') {
+    return executeSearchBackward(state, state.lastSearchPattern)
+  }
   return executeSearch(state, state.lastSearchPattern)
 }
 
-/** Execute N — repeat search backward */
+/** Execute N — repeat search in opposite direction */
 export function executeSearchPrev(state: EditorState): EditorState {
   if (!state.lastSearchPattern) return state
+  if (state.lastSearchDirection === 'backward') {
+    return executeSearch(state, state.lastSearchPattern)
+  }
   const pattern = state.lastSearchPattern
   const flat = state.text
   const ls = lines(flat)
@@ -401,8 +407,8 @@ export function executeSearchWordBackward(state: EditorState): EditorState {
   return executeSearchBackward(state, word)
 }
 
-/** Execute backward search (used by #) */
-function executeSearchBackward(state: EditorState, pattern: string): EditorState {
+/** Execute backward search (used by # and ?) */
+export function executeSearchBackward(state: EditorState, pattern: string): EditorState {
   if (!pattern) return state
   const flat = state.text
   const ls = lines(flat)
@@ -527,4 +533,120 @@ export function executeVisualLine(state: EditorState): EditorState {
     cursor: { line: state.cursor.line, col: Math.max(0, lineContent.length - 1) },
     visualType: 'line',
   }
+}
+
+// ─── Scroll 1 line ─────────────────────────────────────────────────
+
+/** Execute Ctrl+e — scroll viewport down 1 line */
+export function executeScrollDown1(state: EditorState): EditorState {
+  const totalLines = lineCount(state.text)
+  const newTop = clampViewport(state.viewportTop + 1, totalLines)
+  let cursor = state.cursor
+  // If cursor is above viewport, push it down
+  if (cursor.line < newTop) {
+    const ls = lines(state.text)
+    let col = 0
+    while (col < ls[newTop].length && isSpace(ls[newTop][col])) col++
+    cursor = { line: newTop, col: Math.min(col, Math.max(0, ls[newTop].length - 1)) }
+  }
+  return { ...state, viewportTop: newTop, cursor }
+}
+
+/** Execute Ctrl+y — scroll viewport up 1 line */
+export function executeScrollUp1(state: EditorState): EditorState {
+  const totalLines = lineCount(state.text)
+  const newTop = clampViewport(state.viewportTop - 1, totalLines)
+  let cursor = state.cursor
+  // If cursor is below viewport, push it up
+  const bottomLine = newTop + VIEWPORT_HEIGHT - 1
+  if (cursor.line > bottomLine) {
+    const ls = lines(state.text)
+    const targetLine = Math.min(bottomLine, ls.length - 1)
+    let col = 0
+    while (col < ls[targetLine].length && isSpace(ls[targetLine][col])) col++
+    cursor = { line: targetLine, col: Math.min(col, Math.max(0, ls[targetLine].length - 1)) }
+  }
+  return { ...state, viewportTop: newTop, cursor }
+}
+
+// ─── Number increment/decrement ────────────────────────────────────
+
+/** Execute Ctrl+a — increment number under/after cursor */
+export function executeIncrement(state: EditorState): EditorState {
+  return adjustNumber(state, 1)
+}
+
+/** Execute Ctrl+x — decrement number under/after cursor */
+export function executeDecrement(state: EditorState): EditorState {
+  return adjustNumber(state, -1)
+}
+
+function adjustNumber(state: EditorState, delta: number): EditorState {
+  const ls = lines(state.text)
+  const line = ls[state.cursor.line]
+
+  // Find number at or after cursor position
+  const regex = /-?\d+/g
+  let match: RegExpExecArray | null
+  while ((match = regex.exec(line)) !== null) {
+    const matchEnd = match.index + match[0].length - 1
+    if (matchEnd >= state.cursor.col) {
+      const num = parseInt(match[0], 10) + delta
+      const numStr = String(num)
+      const newLine =
+        line.slice(0, match.index) + numStr + line.slice(match.index + match[0].length)
+      const newLines = [...ls]
+      newLines[state.cursor.line] = newLine
+      const newText = join(newLines)
+      const newCol = match.index + numStr.length - 1
+      return pushUndo(state, newText, { line: state.cursor.line, col: newCol }, 'normal', 1)
+    }
+  }
+  return state
+}
+
+// ─── Jump list ─────────────────────────────────────────────────────
+
+/** Record current position to jump list before a jump */
+export function pushJumpList(state: EditorState): EditorState {
+  const jumpList = [...(state.jumpList ?? [])]
+  const jumpIndex = state.jumpIndex ?? jumpList.length
+  // Truncate forward history
+  jumpList.splice(jumpIndex)
+  jumpList.push({ ...state.cursor })
+  // Limit size to 100 entries
+  if (jumpList.length > 100) jumpList.shift()
+  return { ...state, jumpList, jumpIndex: jumpList.length }
+}
+
+/** Execute Ctrl+o — jump back */
+export function executeJumpBack(state: EditorState): EditorState {
+  const jumpList = [...(state.jumpList ?? [])]
+  if (jumpList.length === 0) return state
+  const currentIdx = state.jumpIndex ?? jumpList.length
+  // If we're at the end, save current position first so Ctrl+i can return here
+  if (currentIdx === jumpList.length) {
+    jumpList.push({ ...state.cursor })
+  }
+  const idx = currentIdx - 1
+  if (idx < 0) return state
+  const target = jumpList[idx]
+  return { ...state, jumpList, cursor: clampCursor(state.text, target, state.mode), jumpIndex: idx }
+}
+
+/** Execute Ctrl+i — jump forward */
+export function executeJumpForward(state: EditorState): EditorState {
+  const jumpList = state.jumpList ?? []
+  const currentIdx = state.jumpIndex ?? jumpList.length
+  const idx = currentIdx + 1
+  if (idx >= jumpList.length) return state
+  const target = jumpList[idx]
+  return { ...state, cursor: clampCursor(state.text, target, state.mode), jumpIndex: idx }
+}
+
+// ─── Replace mode ──────────────────────────────────────────────────
+
+/** Execute R — enter replace mode */
+export function executeReplaceMode(state: EditorState): EditorState {
+  return { ...state, mode: 'insert', replaceMode: true }
 }

@@ -44,6 +44,11 @@ const SIMPLE_MOTIONS = new Set<string>([
   '%',
   'n',
   'N',
+  '{',
+  '}',
+  'H',
+  'M',
+  'L',
 ])
 
 const INSTANT_COMMANDS = new Set<string>([
@@ -71,6 +76,7 @@ const INSTANT_COMMANDS = new Set<string>([
   'S',
   'v',
   'V',
+  'R',
 ])
 
 /** Commands that bypass hand restriction */
@@ -147,6 +153,7 @@ export class CommandParser {
   private operator: Operator | undefined = undefined
   private textobjPrefix: string | undefined = undefined
   private searchBuffer: string = ''
+  private searchDirection: 'forward' | 'backward' = 'forward'
   private registerName: string | undefined = undefined
   private availableCommands: string[] | undefined = undefined
   private baseCommands: string[] | undefined = undefined
@@ -196,6 +203,7 @@ export class CommandParser {
     this.operator = undefined
     this.textobjPrefix = undefined
     this.searchBuffer = ''
+    this.searchDirection = 'forward'
     this.registerName = undefined
   }
 
@@ -217,7 +225,8 @@ export class CommandParser {
   /** Get display string for current buffer (for UI display) */
   getDisplayBuffer(): string {
     if (this.state === 'searchInput') {
-      return '/' + this.searchBuffer
+      const prefix = this.searchDirection === 'backward' ? '?' : '/'
+      return prefix + this.searchBuffer
     }
     return this.buffer
   }
@@ -355,12 +364,24 @@ export class CommandParser {
       return null
     }
 
-    // / — search
+    // / — search forward
     if (key === '/') {
       if (!isInHand('/', this.getEffectiveHand())) {
         return this.emitInvalid('/')
       }
       this.searchBuffer = ''
+      this.searchDirection = 'forward'
+      this.state = 'searchInput'
+      return null
+    }
+
+    // ? — search backward
+    if (key === '?') {
+      if (!isInHand('?', this.getEffectiveHand())) {
+        return this.emitInvalid('?')
+      }
+      this.searchBuffer = ''
+      this.searchDirection = 'backward'
       this.state = 'searchInput'
       return null
     }
@@ -373,6 +394,30 @@ export class CommandParser {
 
     // Ctrl+d, Ctrl+u
     if (key === 'Ctrl+d' || key === 'Ctrl+u') {
+      if (!isInHand(key, this.getEffectiveHand())) {
+        return this.emitInvalid(key)
+      }
+      return this.emit({ raw: key, valid: true }, 1)
+    }
+
+    // Ctrl+e, Ctrl+y — scroll 1 line
+    if (key === 'Ctrl+e' || key === 'Ctrl+y') {
+      if (!isInHand(key, this.getEffectiveHand())) {
+        return this.emitInvalid(key)
+      }
+      return this.emit({ raw: key, valid: true }, 1)
+    }
+
+    // Ctrl+a, Ctrl+x — increment/decrement number
+    if (key === 'Ctrl+a' || key === 'Ctrl+x') {
+      if (!isInHand(key, this.getEffectiveHand())) {
+        return this.emitInvalid(key)
+      }
+      return this.emit({ raw: key, valid: true }, 1)
+    }
+
+    // Ctrl+o, Ctrl+i — jump list
+    if (key === 'Ctrl+o' || key === 'Ctrl+i') {
       if (!isInHand(key, this.getEffectiveHand())) {
         return this.emitInvalid(key)
       }
@@ -659,6 +704,24 @@ export class CommandParser {
       return null
     }
 
+    // gi — go to last insert position and enter insert mode
+    if (key === 'i') {
+      const raw = this.buffer
+      if (!isInHand('gi', this.getEffectiveHand())) {
+        return this.emitInvalid(raw)
+      }
+      return this.emit({ raw, valid: true }, 1)
+    }
+
+    // gv — reselect last visual selection
+    if (key === 'v') {
+      const raw = this.buffer
+      if (!isInHand('gv', this.getEffectiveHand())) {
+        return this.emitInvalid(raw)
+      }
+      return this.emit({ raw, valid: true }, 1)
+    }
+
     // Esc cancels
     if (key === 'Esc') {
       return this.emit({ raw: 'Esc', valid: true }, 0)
@@ -761,8 +824,17 @@ export class CommandParser {
 
     // Enter confirms search
     if (key === 'Enter') {
-      const raw = `/${this.searchBuffer}`
-      return this.emit({ raw, searchPattern: this.searchBuffer, valid: true }, 1)
+      const prefix = this.searchDirection === 'backward' ? '?' : '/'
+      const raw = `${prefix}${this.searchBuffer}`
+      return this.emit(
+        {
+          raw,
+          searchPattern: this.searchBuffer,
+          searchDirection: this.searchDirection,
+          valid: true,
+        },
+        1,
+      )
     }
 
     // Accumulate search pattern

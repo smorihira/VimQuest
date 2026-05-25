@@ -344,6 +344,73 @@ function matchBracket(state: EditorState): CursorPosition | null {
   return null
 }
 
+// ─── Paragraph motions ─────────────────────────────────────────────
+
+/** Move to previous paragraph boundary ({ — blank line or start of file) */
+function moveParagraphUp(state: EditorState, count: number): CursorPosition {
+  const ls = lines(state.text)
+  let line = state.cursor.line
+
+  for (let i = 0; i < count; i++) {
+    // Skip current blank lines
+    while (line > 0 && ls[line].trim() === '') line--
+    // Find next blank line above
+    while (line > 0 && ls[line].trim() !== '') line--
+  }
+
+  return { line, col: 0 }
+}
+
+/** Move to next paragraph boundary (} — blank line or end of file) */
+function moveParagraphDown(state: EditorState, count: number): CursorPosition {
+  const ls = lines(state.text)
+  let line = state.cursor.line
+  const maxLine = ls.length - 1
+
+  for (let i = 0; i < count; i++) {
+    // Skip current blank lines
+    while (line < maxLine && ls[line].trim() === '') line++
+    // Find next blank line below
+    while (line < maxLine && ls[line].trim() !== '') line++
+  }
+
+  return { line, col: 0 }
+}
+
+// ─── Viewport cursor motions ───────────────────────────────────────
+
+const VIEWPORT_HEIGHT = 16
+
+/** Move to top of viewport (H) */
+function moveToViewportTop(state: EditorState): CursorPosition {
+  const ls = lines(state.text)
+  const targetLine = Math.min(state.viewportTop, ls.length - 1)
+  const line = ls[targetLine]
+  let col = 0
+  while (col < line.length && isSpace(line[col])) col++
+  return { line: targetLine, col: Math.min(col, Math.max(0, line.length - 1)) }
+}
+
+/** Move to middle of viewport (M) */
+function moveToViewportMiddle(state: EditorState): CursorPosition {
+  const ls = lines(state.text)
+  const targetLine = Math.min(state.viewportTop + Math.floor(VIEWPORT_HEIGHT / 2), ls.length - 1)
+  const line = ls[targetLine]
+  let col = 0
+  while (col < line.length && isSpace(line[col])) col++
+  return { line: targetLine, col: Math.min(col, Math.max(0, line.length - 1)) }
+}
+
+/** Move to bottom of viewport (L) */
+function moveToViewportBottom(state: EditorState): CursorPosition {
+  const ls = lines(state.text)
+  const targetLine = Math.min(state.viewportTop + VIEWPORT_HEIGHT - 1, ls.length - 1)
+  const line = ls[targetLine]
+  let col = 0
+  while (col < line.length && isSpace(line[col])) col++
+  return { line: targetLine, col: Math.min(col, Math.max(0, line.length - 1)) }
+}
+
 /** Resolve a motion to a target cursor position */
 export function resolveMotion(
   state: EditorState,
@@ -397,6 +464,16 @@ export function resolveMotion(
       return moveDown(state, count)
     case 'gk':
       return moveUp(state, count)
+    case '{':
+      return moveParagraphUp(state, count)
+    case '}':
+      return moveParagraphDown(state, count)
+    case 'H':
+      return moveToViewportTop(state)
+    case 'M':
+      return moveToViewportMiddle(state)
+    case 'L':
+      return moveToViewportBottom(state)
     case ';': {
       if (!state.lastFindMotion) return null
       return resolveMotion(state, state.lastFindMotion.motion, count, state.lastFindMotion.char)

@@ -64,7 +64,15 @@ export function executeEscape(state: EditorState): EditorState {
   if (state.mode === 'normal') return state
 
   if (state.mode === 'visual') {
-    return { ...state, mode: 'normal', visualStart: undefined, visualType: undefined }
+    return {
+      ...state,
+      mode: 'normal',
+      visualStart: undefined,
+      visualType: undefined,
+      lastVisualStart: state.visualStart,
+      lastVisualEnd: state.cursor,
+      lastVisualType: state.visualType,
+    }
   }
 
   const newCol = Math.max(0, state.cursor.col - 1)
@@ -72,6 +80,8 @@ export function executeEscape(state: EditorState): EditorState {
     ...state,
     cursor: clampCursor(state.text, { line: state.cursor.line, col: newCol }, 'normal'),
     mode: 'normal',
+    replaceMode: undefined,
+    lastInsertPosition: { ...state.cursor },
   }
 }
 
@@ -90,6 +100,19 @@ export function executeInsertText(state: EditorState, text: string): EditorState
     const newText = join(newLines)
     const newCursor: CursorPosition = { line: state.cursor.line + 1, col: 0 }
     return { ...state, text: newText, cursor: newCursor }
+  }
+
+  // Replace mode: overwrite character instead of inserting
+  if (state.replaceMode && col < line.length) {
+    const newLine = line.slice(0, col) + actualText + line.slice(col + 1)
+    const newLines = [...ls]
+    newLines[state.cursor.line] = newLine
+    const newText = join(newLines)
+    return {
+      ...state,
+      text: newText,
+      cursor: { line: state.cursor.line, col: col + actualText.length },
+    }
   }
 
   const newLine = line.slice(0, col) + actualText + line.slice(col)

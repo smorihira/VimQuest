@@ -437,3 +437,136 @@ describe('insert mode passthrough', () => {
     expect(r.damage).toBe(0)
   })
 })
+
+// ─── New command parsing tests ─────────────────────────────────────
+
+describe('new motion parsing', () => {
+  let parser: CommandParser
+
+  beforeEach(() => {
+    parser = new CommandParser()
+  })
+
+  it('{ is parsed as motion', () => {
+    const r = parser.feed('{')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.motion).toBe('{')
+  })
+
+  it('} is parsed as motion', () => {
+    const r = parser.feed('}')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.motion).toBe('}')
+  })
+
+  it('H is parsed as motion', () => {
+    const r = parser.feed('H')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.motion).toBe('H')
+  })
+
+  it('M is parsed as motion', () => {
+    const r = parser.feed('M')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.motion).toBe('M')
+  })
+
+  it('L is parsed as motion', () => {
+    const r = parser.feed('L')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.motion).toBe('L')
+  })
+
+  it('R is parsed as instant command', () => {
+    const r = parser.feed('R')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.raw).toBe('R')
+  })
+})
+
+describe('? backward search parsing', () => {
+  let parser: CommandParser
+
+  beforeEach(() => {
+    parser = new CommandParser()
+  })
+
+  it('? enters search mode', () => {
+    const r = parser.feed('?')
+    expect(r).toBeNull()
+    expect(parser.getDisplayBuffer()).toBe('?')
+  })
+
+  it('?foo + Enter emits backward search', () => {
+    parser.feed('?')
+    parser.feed('f')
+    parser.feed('o')
+    parser.feed('o')
+    const r = parser.feed('Enter')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.searchPattern).toBe('foo')
+    expect(r.command.searchDirection).toBe('backward')
+    expect(r.command.raw).toBe('?foo')
+  })
+})
+
+describe('new ctrl command parsing', () => {
+  let parser: CommandParser
+
+  beforeEach(() => {
+    parser = new CommandParser()
+  })
+
+  it('Ctrl+e is parsed', () => {
+    const r = parser.feed('Ctrl+e')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.raw).toBe('Ctrl+e')
+  })
+
+  it('Ctrl+y is parsed', () => {
+    const r = parser.feed('Ctrl+y')!
+    expect(r.command.valid).toBe(true)
+  })
+
+  it('Ctrl+a is parsed', () => {
+    const r = parser.feed('Ctrl+a')!
+    expect(r.command.valid).toBe(true)
+  })
+
+  it('Ctrl+x is parsed', () => {
+    const r = parser.feed('Ctrl+x')!
+    expect(r.command.valid).toBe(true)
+  })
+
+  it('Ctrl+o is parsed', () => {
+    const r = parser.feed('Ctrl+o')!
+    expect(r.command.valid).toBe(true)
+  })
+
+  it('Ctrl+i is parsed', () => {
+    const r = parser.feed('Ctrl+i')!
+    expect(r.command.valid).toBe(true)
+  })
+})
+
+describe('gi / gv parsing', () => {
+  let parser: CommandParser
+
+  beforeEach(() => {
+    parser = new CommandParser()
+  })
+
+  it('gi is parsed', () => {
+    parser.feed('g')
+    const r = parser.feed('i')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.raw).toBe('gi')
+  })
+
+  it('gv is parsed', () => {
+    parser.feed('g')
+    const r = parser.feed('v')!
+    expect(r.command.valid).toBe(true)
+    expect(r.command.raw).toBe('gv')
+  })
+})

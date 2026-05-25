@@ -50,6 +50,7 @@ import {
   executeSearchPrev,
   executeSearchWordForward,
   executeSearchWordBackward,
+  executeSearchBackward,
   ensureCursorVisible,
   executeHalfPageDown,
   executeHalfPageUp,
@@ -58,6 +59,14 @@ import {
   executeViewportZB,
   executeVisualChar,
   executeVisualLine,
+  executeScrollDown1,
+  executeScrollUp1,
+  executeIncrement,
+  executeDecrement,
+  pushJumpList,
+  executeJumpBack,
+  executeJumpForward,
+  executeReplaceMode,
 } from './executors/normalCommands'
 
 // Re-export for external consumers
@@ -94,7 +103,17 @@ function executeCommandInner(state: EditorState, cmd: Command): EditorState {
 
   // ── Visual mode ──
   if (state.mode === 'visual') {
-    return executeVisualModeCommand(state, cmd, raw)
+    const result = executeVisualModeCommand(state, cmd, raw)
+    // Save last visual selection when leaving visual mode
+    if (result.mode !== 'visual' && state.visualStart) {
+      return {
+        ...result,
+        lastVisualStart: state.visualStart,
+        lastVisualEnd: state.cursor,
+        lastVisualType: state.visualType,
+      }
+    }
+    return result
   }
 
   // ── Normal mode ──
@@ -298,6 +317,16 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
     }
   }
 
+  // o — swap cursor and visualStart (toggle selection end)
+  if (raw === 'o') {
+    if (!state.visualStart) return state
+    return {
+      ...state,
+      cursor: state.visualStart,
+      visualStart: state.cursor,
+    }
+  }
+
   return state
 }
 
@@ -438,13 +467,66 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
   // Ctrl+u — half page up
   if (raw === 'Ctrl+u') return executeHalfPageUp(state)
 
+  // Ctrl+e — scroll down 1 line
+  if (raw === 'Ctrl+e') return executeScrollDown1(state)
+
+  // Ctrl+y — scroll up 1 line
+  if (raw === 'Ctrl+y') return executeScrollUp1(state)
+
+  // Ctrl+a — increment number
+  if (raw === 'Ctrl+a') return executeIncrement(state)
+
+  // Ctrl+x — decrement number
+  if (raw === 'Ctrl+x') return executeDecrement(state)
+
+  // Ctrl+o — jump back
+  if (raw === 'Ctrl+o') return executeJumpBack(state)
+
+  // Ctrl+i — jump forward
+  if (raw === 'Ctrl+i') return executeJumpForward(state)
+
+  // R — replace mode
+  if (raw === 'R') return executeReplaceMode(state)
+
+  // gi — go to last insert position
+  if (raw === 'gi') {
+    if (state.lastInsertPosition) {
+      const cursor = {
+        line: Math.min(state.lastInsertPosition.line, lines(state.text).length - 1),
+        col: state.lastInsertPosition.col,
+      }
+      return { ...state, cursor, mode: 'insert' }
+    }
+    return { ...state, mode: 'insert' }
+  }
+
+  // gv — reselect last visual selection
+  if (raw === 'gv') {
+    if (state.lastVisualStart && state.lastVisualEnd && state.lastVisualType) {
+      return {
+        ...state,
+        mode: 'visual',
+        visualStart: state.lastVisualStart,
+        cursor: state.lastVisualEnd,
+        visualType: state.lastVisualType,
+      }
+    }
+    return state
+  }
+
   // zz, zt, zb — viewport scroll
   if (raw === 'zz') return executeViewportZZ(state)
   if (raw === 'zt') return executeViewportZT(state)
   if (raw === 'zb') return executeViewportZB(state)
 
-  // Search
-  if (cmd.searchPattern !== undefined) return executeSearch(state, cmd.searchPattern)
+  // Search (/ or ?)
+  if (cmd.searchPattern !== undefined) {
+    const s = pushJumpList(state)
+    if (cmd.searchDirection === 'backward') {
+      return executeSearchBackward(s, cmd.searchPattern)
+    }
+    return executeSearch(s, cmd.searchPattern)
+  }
 
   // Operator + text object
   if (cmd.operator && cmd.textObject) {
@@ -458,8 +540,16 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
 
   // Pure motions
   if (cmd.motion && !cmd.operator) {
-    if (cmd.motion === 'n') return executeSearchNext(state)
-    if (cmd.motion === 'N') return executeSearchPrev(state)
+    // Jump-list motions: record position before jumping
+    const JUMP_MOTIONS = new Set(['G', 'gg', '%', '{', '}', 'H', 'M', 'L', 'n', 'N', '*', '#'])
+    if (JUMP_MOTIONS.has(cmd.motion)) {
+      const s = pushJumpList(state)
+      if (cmd.motion === 'n') return executeSearchNext(s)
+      if (cmd.motion === 'N') return executeSearchPrev(s)
+      if (cmd.motion === '*') return executeSearchWordForward(s)
+      if (cmd.motion === '#') return executeSearchWordBackward(s)
+      return executeMotion(s, cmd)
+    }
     if (cmd.motion === '*') return executeSearchWordForward(state)
     if (cmd.motion === '#') return executeSearchWordBackward(state)
     return executeMotion(state, cmd)

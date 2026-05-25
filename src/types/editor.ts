@@ -57,6 +57,17 @@ export interface EditorState {
   lastInsertText?: string
   /** Top visible line index for viewport scrolling */
   viewportTop: number
+  /** Replace mode flag (overwrite instead of insert) */
+  replaceMode?: boolean
+  /** Last position where insert mode was exited (for gi) */
+  lastInsertPosition?: CursorPosition
+  /** Last visual selection (for gv) */
+  lastVisualStart?: CursorPosition
+  lastVisualEnd?: CursorPosition
+  lastVisualType?: 'char' | 'line' | 'block'
+  /** Jump list for Ctrl+o / Ctrl+i */
+  jumpList?: CursorPosition[]
+  jumpIndex?: number
 }
 
 /** Create initial editor state from text and cursor */
