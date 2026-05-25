@@ -56,7 +56,12 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
   const spaceHeldRef = useRef(false)
   const keyBuffer = useRef('')
   const [displayBuffer, setDisplayBuffer] = useState('')
-  const insertEntryRef = useRef<{ entryState: EditorState; charCount: number } | null>(null)
+  const insertEntryRef = useRef<{
+    entryState: EditorState
+    charCount: number
+    insertText: string
+    entryCommand: import('../../types/command').Command | null
+  } | null>(null)
 
   const step = tutorial.steps[stepIdx] as TutorialStep | undefined
 
@@ -293,7 +298,12 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
             if (parsed) {
               const next = executeCommand(editorState, parsed.command)
               if (next.mode === 'insert' && editorState.mode !== 'insert') {
-                insertEntryRef.current = { entryState: editorState, charCount: 0 }
+                insertEntryRef.current = {
+                  entryState: editorState,
+                  charCount: 0,
+                  insertText: '',
+                  entryCommand: parsed.command,
+                }
               }
               setEditorState(next)
             }
@@ -319,6 +329,13 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
                 insertEntryRef.current.entryState,
                 insertEntryRef.current.charCount,
               )
+              if (insertEntryRef.current.entryCommand) {
+                next = {
+                  ...next,
+                  lastCommand: insertEntryRef.current.entryCommand,
+                  lastInsertText: insertEntryRef.current.insertText,
+                }
+              }
               insertEntryRef.current = null
             }
             setEditorState(next)
@@ -327,6 +344,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
             setEditorState(next)
             if (insertEntryRef.current) {
               insertEntryRef.current.charCount++
+              insertEntryRef.current.insertText += key === 'Enter' ? '\n' : key
             }
           }
         } else if (editorState.mode === 'visual') {
@@ -337,7 +355,12 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
           if (parsed) {
             const next = executeCommand(editorState, parsed.command)
             if (next.mode === 'insert') {
-              insertEntryRef.current = { entryState: editorState, charCount: 0 }
+              insertEntryRef.current = {
+                entryState: editorState,
+                charCount: 0,
+                insertText: '',
+                entryCommand: parsed.command,
+              }
             }
             setEditorState(next)
           } else {
@@ -353,7 +376,12 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
           if (parsed) {
             const next = executeCommand(editorState, parsed.command)
             if (next.mode === 'insert') {
-              insertEntryRef.current = { entryState: editorState, charCount: 0 }
+              insertEntryRef.current = {
+                entryState: editorState,
+                charCount: 0,
+                insertText: '',
+                entryCommand: parsed.command,
+              }
             }
             setEditorState(next)
           }
