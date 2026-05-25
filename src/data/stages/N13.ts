@@ -24,19 +24,19 @@ export const N13_STAGES: Stage[] = [
     flavor: 'D は d$ のショートカット。行末まで一発で消せ',
   },
 
-  // ── Practice: C/S を体験（2行） ──
-  // opt = 3 (C+ok;+Esc+j+S+new+Esc) → ☆3=3, ☆2=5, ☆1=7, life=9
+  // ── Teach a: C/S を体験（2行） ──
+  // opt = 3 (C+ok;+Esc+j+S+new+Esc) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
-    id: 'N13-P',
+    id: 'N13-Ta',
     nodeId: 'N13',
-    type: 'practice',
+    type: 'teach',
     title: 'C/Sで書き換え',
     language: 'javascript',
     initialText: 'let x = bad;\nold line',
     goalText: 'let x = ok;\nnew',
     initialCursor: { line: 0, col: 8 },
     life: 9,
-    stars: [3, 5, 7],
+    stars: [3, 4, 6],
     availableCommands: ['D', 'C', 'S', 'f', 't'],
     hints: [{ cost: 1, commands: ['C', 'ok;', 'Esc', 'j', 'S', 'new', 'Esc'] }],
     flavor: 'C は行末まで変更、S は行全体を変更するショートカットだ',

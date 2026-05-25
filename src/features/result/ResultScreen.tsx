@@ -10,6 +10,7 @@ import { getStage, getStagesByNode } from '../../data/stages'
 import { calculateStars, applyHintPenalty } from '../../engine/damageCalculator'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES, getSkillNode } from '../../data/skillTree'
+import { isScoredStage } from '../../types/stage'
 import type { StarRating } from '../../types/stage'
 import type { SpellEntry } from '../../types/spell'
 import './ResultScreen.css'
@@ -31,8 +32,9 @@ export function ResultScreen() {
 
   const state = (location.state as LocationState) ?? { damage: 0, usedHint: false, spells: [] }
   const spells = state.spells ?? []
-  const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
-  const stars = stage ? applyHintPenalty(rawStars, state.usedHint) : (0 as StarRating)
+  const scored = stage ? isScoredStage(stage.type) : false
+  const rawStars = stage && scored ? calculateStars(state.damage, stage.stars) : (3 as StarRating)
+  const stars = stage && scored ? applyHintPenalty(rawStars, state.usedHint) : (3 as StarRating)
 
   // Save progress once
   useEffect(() => {
@@ -41,10 +43,16 @@ export function ResultScreen() {
 
     setProgress((prev) => {
       const existing = prev.stageResults[stage.id]
-      const bestStars = existing
-        ? (Math.max(existing.bestStars, stars) as StarRating)
-        : (stars as StarRating)
-      const bestDamage = existing ? Math.min(existing.bestDamage, state.damage) : state.damage
+      const bestStars: StarRating = scored
+        ? existing
+          ? (Math.max(existing.bestStars, stars) as StarRating)
+          : (stars as StarRating)
+        : 3
+      const bestDamage = scored
+        ? existing
+          ? Math.min(existing.bestDamage, state.damage)
+          : state.damage
+        : 0
 
       const nextResults = {
         ...prev.stageResults,
@@ -173,85 +181,91 @@ export function ResultScreen() {
           {stage.id} — {stage.title}
         </div>
 
-        {/* Stars */}
-        <div className="stars-container">
-          <div className="stars">
-            {[0, 1, 2].map((i) => (
-              <span
-                key={i}
-                className={`star-result${i < stars ? ' earned' : ''}`}
-                style={{ animationDelay: `${i * 0.2}s` }}
-              >
-                {i < stars ? '★' : '☆'}
-              </span>
-            ))}
-          </div>
-          {state.usedHint && (
-            <div className="hint-notice">
-              <span className="hint-label">ヒント使用</span>: ☆1確定
-            </div>
-          )}
-          <div className="star-label">
-            {stars === 3
-              ? 'パーフェクト！'
-              : stars === 2
-                ? 'よくできました！'
-                : stars === 1
-                  ? 'クリア！'
-                  : ''}
-          </div>
-        </div>
-
-        {/* YOUR SPELL */}
-        {spells.length > 0 && (
-          <div className="spell-section">
-            <div className="spell-label">YOUR SPELL</div>
-            <div className="spell-list">
-              {spells.map((s, i) => {
-                const learningCmds = getSkillNode(stage.nodeId)?.commands ?? []
-                const baseCmd = s.command.replace(/…Esc$/, '')
-                const isLearning = learningCmds.includes(baseCmd)
-                const isDim = s.command.includes('Esc') || s.damage === 0
-                const colorClass = isLearning
-                  ? 'spell-learning'
-                  : isDim
-                    ? 'spell-dim'
-                    : 'spell-accent'
-                return (
-                  <div key={i} className={`spell-item ${colorClass}`}>
-                    <div className="spell-cmd">{s.command}</div>
-                    <div className="spell-dmg">-{s.damage}</div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Stats */}
-        <div className="stats">
-          <div className="stat">
-            <div className="stat-value">{state.damage}</div>
-            <div className="stat-label">DAMAGE</div>
-          </div>
-          <div className="stat">
-            <div className="stat-value">
-              {stage.life - state.damage}/{stage.life}
-            </div>
-            <div className="stat-label">LIFE</div>
-          </div>
-          <div className="stat">
-            <div className="stat-value best-value">
-              {progress.stageResults[stage.id]?.bestDamage ?? state.damage}
-            </div>
-            <div className="stat-label">BEST</div>
-            {progress.stageResults[stage.id] &&
-              state.damage <= progress.stageResults[stage.id].bestDamage &&
-              state.damage < progress.stageResults[stage.id].bestDamage && (
-                <div className="new-best">NEW BEST!</div>
+        {scored ? (
+          <>
+            {/* Stars */}
+            <div className="stars-container">
+              <div className="stars">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className={`star-result${i < stars ? ' earned' : ''}`}
+                    style={{ animationDelay: `${i * 0.2}s` }}
+                  >
+                    {i < stars ? '★' : '☆'}
+                  </span>
+                ))}
+              </div>
+              {state.usedHint && (
+                <div className="hint-notice">
+                  <span className="hint-label">ヒント使用</span>: ☆1確定
+                </div>
               )}
-          </div>
-        </div>
+              <div className="star-label">
+                {stars === 3
+                  ? 'パーフェクト！'
+                  : stars === 2
+                    ? 'よくできました！'
+                    : stars === 1
+                      ? 'クリア！'
+                      : ''}
+              </div>
+            </div>
+
+            {/* YOUR SPELL */}
+            {spells.length > 0 && (
+              <div className="spell-section">
+                <div className="spell-label">YOUR SPELL</div>
+                <div className="spell-list">
+                  {spells.map((s, i) => {
+                    const learningCmds = getSkillNode(stage.nodeId)?.commands ?? []
+                    const baseCmd = s.command.replace(/…Esc$/, '')
+                    const isLearning = learningCmds.includes(baseCmd)
+                    const isDim = s.command.includes('Esc') || s.damage === 0
+                    const colorClass = isLearning
+                      ? 'spell-learning'
+                      : isDim
+                        ? 'spell-dim'
+                        : 'spell-accent'
+                    return (
+                      <div key={i} className={`spell-item ${colorClass}`}>
+                        <div className="spell-cmd">{s.command}</div>
+                        <div className="spell-dmg">-{s.damage}</div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Stats */}
+            <div className="stats">
+              <div className="stat">
+                <div className="stat-value">{state.damage}</div>
+                <div className="stat-label">DAMAGE</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value">
+                  {stage.life - state.damage}/{stage.life}
+                </div>
+                <div className="stat-label">LIFE</div>
+              </div>
+              <div className="stat">
+                <div className="stat-value best-value">
+                  {progress.stageResults[stage.id]?.bestDamage ?? state.damage}
+                </div>
+                <div className="stat-label">BEST</div>
+                {progress.stageResults[stage.id] &&
+                  state.damage <= progress.stageResults[stage.id].bestDamage &&
+                  state.damage < progress.stageResults[stage.id].bestDamage && (
+                    <div className="new-best">NEW BEST!</div>
+                  )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="teach-result-flavor">{stage.flavor}</div>
+        )}
 
         {/* Actions */}
         <div className="actions">

@@ -109,7 +109,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         if (e.key === 'Escape') {
           e.preventDefault()
           playTick()
-          onComplete('skipped')
+          onComplete('skipped', editorState)
           return
         }
         e.preventDefault()
@@ -129,7 +129,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
             return
           }
           playTick()
-          onComplete('skipped')
+          onComplete('skipped', editorState)
           return
         }
 
@@ -192,7 +192,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
             return
           }
           playTick()
-          onComplete('skipped')
+          onComplete('skipped', editorState)
           return
         }
 
@@ -212,7 +212,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
               if (target === ':e!') {
                 setEditorState(createEditorState(initText, initCursor))
               } else if (target === ':q!') {
-                onComplete('skipped')
+                onComplete('skipped', editorState)
                 return
               } else if (target === ':h' && stage && stage.hints.length > 0) {
                 playHint()
@@ -255,7 +255,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
       // Skip with Esc — but not if the current step expects Esc
       if (key === 'Esc' && step.expectedKey !== 'Esc') {
         playTick()
-        onComplete('skipped')
+        onComplete('skipped', editorState)
         return
       }
 
@@ -498,7 +498,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
           className="skip-btn"
           onClick={() => {
             playTick()
-            onComplete(isReview ? 'completed' : 'skipped')
+            onComplete(isReview ? 'completed' : 'skipped', editorState)
           }}
           title={isReview ? 'Esc で閉じる' : 'Esc でスキップ'}
         >

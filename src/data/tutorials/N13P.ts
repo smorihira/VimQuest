@@ -1,9 +1,9 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N13-P: C/Sで書き換え */
-export const N13_P_TUTORIAL: Tutorial = {
+/** N13-Ta: C/Sで書き換え */
+export const N13_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N13',
-  stageId: 'N13-P',
+  stageId: 'N13-Ta',
   steps: [
     {
       message: 'C を押せ。カーソルから行末まで消して Insert に入る',

@@ -13,6 +13,7 @@ import { hasTutorial } from '../../data/tutorials'
 import type { SkillNodeDef } from '../../types/game'
 import type { GameProgress } from '../../types/game'
 import type { Stage } from '../../types/stage'
+import { isScoredStage } from '../../types/stage'
 import './SkillTreeScreen.css'
 import { playTick } from '../../engine/sound'
 
@@ -38,7 +39,7 @@ function getNodeStars(
   node: SkillNodeDef,
   progress: GameProgress,
 ): { earned: number; total: number } {
-  const stages = getStagesByNode(node.id)
+  const stages = getStagesByNode(node.id).filter((s) => isScoredStage(s.type))
   const total = stages.length * 3
   const earned = stages.reduce((sum, s) => {
     const result = progress.stageResults[s.id]
@@ -208,9 +209,11 @@ export function SkillTreeScreen() {
       for (const s of stages) {
         const r = progress.stageResults[s.id]
         if (r && r.bestStars > 0) clearedStages++
-        earnedStars += r?.bestStars ?? 0
+        if (isScoredStage(s.type)) {
+          earnedStars += r?.bestStars ?? 0
+          totalStars += 3
+        }
       }
-      totalStars += stages.length * 3
     }
     return { totalStages, clearedStages, totalStars, earnedStars }
   }, [progress])
@@ -253,7 +256,7 @@ export function SkillTreeScreen() {
       <div className="tree-grid" ref={gridRef}>
         {SKILL_NODES.map((node, idx) => {
           const status = getNodeStatus(node, progress)
-          const { earned } = getNodeStars(node, progress)
+          const { earned, total } = getNodeStars(node, progress)
           const stages = getStagesByNode(node.id)
 
           return (
@@ -273,11 +276,11 @@ export function SkillTreeScreen() {
                 {node.commands.slice(0, 4).join(' ')}
                 {node.commands.length > 4 && ' …'}
               </div>
-              {stages.length > 0 && (
+              {total > 0 && (
                 <div className="node-stars">
                   {[0, 1, 2].map((i) => {
-                    // Show average stars across stages
-                    const avgStars = stages.length > 0 ? earned / stages.length : 0
+                    const scoredStages = stages.filter((s) => isScoredStage(s.type))
+                    const avgStars = scoredStages.length > 0 ? earned / scoredStages.length : 0
                     return (
                       <span
                         key={i}
@@ -310,6 +313,7 @@ export function SkillTreeScreen() {
               {getStagesByNode(selectedNode.id).map((stage, si) => {
                 const result = progress.stageResults[stage.id]
                 const stars = result?.bestStars ?? 0
+                const scored = isScoredStage(stage.type)
                 const hasTut = hasTutorial(stage.id, stage.nodeId)
                 return (
                   <div
@@ -319,13 +323,17 @@ export function SkillTreeScreen() {
                   >
                     <span className="stage-type">{typeLabel(stage.type)}</span>
                     <span className="stage-name">{stage.title}</span>
-                    <span className="stage-stars">
-                      {[0, 1, 2].map((i) => (
-                        <span key={i} className={i < stars ? 'star-on' : 'star-off'}>
-                          ★
-                        </span>
-                      ))}
-                    </span>
+                    {scored ? (
+                      <span className="stage-stars">
+                        {[0, 1, 2].map((i) => (
+                          <span key={i} className={i < stars ? 'star-on' : 'star-off'}>
+                            ★
+                          </span>
+                        ))}
+                      </span>
+                    ) : (
+                      <span className="stage-stars">{stars > 0 ? '✓' : ''}</span>
+                    )}
                     {hasTut && (
                       <button
                         className="stage-tutorial-btn"

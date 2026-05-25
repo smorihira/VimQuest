@@ -6,6 +6,11 @@ export type Language = 'plaintext' | 'css' | 'html' | 'json' | 'javascript' | 'p
 /** Stage difficulty type */
 export type StageType = 'tutorial' | 'teach' | 'practice' | 'challenge'
 
+/** Whether a stage type contributes to scoring (stars, damage records) */
+export function isScoredStage(type: StageType): boolean {
+  return type === 'practice' || type === 'challenge'
+}
+
 /** Star rating */
 export type StarRating = 0 | 1 | 2 | 3
 

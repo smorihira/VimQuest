@@ -8,6 +8,7 @@
 
 import { useState, useCallback, useRef, useMemo } from 'react'
 import type { Stage } from '../../types/stage'
+import { isScoredStage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import type { Command } from '../../types/command'
 import { createEditorState } from '../../types/editor'
@@ -102,7 +103,7 @@ export function usePlayEngine(
     ),
   )
 
-  const life = stage.life
+  const life = isScoredStage(stage.type) ? stage.life : 999
   const lifePercent = Math.max(0, ((life - damage) / life) * 100)
 
   const projectedStars = useMemo(() => {

@@ -29,7 +29,7 @@ import { N25_T_TUTORIAL } from './N25'
 import { N10_T_TUTORIAL } from './N10'
 import { N12_T_TUTORIAL } from './N12'
 import { N13_T_TUTORIAL } from './N13'
-import { N13_P_TUTORIAL } from './N13P'
+import { N13_Ta_TUTORIAL } from './N13P'
 import { N17_T_TUTORIAL } from './N17'
 import { N18_T_TUTORIAL } from './N18'
 import { N20_T_TUTORIAL } from './N20'
@@ -37,7 +37,7 @@ import { N21_T_TUTORIAL } from './N21'
 import { N22_T_TUTORIAL } from './N22'
 import { N23_T_TUTORIAL } from './N23'
 import { N24_T_TUTORIAL } from './N24'
-import { N27_1_TUTORIAL, N27_2_TUTORIAL, N27_3_TUTORIAL } from './N27'
+import { N27_T_TUTORIAL, N27_Ta_TUTORIAL, N27_Tb_TUTORIAL } from './N27'
 import { N28_T_TUTORIAL } from './N28'
 import { N30_T_TUTORIAL } from './N30'
 import { N29_T_TUTORIAL } from './N29'
@@ -72,7 +72,7 @@ const TUTORIALS: Record<string, Tutorial> = {
   'N10-T': N10_T_TUTORIAL,
   'N12-T': N12_T_TUTORIAL,
   'N13-T': N13_T_TUTORIAL,
-  'N13-P': N13_P_TUTORIAL,
+  'N13-Ta': N13_Ta_TUTORIAL,
   'N17-T': N17_T_TUTORIAL,
   'N18-T': N18_T_TUTORIAL,
   'N20-T': N20_T_TUTORIAL,
@@ -80,9 +80,9 @@ const TUTORIALS: Record<string, Tutorial> = {
   'N22-T': N22_T_TUTORIAL,
   'N23-T': N23_T_TUTORIAL,
   'N24-T': N24_T_TUTORIAL,
-  'N27-1': N27_1_TUTORIAL,
-  'N27-2': N27_2_TUTORIAL,
-  'N27-3': N27_3_TUTORIAL,
+  'N27-T': N27_T_TUTORIAL,
+  'N27-Ta': N27_Ta_TUTORIAL,
+  'N27-Tb': N27_Tb_TUTORIAL,
   'N28-T': N28_T_TUTORIAL,
   'N30-T': N30_T_TUTORIAL,
   'N29-T': N29_T_TUTORIAL,

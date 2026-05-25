@@ -8,7 +8,7 @@ export const N27_STAGES: Stage[] = [
   // ── Teach 1: v で文字選択して削除 ──
   // opt = 6 (f<(1)+v(0)+f>(1)+d(1) + f<(1)+v(0)+f>(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
-    id: 'N27-1',
+    id: 'N27-T',
     nodeId: 'N27',
     type: 'teach',
     title: '文字を選べ',
@@ -27,7 +27,7 @@ export const N27_STAGES: Stage[] = [
   // ── Teach 2: V で行選択して削除 ──
   // opt = 4 (j(1)+V(0)+j(1)+d(1) + V(0)+d(1)) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
-    id: 'N27-2',
+    id: 'N27-Ta',
     nodeId: 'N27',
     type: 'teach',
     title: '行を選べ',
@@ -46,7 +46,7 @@ export const N27_STAGES: Stage[] = [
   // ── Teach 3: Ctrl+v で矩形選択して削除 ──
   // opt = 6 (Ctrl+v(0)+j(1)+d(1) + jj(2)+Ctrl+v(0)+j(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
-    id: 'N27-3',
+    id: 'N27-Tb',
     nodeId: 'N27',
     type: 'teach',
     title: '矩形で切れ',

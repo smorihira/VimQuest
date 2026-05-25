@@ -1,9 +1,9 @@
 import type { Tutorial } from '../../types/tutorial'
 
-/** N27-1: 文字を選べ (v + d) */
-export const N27_1_TUTORIAL: Tutorial = {
+/** N27-T: 文字を選べ (v + d) */
+export const N27_T_TUTORIAL: Tutorial = {
   nodeId: 'N27',
-  stageId: 'N27-1',
+  stageId: 'N27-T',
   steps: [
     {
       message: 'f< で < に移動',
@@ -28,10 +28,10 @@ export const N27_1_TUTORIAL: Tutorial = {
   ],
 }
 
-/** N27-2: 行を選べ (V + d) */
-export const N27_2_TUTORIAL: Tutorial = {
+/** N27-Ta: 行を選べ (V + d) */
+export const N27_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N27',
-  stageId: 'N27-2',
+  stageId: 'N27-Ta',
   steps: [
     {
       message: 'j で削除対象の行に移動',
@@ -56,10 +56,10 @@ export const N27_2_TUTORIAL: Tutorial = {
   ],
 }
 
-/** N27-3: 矩形で切れ (Ctrl+v + d) */
-export const N27_3_TUTORIAL: Tutorial = {
+/** N27-Tb: 矩形で切れ (Ctrl+v + d) */
+export const N27_Tb_TUTORIAL: Tutorial = {
   nodeId: 'N27',
-  stageId: 'N27-3',
+  stageId: 'N27-Tb',
   steps: [
     {
       message: 'Ctrl+v を押せ。矩形選択モードに入る',
