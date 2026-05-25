@@ -1,0 +1,160 @@
+/**
+ * Data Integrity Tests
+ *
+ * B1: Tutorial stageId references a valid stage
+ * B2: Tutorial expectedKeys are available in the stage's commands
+ * C1: All skill tree nodes are reachable from N01
+ * C3: All prerequisites reference valid nodes
+ */
+
+import { describe, it, expect } from 'vitest'
+import { getAllTutorials } from '../data/tutorials'
+import { ALL_STAGES, getStage } from '../data/stages'
+import { SKILL_NODES, SKILL_NODE_MAP } from '../data/skillTree'
+import { BASE_COMMANDS } from '../data/constants'
+
+// ─── B: Tutorial Data Integrity ──────────────────────────────────────
+
+const TUTORIALS = getAllTutorials()
+
+// Tutorials for stages/nodes not yet implemented
+const UNIMPLEMENTED_TUTORIALS = new Set(['N23-T', 'N30-T'])
+
+describe('Tutorial data integrity', () => {
+  for (const [key, tutorial] of Object.entries(TUTORIALS)) {
+    if (UNIMPLEMENTED_TUTORIALS.has(key)) continue
+
+    describe(`${key} (stageId=${tutorial.stageId})`, () => {
+      // B1: stageId references a valid stage
+      it('stageId references an existing stage', () => {
+        const stage = getStage(tutorial.stageId)
+        expect(stage, `stage ${tutorial.stageId} not found`).toBeDefined()
+      })
+
+      // B1: nodeId references a valid node
+      it('nodeId references an existing node', () => {
+        expect(SKILL_NODE_MAP[tutorial.nodeId], `node ${tutorial.nodeId} not found`).toBeDefined()
+      })
+
+      // B2: every expectedKey is available in the stage's commands + BASE_COMMANDS
+      it('all expectedKeys are available commands', () => {
+        const stage = getStage(tutorial.stageId)
+        if (!stage) return // covered by B1
+
+        const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
+        const allCommands = new Set([
+          ...stage.availableCommands,
+          ...(stage.visualCommands ?? []),
+          ...(showBase ? BASE_COMMANDS : []),
+        ])
+
+        // Always-available keys (not part of stage commands but usable in tutorials)
+        const builtinKeys = new Set([
+          'Esc',
+          'Enter',
+          'Backspace',
+          'Ctrl+R',
+          'Ctrl+d',
+          'Ctrl+u',
+          'Ctrl+v',
+          'u',
+          ':',
+          '/',
+        ])
+
+        for (const step of tutorial.steps) {
+          if (step.expectedKey === null) continue // info step, any key
+          if (step.type === 'hold_space') continue // Space hold step
+          if (step.type === 'colon_command') continue // handled separately
+          if (step.type === 'search') continue // handled separately
+
+          const key = step.expectedKey
+          if (builtinKeys.has(key)) continue
+
+          // Single character keys (typing, motion targets, etc.) are always valid
+          if (key.length === 1) continue
+
+          // Multi-char expectedKeys: "dd", "f{", "dt1", "ci\"", ""ayiw", "gUiw", ">>"
+          // Check that this key (or its operator prefix) exists in availableCommands
+          // or that one of the available commands shares the same operator prefix
+          const hasCommand =
+            allCommands.has(key) || // exact match (e.g. "dd", "gg", ">>")
+            [...allCommands].some((cmd) => {
+              // The expectedKey uses the same operator/motion as an available command
+              // e.g. expectedKey "diw" matches available "dd" (both use 'd' operator)
+              // e.g. expectedKey "cf;" matches available "ciw" (both use 'c' operator)
+              if (cmd.length === 0 || key.length === 0) return false
+              // Strip register prefix from both
+              const cmdBase = cmd[0] === '"' && cmd.length >= 3 ? cmd.slice(2) : cmd
+              const keyBase = key[0] === '"' && key.length >= 3 ? key.slice(2) : key
+              // Compare leading operator/motion character
+              return cmdBase[0] === keyBase[0]
+            })
+
+          expect(
+            hasCommand,
+            `expectedKey "${key}" has no matching operator in availableCommands for ${stage.id} (available: ${[...allCommands].join(', ')})`,
+          ).toBe(true)
+        }
+      })
+    })
+  }
+})
+
+// ─── C: Skill Tree Integrity ─────────────────────────────────────────
+
+describe('Skill tree integrity', () => {
+  // C3: All prerequisites reference valid nodes
+  it('all prerequisites reference existing nodes', () => {
+    for (const node of SKILL_NODES) {
+      for (const pre of node.prerequisites) {
+        expect(
+          SKILL_NODE_MAP[pre],
+          `node ${node.id} has prerequisite "${pre}" which doesn't exist`,
+        ).toBeDefined()
+      }
+    }
+  })
+
+  // C1: All nodes are reachable from N01
+  it('all nodes are reachable from N01', () => {
+    const reachable = new Set<string>()
+    const queue = ['N01']
+    reachable.add('N01')
+
+    // Build adjacency: prerequisite → dependent
+    const dependents = new Map<string, string[]>()
+    for (const node of SKILL_NODES) {
+      for (const pre of node.prerequisites) {
+        if (!dependents.has(pre)) dependents.set(pre, [])
+        dependents.get(pre)!.push(node.id)
+      }
+    }
+
+    while (queue.length > 0) {
+      const current = queue.shift()!
+      const children = dependents.get(current) ?? []
+      for (const child of children) {
+        if (!reachable.has(child)) {
+          reachable.add(child)
+          queue.push(child)
+        }
+      }
+    }
+
+    for (const node of SKILL_NODES) {
+      expect(reachable.has(node.id), `node ${node.id} is not reachable from N01`).toBe(true)
+    }
+  })
+
+  // Every stage's nodeId maps to a valid node (already in balanceValidator, but good to cross-check)
+  it('every stage belongs to a valid node', () => {
+    const allStages = Object.values(ALL_STAGES)
+    for (const stage of allStages) {
+      expect(
+        SKILL_NODE_MAP[stage.nodeId],
+        `stage ${stage.id} references non-existent node ${stage.nodeId}`,
+      ).toBeDefined()
+    }
+  })
+})

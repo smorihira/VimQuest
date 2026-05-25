@@ -98,3 +98,8 @@ export function hasTutorial(stageId: string, nodeId?: string): boolean {
 export function getTutorial(stageId: string, nodeId?: string): Tutorial | undefined {
   return TUTORIALS[stageId] ?? (nodeId !== undefined ? TUTORIALS[nodeId] : undefined)
 }
+
+/** Get all tutorials (for testing/validation) */
+export function getAllTutorials(): Record<string, Tutorial> {
+  return TUTORIALS
+}

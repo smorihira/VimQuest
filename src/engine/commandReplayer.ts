@@ -10,8 +10,7 @@ import type { CursorPosition } from '../types/editor'
 import { createEditorState } from '../types/editor'
 import { CommandParser } from './commandParser'
 import { executeCommand, finalizeInsertSession } from './commandExecutor'
-
-const INSERT_FREE_CHARS = 5
+import { insertSessionDamage } from './damageModel'
 
 /** Tokenize a hint command string into individual key presses. */
 function tokenizeHintCommand(cmdStr: string): string[] {
@@ -127,7 +126,7 @@ export function calculateHintDamage(
 
     if (prevMode === 'insert') {
       if (cmd === 'Esc') {
-        damage += 1 + Math.max(0, charCount - INSERT_FREE_CHARS)
+        damage += insertSessionDamage(charCount)
         charCount = 0
       } else {
         charCount += cmd.length

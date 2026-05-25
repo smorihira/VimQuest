@@ -15,14 +15,12 @@ import { CommandParser } from '../../engine/commandParser'
 import { executeCommand, finalizeInsertSession } from '../../engine/commandExecutor'
 import { isStageClear } from '../../engine/clearChecker'
 import { evaluateAttempt } from '../../engine/damageCalculator'
+import { insertSessionDamage } from '../../engine/damageModel'
 import type { StarRating } from '../../types/stage'
 import type { SpellEntry } from '../../types/spell'
 
 export type { SpellEntry }
 export type PlayStatus = 'playing' | 'clear' | 'dead'
-
-/** Number of free characters per INSERT session before excess damage kicks in */
-const INSERT_FREE_CHARS = 5
 
 /** Insert session tracking state */
 interface InsertSession {
@@ -270,7 +268,7 @@ export function usePlayEngine(
           insertRef.current = null
 
           // Compute insert damage: base cost 1 + excess chars beyond free threshold
-          const insertDamage = 1 + Math.max(0, charCount - INSERT_FREE_CHARS)
+          const insertDamage = insertSessionDamage(charCount)
           const newDamage = damage + insertDamage
           setDamage(newDamage)
           setSpells((prev) => [
