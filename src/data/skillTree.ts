@@ -128,16 +128,21 @@ export const SKILL_NODES: SkillNodeDef[] = [
     prerequisites: ['N20'],
   },
   { id: 'N26', name: 'インデント', commands: ['>>', '<<'], stageCount: 1, prerequisites: ['N20'] },
-  { id: 'N27', name: 'Visualモード', commands: ['v', 'V'], stageCount: 2, prerequisites: ['N20'] },
-  { id: 'N28', name: '矩形選択', commands: ['Ctrl+v'], stageCount: 2, prerequisites: ['N27'] },
   {
-    id: 'N29',
+    id: 'N27',
+    name: 'Visualモード',
+    commands: ['v', 'V', 'Ctrl+v'],
+    stageCount: 4,
+    prerequisites: ['N20'],
+  },
+  {
+    id: 'N28',
     name: 'ヤンク＆ペースト',
     commands: ['y', 'p', 'P'],
     stageCount: 3,
     prerequisites: ['N20'],
   },
-  { id: 'N31', name: 'レジスタ', commands: ['"a', '"0'], stageCount: 2, prerequisites: ['N29'] },
+  { id: 'N29', name: 'レジスタ', commands: ['"a', '"0'], stageCount: 2, prerequisites: ['N28'] },
 ]
 
 /** All edges derived from prerequisites */

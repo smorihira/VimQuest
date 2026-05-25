@@ -37,11 +37,10 @@ import { N21_T_TUTORIAL } from './N21'
 import { N22_T_TUTORIAL } from './N22'
 import { N23_T_TUTORIAL } from './N23'
 import { N24_T_TUTORIAL } from './N24'
-import { N27_T_TUTORIAL } from './N27'
+import { N27_1_TUTORIAL, N27_2_TUTORIAL, N27_3_TUTORIAL } from './N27'
 import { N28_T_TUTORIAL } from './N28'
-import { N29_T_TUTORIAL } from './N29'
 import { N30_T_TUTORIAL } from './N30'
-import { N31_T_TUTORIAL } from './N31'
+import { N29_T_TUTORIAL } from './N29'
 
 /** All tutorials keyed by stage ID or node ID */
 const TUTORIALS: Record<string, Tutorial> = {
@@ -81,11 +80,12 @@ const TUTORIALS: Record<string, Tutorial> = {
   'N22-T': N22_T_TUTORIAL,
   'N23-T': N23_T_TUTORIAL,
   'N24-T': N24_T_TUTORIAL,
-  'N27-T': N27_T_TUTORIAL,
+  'N27-1': N27_1_TUTORIAL,
+  'N27-2': N27_2_TUTORIAL,
+  'N27-3': N27_3_TUTORIAL,
   'N28-T': N28_T_TUTORIAL,
-  'N29-T': N29_T_TUTORIAL,
   'N30-T': N30_T_TUTORIAL,
-  'N31-T': N31_T_TUTORIAL,
+  'N29-T': N29_T_TUTORIAL,
 }
 
 /** Check if a stage or node has a tutorial (stageId first, then nodeId fallback) */

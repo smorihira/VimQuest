@@ -1,45 +1,61 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N28: 矩形選択 (Ctrl+v)
- * Teach(T) + Practice(P) = 2ステージ
+ * N28: ヤンク＆ペースト (y + motion/textobj, p, P)
+ * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N28_STAGES: Stage[] = [
-  // ── Teach: 矩形選択で列削除（4行、チュートリアルは前2行のみガイド） ──
-  // opt = 6 (Ctrl+v(0)+j(1)+d(1) + jj(2)+Ctrl+v(0)+j(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
+  // ── Teach: yiw でコピー → p でペースト（2行） ──
+  // opt = 2 (自力: $+p) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N28-T',
     nodeId: 'N28',
     type: 'teach',
-    title: '矩形で切れ',
+    title: 'コピーせよ',
     language: 'plaintext',
-    initialText: 'X hello\nX world\nX alpha\nX beta',
-    goalText: ' hello\n world\n alpha\n beta',
+    initialText: 'hello world\nfoo bar',
+    goalText: 'hello worldhello\nfoo barfoo',
     initialCursor: { line: 0, col: 0 },
-    life: 12,
-    stars: [6, 7, 9],
-    availableCommands: ['v', 'V', 'Ctrl+v'],
-    visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['Ctrl+v', 'j', 'd', 'j', 'j', 'Ctrl+v', 'j', 'd'] }],
-    flavor: 'Ctrl+v で矩形選択。縦1列をまとめて消せる',
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['yiw', 'v', 'p', 'f', 't'],
+    hints: [{ cost: 1, commands: ['yiw', '$', 'p', 'j', '0', 'yiw', '$', 'p'] }],
+    flavor: 'yiw で単語をヤンク（コピー）し、p でペーストだ',
   },
 
-  // ── Practice: 矩形選択で接頭辞を除去 ──
-  // opt = 5 (Ctrl+v + jjj + ll + d)
+  // ── Practice: yy で行コピー、p でペースト ──
+  // opt = 3 (j + yy + p)
   {
     id: 'N28-P',
     nodeId: 'N28',
     type: 'practice',
-    title: '列を消せ',
+    title: '行を複製',
+    language: 'javascript',
+    initialText: 'const a = 1;\nconst b = 2;',
+    goalText: 'const a = 1;\nconst b = 2;\nconst b = 2;',
+    initialCursor: { line: 0, col: 0 },
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['y', 'yy', 'v', 'V', 'p', 'P'],
+    hints: [{ cost: 1, commands: ['j', 'yy', 'p'] }],
+    flavor: 'yy で行全体をヤンクし、p で下に複製せよ',
+  },
+
+  // ── Challenge: dd + P で行を移動 ──
+  // opt = 3 (jj + dd + P)
+  {
+    id: 'N28-C',
+    nodeId: 'N28',
+    type: 'challenge',
+    title: '切り貼りせよ',
     language: 'plaintext',
-    initialText: '-- alpha\n-- beta\n-- gamma\n-- delta',
-    goalText: ' alpha\n beta\n gamma\n delta',
+    initialText: 'first\nthird\nsecond',
+    goalText: 'first\nsecond\nthird',
     initialCursor: { line: 0, col: 0 },
     life: 11,
-    stars: [5, 7, 9],
-    availableCommands: ['v', 'V', 'Ctrl+v'],
-    visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['Ctrl+v', 'j', 'j', 'j', 'l', 'd'] }],
-    flavor: '全行の -- を矩形選択で一括削除せよ',
+    stars: [3, 6, 9],
+    availableCommands: ['y', 'yy', 'dd', 'p', 'P'],
+    hints: [{ cost: 1, commands: ['j', 'j', 'dd', 'P'] }],
+    flavor: 'dd で行を切り取り、P でカーソルの上にペーストだ',
   },
 ]

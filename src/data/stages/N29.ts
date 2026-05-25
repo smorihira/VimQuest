@@ -1,61 +1,54 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N29: ヤンク＆ペースト (y + motion/textobj, p, P)
- * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
+ * N29: レジスタ ("a〜"z, "0)
+ * Teach(T) + Practice(P) = 2ステージ
  */
 export const N29_STAGES: Stage[] = [
-  // ── Teach: yiw でコピー → p でペースト（2行） ──
-  // opt = 2 (自力: $+p) → ☆3=2, ☆2=3, ☆1=5, life=8
+  // ── Teach: 名前付きレジスタ（2行でヤンク→ペースト全フロー） ──
+  // opt = 4 (自力: j+"byiw+$+"bp) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N29-T',
     nodeId: 'N29',
     type: 'teach',
-    title: 'コピーせよ',
+    title: 'レジスタ入門',
     language: 'plaintext',
     initialText: 'hello world\nfoo bar',
     goalText: 'hello worldhello\nfoo barfoo',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['yiw', 'v', 'p', 'f', 't'],
-    hints: [{ cost: 1, commands: ['yiw', '$', 'p', 'j', '0', 'yiw', '$', 'p'] }],
-    flavor: 'yiw で単語をヤンク（コピー）し、p でペーストだ',
+    life: 10,
+    stars: [4, 5, 7],
+    availableCommands: ['y', 'p', 'P', '"a', '"b', '"0'],
+    clearConditions: {
+      registers: { a: 'hello', b: 'foo' },
+    },
+    hints: [{ cost: 1, commands: ['"ayiw', '$', '"ap', 'j', '0', '"byiw', '$', '"bp'] }],
+    flavor: '"a で名前付きレジスタに保存。後から正確に貼り付けられる',
   },
 
-  // ── Practice: yy で行コピー、p でペースト ──
-  // opt = 3 (j + yy + p)
+  // ── Practice: 複数レジスタの使い分け ──
+  // opt = 9 ("ayiw(1)+w(1)+"byiw(1)+j(1)+$(1)+a+Esc(1)+"ap(1)+a+Esc(1)+"bp(1))
   {
     id: 'N29-P',
     nodeId: 'N29',
     type: 'practice',
-    title: '行を複製',
-    language: 'javascript',
-    initialText: 'const a = 1;\nconst b = 2;',
-    goalText: 'const a = 1;\nconst b = 2;\nconst b = 2;',
-    initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['y', 'yy', 'v', 'V', 'p', 'P'],
-    hints: [{ cost: 1, commands: ['j', 'yy', 'p'] }],
-    flavor: 'yy で行全体をヤンクし、p で下に複製せよ',
-  },
-
-  // ── Challenge: dd + P で行を移動 ──
-  // opt = 3 (jj + dd + P)
-  {
-    id: 'N29-C',
-    nodeId: 'N29',
-    type: 'challenge',
-    title: '切り貼りせよ',
+    title: 'レジスタ活用',
     language: 'plaintext',
-    initialText: 'first\nthird\nsecond',
-    goalText: 'first\nsecond\nthird',
+    initialText: 'foo bar\nbaz',
+    goalText: 'foo bar\nbaz foo bar',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [3, 6, 9],
-    availableCommands: ['y', 'yy', 'dd', 'p', 'P'],
-    hints: [{ cost: 1, commands: ['j', 'j', 'dd', 'P'] }],
-    flavor: 'dd で行を切り取り、P でカーソルの上にペーストだ',
+    life: 15,
+    stars: [9, 11, 13],
+    availableCommands: ['y', 'p', 'P', '"a', '"b', '"0', 'A'],
+    clearConditions: {
+      registers: { a: 'foo', b: 'bar' },
+    },
+    hints: [
+      {
+        cost: 1,
+        commands: ['"ayiw', 'w', '"byiw', 'j', '$', 'a', ' ', 'Esc', '"ap', 'a', ' ', 'Esc', '"bp'],
+      },
+    ],
+    flavor: '"a と "b に別々の単語を保存し、組み合わせてペーストせよ',
   },
 ]

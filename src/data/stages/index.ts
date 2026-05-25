@@ -27,7 +27,6 @@ import { N26_STAGES } from './N26'
 import { N27_STAGES } from './N27'
 import { N28_STAGES } from './N28'
 import { N29_STAGES } from './N29'
-import { N31_STAGES } from './N31'
 
 const ALL_STAGE_ARRAYS: Stage[][] = [
   N01_STAGES,
@@ -58,7 +57,6 @@ const ALL_STAGE_ARRAYS: Stage[][] = [
   N27_STAGES,
   N28_STAGES,
   N29_STAGES,
-  N31_STAGES,
 ]
 
 /** All stages keyed by stage ID */
