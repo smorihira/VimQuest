@@ -157,4 +157,114 @@ describe('Skill tree integrity', () => {
       ).toBeDefined()
     }
   })
+
+  // C2: Every availableCommand in a stage must be learnable by the time the player reaches that node
+  // i.e. it must be in: self node commands ∪ transitive prerequisite commands ∪ BASE_COMMANDS
+  // Composite commands (e.g. "dw") are learnable if the operator ("d") appears in any learnable composite
+  describe('C2: stage availableCommands are learnable', () => {
+    // Stages with known prerequisite chain gaps (see TEST-DESIGN.md)
+    // N19: uses d-operator but N10 not in prerequisites
+    // N20: uses d-operator but N10 not in prerequisites
+    // N27: visual d but d-operator (N10) not in prerequisites
+    // N28: uses v but N27 not in prerequisites
+    const KNOWN_PREREQ_GAPS = new Set([
+      'N19-T',
+      'N19-P',
+      'N20-T',
+      'N20-P',
+      'N27-1',
+      'N27-2',
+      'N27-3',
+      'N27-P',
+      'N28-T',
+      'N28-P',
+      'N28-C',
+      'N29-T',
+      'N29-P',
+    ])
+    // Build transitive prerequisite commands for each node (cached)
+    const learnableCache = new Map<string, Set<string>>()
+    function getLearnableCommands(nodeId: string): Set<string> {
+      if (learnableCache.has(nodeId)) return learnableCache.get(nodeId)!
+      const result = new Set<string>()
+      const visited = new Set<string>()
+      const queue = [nodeId]
+      while (queue.length > 0) {
+        const id = queue.shift()!
+        if (visited.has(id)) continue
+        visited.add(id)
+        const node = SKILL_NODE_MAP[id]
+        if (!node) continue
+        for (const cmd of node.commands) result.add(cmd)
+        for (const pre of node.prerequisites) queue.push(pre)
+      }
+      for (const cmd of BASE_COMMANDS) result.add(cmd)
+      learnableCache.set(nodeId, result)
+      return result
+    }
+
+    // Extract known operator prefixes from a learnable set
+    // e.g. if "dw" is learnable, operator "d" is known
+    const OPERATOR_CHARS = new Set(['d', 'c', 'y', '>', '<', '!'])
+    function isCommandLearnable(cmd: string, learnable: Set<string>): boolean {
+      if (learnable.has(cmd)) return true
+
+      // Register prefix: "a → if any "x exists in learnable, register usage is known
+      if (cmd.startsWith('"') && cmd.length >= 2) {
+        const hasRegister = [...learnable].some((l) => l.startsWith('"'))
+        if (hasRegister) {
+          // Check the command after register prefix
+          return cmd.length === 2 || isCommandLearnable(cmd.slice(2), learnable)
+        }
+        return false
+      }
+
+      // g-prefix operators: gU, gu, g~
+      if (cmd.startsWith('gU') || cmd.startsWith('gu') || cmd.startsWith('g~')) {
+        const op = cmd.slice(0, 2)
+        return [...learnable].some((l) => l.startsWith(op))
+      }
+
+      // Operator+motion composite: dw, ciw, yy, etc.
+      if (cmd.length > 1 && OPERATOR_CHARS.has(cmd[0])) {
+        return [...learnable].some((l) => l.length > 0 && l[0] === cmd[0])
+      }
+
+      // Doubled operator: >>, <<
+      if (cmd.length === 2 && cmd[0] === cmd[1] && OPERATOR_CHARS.has(cmd[0])) {
+        return [...learnable].some((l) => l[0] === cmd[0])
+      }
+
+      return false
+    }
+
+    const allStages = Object.values(ALL_STAGES)
+    for (const stage of allStages) {
+      if (KNOWN_PREREQ_GAPS.has(stage.id)) continue
+
+      it(`${stage.id}: availableCommands ⊆ learnable commands`, () => {
+        const learnable = getLearnableCommands(stage.nodeId)
+
+        for (const cmd of stage.availableCommands) {
+          expect(
+            isCommandLearnable(cmd, learnable),
+            `stage ${stage.id} uses command "${cmd}" which is not learnable at node ${stage.nodeId} (learnable: ${[...learnable].sort().join(', ')})`,
+          ).toBe(true)
+        }
+      })
+
+      if (stage.visualCommands) {
+        it(`${stage.id}: visualCommands ⊆ learnable commands`, () => {
+          const learnable = getLearnableCommands(stage.nodeId)
+
+          for (const cmd of stage.visualCommands!) {
+            expect(
+              isCommandLearnable(cmd, learnable),
+              `stage ${stage.id} uses visual command "${cmd}" which is not learnable at node ${stage.nodeId}`,
+            ).toBe(true)
+          }
+        })
+      }
+    }
+  })
 })

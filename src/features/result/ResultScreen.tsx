@@ -8,6 +8,7 @@ import { useParams, useNavigate, useLocation } from 'react-router'
 import { useAtom } from 'jotai'
 import { getStage, getStagesByNode } from '../../data/stages'
 import { calculateStars, applyHintPenalty } from '../../engine/damageCalculator'
+import { computeProgressUpdate } from '../../engine/progressUpdater'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES, getSkillNode } from '../../data/skillTree'
 import type { StarRating } from '../../types/stage'
@@ -37,7 +38,6 @@ export function ResultScreen() {
   const state = (location.state as LocationState) ?? { damage: 0, usedHint: false, spells: [] }
   const spells = state.spells ?? []
   const playMode = state.playMode ?? 'normal'
-  const fromTutorial = playMode === 'fromTutorial'
   const practiceMode = playMode === 'practice'
   const noScore = playMode !== 'normal'
   const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
@@ -48,59 +48,17 @@ export function ResultScreen() {
     if (!stage || saved.current || practiceMode) return
     saved.current = true
 
-    setProgress((prev) => {
-      const existing = prev.stageResults[stage.id]
-
-      // When continuing from tutorial, only mark as cleared (bestStars=1)
-      // without recording damage/stars as best — replay without tutorial for real score
-      const bestStars = fromTutorial
-        ? (Math.max(existing?.bestStars ?? 0, 1) as StarRating)
-        : existing
-          ? (Math.max(existing.bestStars, stars) as StarRating)
-          : (stars as StarRating)
-      const bestDamage = fromTutorial
-        ? (existing?.bestDamage ?? stage.life)
-        : existing
-          ? Math.min(existing.bestDamage, state.damage)
-          : state.damage
-
-      const nextResults = {
-        ...prev.stageResults,
-        [stage.id]: {
-          stageId: stage.id,
-          bestStars,
-          bestDamage,
-          usedHint: existing ? existing.usedHint && state.usedHint : state.usedHint,
-        },
-      }
-
-      // Check if all stages in this node are now cleared → unlock dependents
-      const allNodeStages = getStagesByNode(stage.nodeId)
-      const allCleared = allNodeStages.every((s) => nextResults[s.id]?.bestStars >= 1)
-
-      let nextUnlocked = prev.unlockedNodes
-      if (allCleared) {
-        const dependents = SKILL_NODES.filter((n) => n.prerequisites.includes(stage.nodeId))
-          .filter((n) =>
-            n.prerequisites.every((pre) => {
-              const preStages = getStagesByNode(pre)
-              return preStages.every((s) => nextResults[s.id]?.bestStars >= 1)
-            }),
-          )
-          .map((n) => n.id)
-
-        const newNodes = dependents.filter((id) => !prev.unlockedNodes.includes(id))
-        if (newNodes.length > 0) {
-          nextUnlocked = [...prev.unlockedNodes, ...newNodes]
-        }
-      }
-
-      return {
-        ...prev,
-        stageResults: nextResults,
-        unlockedNodes: nextUnlocked,
-      }
-    })
+    setProgress((prev) =>
+      computeProgressUpdate(prev, {
+        stageId: stage.id,
+        nodeId: stage.nodeId,
+        damage: state.damage,
+        stars,
+        usedHint: state.usedHint,
+        playMode,
+        stageLife: stage.life,
+      }),
+    )
   })
 
   // Find next stage in the same node
