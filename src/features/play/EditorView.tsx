@@ -175,7 +175,9 @@ export function EditorView({
                       >
                         {isGoalCursor
                           ? renderGoalLineWithCursor(line, goalCursor!.col)
-                          : line || '\u00A0'}
+                          : isDiff
+                            ? renderDiffLine(line, currentLines[lineIdx])
+                            : trailingDots(line)}
                       </div>
                     )
                   })}
@@ -237,9 +239,31 @@ export function EditorView({
   )
 }
 
+/** Replace trailing spaces with visible · markers wrapped in a styled span */
+function trailingDots(text: string): React.ReactNode {
+  const m = text.match(/( +)$/)
+  if (!m) return text || '\u00A0'
+  const prefix = text.slice(0, -m[1].length)
+  return (
+    <>
+      {prefix}
+      <span className="trailing-space">{'·'.repeat(m[1].length)}</span>
+    </>
+  )
+}
+
+/** Check if character at col is a trailing space (all chars from col to end are spaces) */
+function isTrailingSpace(line: string, col: number): boolean {
+  if (col >= line.length || line[col] !== ' ') return false
+  for (let i = col; i < line.length; i++) {
+    if (line[i] !== ' ') return false
+  }
+  return true
+}
+
 function renderDiffLine(goalLine: string, currentLine: string | undefined): React.ReactNode[] {
   if (currentLine === undefined || currentLine === goalLine) {
-    return [<span key="text">{goalLine || '\u00A0'}</span>]
+    return [<span key="text">{trailingDots(goalLine)}</span>]
   }
 
   // Character-level diff: highlight characters that differ
@@ -254,9 +278,10 @@ function renderDiffLine(goalLine: string, currentLine: string | undefined): Reac
       while (j < goalLine.length && (j >= currentLine.length || goalLine[j] !== currentLine[j])) {
         j++
       }
+      const raw = goalLine.slice(i, j)
       result.push(
         <span key={`d${i}`} className="diff-char">
-          {goalLine.slice(i, j)}
+          {raw}
         </span>,
       )
       i = j
@@ -266,7 +291,9 @@ function renderDiffLine(goalLine: string, currentLine: string | undefined): Reac
       while (j < goalLine.length && j < currentLine.length && goalLine[j] === currentLine[j]) {
         j++
       }
-      result.push(<span key={`s${i}`}>{goalLine.slice(i, j)}</span>)
+      const span = goalLine.slice(i, j)
+      // If this non-diff span ends the line, visualize trailing spaces
+      result.push(<span key={`s${i}`}>{j === goalLine.length ? trailingDots(span) : span}</span>)
       i = j
     }
   }
@@ -297,11 +324,11 @@ function renderLineWithCursor(
     if (tokens && tokens.length > 0) {
       return tokens.map((t, i) => (
         <span key={i} style={t.color ? { color: t.color } : undefined}>
-          {t.text}
+          {i === tokens.length - 1 ? trailingDots(t.text) : t.text}
         </span>
       ))
     }
-    return [<span key="text">{line || '\u00A0'}</span>]
+    return [<span key="text">{trailingDots(line)}</span>]
   }
 
   // Cursor line: overlay cursor on top of highlighted tokens
@@ -314,28 +341,30 @@ function renderLineWithCursor(
   }
 
   if (tokens && tokens.length > 0) {
-    return renderTokensWithCursor(tokens, col, cursorClass, state.mode === 'insert')
+    return renderTokensWithCursor(tokens, col, cursorClass, state.mode === 'insert', line)
   }
 
   // Fallback: no highlighting
   const before = line.slice(0, col)
-  const cursorChar = line[col] ?? '\u00A0'
+  const rawChar = line[col] ?? '\u00A0'
+  const onTrailing = isTrailingSpace(line, col) || (col >= line.length && line.endsWith(' '))
+  const cursorChar = rawChar === ' ' && onTrailing ? '·' : rawChar
   const after = line.slice(col + 1)
 
   if (state.mode === 'insert') {
     return [
-      <span key="before">{before}</span>,
+      <span key="before">{onTrailing ? trailingDots(before) : before}</span>,
       <span key="cursor" className={cursorClass} />,
-      <span key="rest">{line.slice(col) || '\u00A0'}</span>,
+      <span key="rest">{trailingDots(line.slice(col)) || '\u00A0'}</span>,
     ]
   }
 
   return [
-    <span key="before">{before}</span>,
+    <span key="before">{onTrailing ? trailingDots(before) : before}</span>,
     <span key="cursor" className={cursorClass}>
       {cursorChar}
     </span>,
-    after ? <span key="after">{after}</span> : null,
+    after ? <span key="after">{trailingDots(after)}</span> : null,
   ].filter(Boolean) as React.ReactNode[]
 }
 
@@ -344,6 +373,7 @@ function renderTokensWithCursor(
   cursorCol: number,
   cursorClass: string,
   isInsert: boolean,
+  line: string,
 ): React.ReactNode[] {
   const result: React.ReactNode[] = []
   let pos = 0
@@ -355,9 +385,10 @@ function renderTokensWithCursor(
 
     if (cursorCol < tokenStart || cursorCol >= tokenEnd) {
       // Cursor not in this token
+      const isLast = i === tokens.length - 1
       result.push(
         <span key={i} style={token.color ? { color: token.color } : undefined}>
-          {token.text}
+          {isLast ? trailingDots(token.text) : token.text}
         </span>,
       )
     } else {
@@ -365,13 +396,16 @@ function renderTokensWithCursor(
       const offsetInToken = cursorCol - tokenStart
       const before = token.text.slice(0, offsetInToken)
       const cursorChar = token.text[offsetInToken] ?? '\u00A0'
+      const onTrailing = isTrailingSpace(line, cursorCol)
+      const displayChar = cursorChar === ' ' && onTrailing ? '·' : cursorChar
       const after = token.text.slice(offsetInToken + 1)
       const style = token.color ? { color: token.color } : undefined
+      const isLast = i === tokens.length - 1
 
       if (before) {
         result.push(
           <span key={`${i}b`} style={style}>
-            {before}
+            {isLast && onTrailing ? trailingDots(before) : before}
           </span>,
         )
       }
@@ -382,20 +416,20 @@ function renderTokensWithCursor(
         if (rest) {
           result.push(
             <span key={`${i}r`} style={style}>
-              {rest}
+              {isLast ? trailingDots(rest) : rest}
             </span>,
           )
         }
       } else {
         result.push(
           <span key={`${i}c`} className={cursorClass}>
-            {cursorChar}
+            {displayChar}
           </span>,
         )
         if (after) {
           result.push(
             <span key={`${i}a`} style={style}>
-              {after}
+              {isLast ? trailingDots(after) : after}
             </span>,
           )
         }
@@ -563,9 +597,10 @@ function renderVisualLineWithCursor(
     }
 
     if (cls) {
+      const ch = line[i] === ' ' && isTrailingSpace(line, i) ? '·' : line[i]
       result.push(
         <span key={`c${i}`} className={cls}>
-          {line[i]}
+          {ch}
         </span>,
       )
     } else {
@@ -574,7 +609,7 @@ function renderVisualLineWithCursor(
       while (j < line.length && j !== cursorCol && !(j >= visual.startCol && j <= visual.endCol)) {
         j++
       }
-      result.push(<span key={`t${i}`}>{line.slice(i, j)}</span>)
+      result.push(<span key={`t${i}`}>{trailingDots(line.slice(i, j))}</span>)
       i = j
       continue
     }

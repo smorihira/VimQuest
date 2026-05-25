@@ -6,7 +6,8 @@ import type { Stage } from '../../types/stage'
  */
 export const N28_STAGES: Stage[] = [
   // ── Teach: 矩形選択で列を削除 ──
-  // opt = 3 (Ctrl+v + jj + d)
+  // ── Teach: 矩形選択で列削除 ──
+  // opt = 3 (Ctrl+v(0)+j(1)+j(1)+d(1)) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N28-T',
     nodeId: 'N28',

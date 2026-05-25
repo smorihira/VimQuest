@@ -5,21 +5,21 @@ import type { Stage } from '../../types/stage'
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N20_STAGES: Stage[] = [
-  // ── Teach: 引用符の中身を変更 ──
-  // opt = 1 (ci"…blue…Esc(1))
+  // ── Teach: ci" で引用符の中身を変更（2箇所） ──
+  // opt = 2 (自力: f"+ci"…large…Esc) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N20-T',
     nodeId: 'N20',
     type: 'teach',
     title: '中身を変えろ',
     language: 'json',
-    initialText: '{ "color": "red" }',
-    goalText: '{ "color": "blue" }',
-    initialCursor: { line: 0, col: 14 },
-    life: 7,
-    stars: [1, 2, 4],
+    initialText: '{ "color": "red" }\n{ "size": "small" }',
+    goalText: '{ "color": "blue" }\n{ "size": "large" }',
+    initialCursor: { line: 0, col: 12 },
+    life: 8,
+    stars: [2, 3, 5],
     availableCommands: ['di"', 'da"', 'ci"', 'f', 't'],
-    hints: [{ cost: 1, commands: ['ci"', 'blue', 'Esc'] }],
+    hints: [{ cost: 1, commands: ['ci"', 'blue', 'Esc', 'j', 'ci"', 'large', 'Esc'] }],
     flavor: 'ci" で引用符の中身だけを書き換えられる',
   },
 

@@ -7,22 +7,22 @@ import type { Stage } from '../../types/stage'
  */
 
 export const N10_STAGES: Stage[] = [
-  // ── Teach: dw で単語1つ消す ──
-  // opt = 2 (wdw等) → ☆3=2, ☆2=3, ☆1=5, life=8
+  // ── Teach: dw/de の違いを体験 ──
+  // opt = 2 (自力: dw×2) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N10-T',
     nodeId: 'N10',
     type: 'teach',
     title: '単語を消せ',
     language: 'plaintext',
-    initialText: 'delete this word',
+    initialText: 'delete this ugly old word',
     goalText: 'delete word',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
     availableCommands: ['dw', 'de', 'db'],
-    hints: [{ cost: 1, commands: ['w', 'dw'] }],
-    flavor: '"this " を dw で一撃で消せ',
+    hints: [{ cost: 1, commands: ['w', 'dw', 'dw', 'dw'] }],
+    flavor: '不要な単語を dw で消せ',
   },
 
   // ── Practice: 複数単語を効率的に消す ──

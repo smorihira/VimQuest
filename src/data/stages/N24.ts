@@ -7,21 +7,21 @@ import type { Stage } from '../../types/stage'
  * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N24_STAGES: Stage[] = [
-  // ── Teach: . で直前の変更を繰り返す ──
-  // opt = 5 (ciw…yes…Esc(1) + w(1)+.(1) + w(1)+.(1))
+  // ── Teach: . でドットリピート（5単語） ──
+  // opt = 6 (自力: w+.+w+.+w+.) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
     id: 'N24-T',
     nodeId: 'N24',
     type: 'teach',
     title: 'リピート',
     language: 'plaintext',
-    initialText: 'no no no',
-    goalText: 'yes yes yes',
+    initialText: 'no no no no no',
+    goalText: 'yes yes yes yes yes',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 6, 8],
+    life: 12,
+    stars: [6, 7, 9],
     availableCommands: ['ciw', 's', '.', 'f', 't'],
-    hints: [{ cost: 1, commands: ['ciw', 'yes', 'Esc', 'w', '.', 'w', '.'] }],
+    hints: [{ cost: 1, commands: ['ciw', 'yes', 'Esc', 'w', '.', 'w', '.', 'w', '.', 'w', '.'] }],
     flavor: 'ciw で最初の no を yes に変え、. で残りも一発だ',
   },
 

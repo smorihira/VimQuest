@@ -6,21 +6,21 @@ import type { Stage } from '../../types/stage'
  * ★★★ 重要ノード — Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N22_STAGES: Stage[] = [
-  // ── Teach: ciw で単語を置換 ──
-  // opt = 2 (w(1) + ciw…count…Esc(1))
+  // ── Teach: ciw で単語置換（2箇所） ──
+  // opt = 3 (自力: w+w+ciw…new…Esc) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N22-T',
     nodeId: 'N22',
     type: 'teach',
     title: '単語を変えろ',
     language: 'javascript',
-    initialText: 'let value = 0;',
-    goalText: 'let count = 0;',
+    initialText: 'let value = old;',
+    goalText: 'let count = new;',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
+    life: 9,
+    stars: [3, 4, 6],
     availableCommands: ['dw', 'cf', 'ct', 'ciw', 'ci"', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'ciw', 'count', 'Esc'] }],
+    hints: [{ cost: 1, commands: ['w', 'ciw', 'count', 'Esc', 'w', 'w', 'ciw', 'new', 'Esc'] }],
     flavor: 'ciw で単語を消してそのままInsertモードへ。変数名を変えろ',
   },
 

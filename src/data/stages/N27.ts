@@ -6,21 +6,22 @@ import type { Stage } from '../../types/stage'
  */
 export const N27_STAGES: Stage[] = [
   // ── Teach: V で行選択して削除 ──
-  // opt = 2 (j + Vd)
+  // ── Teach: V で行選択 → 削除（3行削除） ──
+  // opt = 2 (自力: V+d ×2) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N27-T',
     nodeId: 'N27',
     type: 'teach',
     title: '選んで消せ',
     language: 'javascript',
-    initialText: 'keep this\nremove this\nkeep this too',
-    goalText: 'keep this\nkeep this too',
+    initialText: 'keep\nremove A\nremove B\nremove C\nalso keep',
+    goalText: 'keep\nalso keep',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
     availableCommands: ['v', 'V', 'f', 't'],
     visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['j', 'V', 'd'] }],
+    hints: [{ cost: 1, commands: ['j', 'V', 'd', 'V', 'd', 'V', 'd'] }],
     flavor: 'V で行を選択、d で削除。Visual モードの基本だ',
   },
 

@@ -6,21 +6,40 @@ import type { Stage } from '../../types/stage'
  * Teach(T) = 1ステージ
  */
 export const N23_STAGES: Stage[] = [
-  // ── Teach: s で1文字置換＋Insert ──
-  // opt = 2 (fs + s + 'S' + Esc)
+  // ── Teach: s/S/C を体験（3行） ──
+  // opt = 4 (自力: j+f=+l+C…good;…Esc) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N23-T',
     nodeId: 'N23',
     type: 'teach',
     title: 'ショートカット',
     language: 'javascript',
-    initialText: 'const result = null;',
-    goalText: 'const Result = null;',
-    initialCursor: { line: 0, col: 6 },
-    life: 7,
-    stars: [1, 2, 4],
+    initialText: 'let x = 0;\nold line;\nlet z = bad;',
+    goalText: 'let y = 0;\nnew code;\nlet z = good;',
+    initialCursor: { line: 0, col: 4 },
+    life: 10,
+    stars: [4, 5, 7],
     availableCommands: ['ciw', 'S', 'C', 'f', 't'],
-    hints: [{ cost: 1, commands: ['s', 'R', 'Esc'] }],
-    flavor: 's で1文字消してすぐ入力。r より柔軟だ',
+    hints: [
+      {
+        cost: 1,
+        commands: [
+          's',
+          'y',
+          'Esc',
+          'j',
+          'S',
+          'new code;',
+          'Esc',
+          'j',
+          'f=',
+          'l',
+          'C',
+          'good;',
+          'Esc',
+        ],
+      },
+    ],
+    flavor: 's は1文字、S は行全体、C は行末まで変更するショートカットだ',
   },
 ]

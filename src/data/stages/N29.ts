@@ -5,21 +5,21 @@ import type { Stage } from '../../types/stage'
  * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N29_STAGES: Stage[] = [
-  // ── Teach: yiw でコピー → p でペースト ──
-  // opt = 3 (yiw + $ + p)
+  // ── Teach: yiw でコピー → p でペースト（2行） ──
+  // opt = 2 (自力: $+p) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N29-T',
     nodeId: 'N29',
     type: 'teach',
     title: 'コピーせよ',
     language: 'plaintext',
-    initialText: 'hello world',
-    goalText: 'hello worldhello',
+    initialText: 'hello world\nfoo bar',
+    goalText: 'hello worldhello\nfoo barfoo',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
+    life: 8,
+    stars: [2, 3, 5],
     availableCommands: ['yiw', 'v', 'p', 'f', 't'],
-    hints: [{ cost: 1, commands: ['yiw', '$', 'p'] }],
+    hints: [{ cost: 1, commands: ['yiw', '$', 'p', 'j', '0', 'yiw', '$', 'p'] }],
     flavor: 'yiw で単語をヤンク（コピー）し、p でペーストだ',
   },
 
@@ -46,14 +46,14 @@ export const N29_STAGES: Stage[] = [
   {
     id: 'N29-C',
     nodeId: 'N29',
-    type: 'teach',
+    type: 'challenge',
     title: '切り貼りせよ',
     language: 'plaintext',
     initialText: 'first\nthird\nsecond',
     goalText: 'first\nsecond\nthird',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
+    life: 11,
+    stars: [3, 6, 9],
     availableCommands: ['y', 'yy', 'dd', 'p', 'P'],
     hints: [{ cost: 1, commands: ['j', 'j', 'dd', 'P'] }],
     flavor: 'dd で行を切り取り、P でカーソルの上にペーストだ',

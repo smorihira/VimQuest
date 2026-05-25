@@ -6,22 +6,27 @@ import type { Stage } from '../../types/stage'
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N18_STAGES: Stage[] = [
-  // ── Teach: ct で文字の手前まで変更 ──
-  // opt = 3 (w+w+ct;…blue…Esc(1))
+  // ── Teach: cf/ct の違いを体験（2行） ──
+  // opt = 4 (自力: j+w+w+ct;…large…Esc) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N18-T',
     nodeId: 'N18',
     type: 'teach',
     title: '書き換えろ',
     language: 'css',
-    initialText: 'color: red;',
-    goalText: 'color: blue;',
+    initialText: 'color: red;\nsize: small;',
+    goalText: 'color: blue;\nsize: large;',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
+    life: 10,
+    stars: [4, 5, 7],
     availableCommands: ['df', 'dt', 'cf', 'ct', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'w', 'ct;', 'blue', 'Esc'] }],
-    flavor: 'ct; で ; の手前まで消してInsertモードに。d+i が一体化した c の威力',
+    hints: [
+      {
+        cost: 1,
+        commands: ['w', 'w', 'ct;', 'blue', 'Esc', 'j', '0', 'w', 'w', 'ct;', 'large', 'Esc'],
+      },
+    ],
+    flavor: 'cf は文字ごと、ct は手前まで変更。使い分けろ',
   },
 
   // ── Practice: 複数行で cf/ct を使い分け ──

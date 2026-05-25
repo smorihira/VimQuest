@@ -7,21 +7,21 @@ import type { Stage } from '../../types/stage'
  * Teach(T) + Practice(P) = 2ステージ
  */
 export const N21_STAGES: Stage[] = [
-  // ── Teach: diw で単語をピンポイント削除 ──
-  // opt = 2 (w + diw)
+  // ── Teach: diw で単語削除（3単語） ──
+  // opt = 2 (自力: diw×2) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N21-T',
     nodeId: 'N21',
     type: 'teach',
     title: '精密除去',
     language: 'javascript',
-    initialText: 'const temp = 42;',
-    goalText: 'const  = 42;',
+    initialText: 'const temp old = 42;',
+    goalText: 'const   = 42;',
     initialCursor: { line: 0, col: 0 },
     life: 8,
     stars: [2, 3, 5],
     availableCommands: ['dw', 'de', 'db', 'diw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'diw'] }],
+    hints: [{ cost: 1, commands: ['w', 'diw', 'w', 'diw'] }],
     flavor: 'diw は単語だけを正確に消す。前後の空白は残る',
   },
 

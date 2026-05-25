@@ -246,6 +246,10 @@
   border-radius: 2px;
 }
 
+.trailing-space {
+  color: rgba(255, 255, 255, 0.25);
+}
+
 @keyframes vision-flash {
   0% {
     background: rgba(68, 221, 170, 0.12);

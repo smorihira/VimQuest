@@ -97,10 +97,34 @@
 .tutorial-editor-area {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: stretch;
   padding: 24px 48px;
   overflow: hidden;
+}
+
+.tutorial-editor-area > .editor {
+  flex: 1;
+}
+
+.tutorial-editor-area .parser-buffer {
+  font-family: var(--font-code);
+  font-size: 18px;
+  color: var(--accent);
+  text-align: center;
+  padding-top: 8px;
+  animation: tut-pulse 1s infinite;
+}
+
+@keyframes tut-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 /* Navigator bar */

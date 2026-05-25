@@ -5,21 +5,21 @@ import type { Stage } from '../../types/stage'
  * Teach(T) = 1ステージ
  */
 export const N30_STAGES: Stage[] = [
-  // ── Teach: dd + P で行を移動 ──
-  // opt = 3 (jj + dd + P → move line 3 to line 2)
+  // ── Teach: p/P の違いを体験（4行並び替え） ──
+  // opt = 4 (自力: j+j+dd+p) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N30-T',
     nodeId: 'N30',
     type: 'teach',
-    title: '切り貼りせよ',
+    title: '並び替えろ',
     language: 'plaintext',
-    initialText: 'first\nthird\nsecond',
-    goalText: 'first\nsecond\nthird',
+    initialText: 'B\nA\nD\nC',
+    goalText: 'A\nB\nC\nD',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
+    life: 10,
+    stars: [4, 5, 7],
     availableCommands: ['y', 'yy', 'dd', 'p', 'P'],
-    hints: [{ cost: 1, commands: ['j', 'j', 'dd', 'P'] }],
-    flavor: 'dd で行を切り取り、P でカーソルの上にペーストだ',
+    hints: [{ cost: 1, commands: ['j', 'dd', 'P', 'j', 'j', 'dd', 'p'] }],
+    flavor: 'dd で切り取り、P は上、p は下にペースト。使い分けろ',
   },
 ]

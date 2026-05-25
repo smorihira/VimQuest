@@ -15,7 +15,7 @@ import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import type { TutorialStatus } from '../../types/game'
 import { createEditorState } from '../../types/editor'
-import { executeCommand } from '../../engine/commandExecutor'
+import { executeCommand, finalizeInsertSession } from '../../engine/commandExecutor'
 import { parseKeys } from '../../engine/commandParser'
 import { EditorView } from './EditorView'
 import { HintOverlay } from './HintOverlay'
@@ -55,6 +55,8 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
   const spaceDownTime = useRef(0)
   const spaceHeldRef = useRef(false)
   const keyBuffer = useRef('')
+  const [displayBuffer, setDisplayBuffer] = useState('')
+  const insertEntryRef = useRef<{ entryState: EditorState; charCount: number } | null>(null)
 
   const step = tutorial.steps[stepIdx] as TutorialStep | undefined
 
@@ -64,6 +66,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
     setColonBuffer('')
     setSearchBuffer('')
     keyBuffer.current = ''
+    setDisplayBuffer('')
     const nextIdx = stepIdx + 1
     if (nextIdx >= tutorial.steps.length) {
       // Pass editor state so PlayScreen can continue from here
@@ -72,6 +75,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
       setStepIdx(nextIdx)
       const nextStep = tutorial.steps[nextIdx]
       if (nextStep?.editorSetup) {
+        insertEntryRef.current = null
         setEditorState(createEditorState(nextStep.editorSetup.text, nextStep.editorSetup.cursor))
       }
     }
@@ -281,11 +285,16 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         const buf = keyBuffer.current + key
         if (step.expectedKey!.startsWith(buf)) {
           keyBuffer.current = buf
+          setDisplayBuffer(buf)
           if (buf === step.expectedKey) {
+            setDisplayBuffer('')
             setWrongMessage(null)
             const parsed = parseKeys(buf.split(''))
             if (parsed) {
               const next = executeCommand(editorState, parsed.command)
+              if (next.mode === 'insert' && editorState.mode !== 'insert') {
+                insertEntryRef.current = { entryState: editorState, charCount: 0 }
+              }
               setEditorState(next)
             }
             advance()
@@ -293,6 +302,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
           return
         }
         keyBuffer.current = ''
+        setDisplayBuffer('')
         setWrongMessage(step.wrongKeyMessage ?? `${key} じゃない。${step.expectedKey} を押してみろ`)
         return
       }
@@ -301,12 +311,31 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         setWrongMessage(null)
         // Apply key to editor
         if (editorState.mode === 'insert') {
-          const next = executeCommand(editorState, { raw: key, valid: true })
-          setEditorState(next)
+          if (key === 'Esc') {
+            let next = executeCommand(editorState, { raw: key, valid: true })
+            if (insertEntryRef.current) {
+              next = finalizeInsertSession(
+                next,
+                insertEntryRef.current.entryState,
+                insertEntryRef.current.charCount,
+              )
+              insertEntryRef.current = null
+            }
+            setEditorState(next)
+          } else {
+            const next = executeCommand(editorState, { raw: key, valid: true })
+            setEditorState(next)
+            if (insertEntryRef.current) {
+              insertEntryRef.current.charCount++
+            }
+          }
         } else {
           const parsed = parseKeys([key])
           if (parsed) {
             const next = executeCommand(editorState, parsed.command)
+            if (next.mode === 'insert') {
+              insertEntryRef.current = { entryState: editorState, charCount: 0 }
+            }
             setEditorState(next)
           }
         }
@@ -414,6 +443,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
           goalCursor={stage?.clearConditions?.cursor}
           showGoal={showGoal}
         />
+        {displayBuffer && <div className="parser-buffer">{displayBuffer}_</div>}
       </div>
 
       {/* Command-line buffer (colon / search) */}
