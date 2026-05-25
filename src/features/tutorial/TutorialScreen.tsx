@@ -9,6 +9,7 @@ import { getTutorial } from '../../data/tutorials'
 import { getStage, getStagesByNode } from '../../data/stages'
 import { gameProgressAtom } from '../../store/atoms'
 import type { TutorialStatus } from '../../types/game'
+import type { EditorState } from '../../types/editor'
 import { StageTutorial } from '../play/StageTutorial'
 import './TutorialScreen.css'
 
@@ -27,19 +28,22 @@ export function TutorialScreen() {
 
   const stage = getStage(tutorial.stageId)
 
-  const handleComplete = (status: TutorialStatus) => {
-    if (!isReview) {
-      setProgress((prev) => ({
-        ...prev,
-        tutorialStatus: {
-          ...prev.tutorialStatus,
-          [tutorial.stageId]: status,
-        },
-      }))
-    }
+  const handleComplete = (status: TutorialStatus, editorState?: EditorState) => {
+    // Always save tutorialStatus so the tutorial won't replay on normal play
+    setProgress((prev) => ({
+      ...prev,
+      tutorialStatus: {
+        ...prev.tutorialStatus,
+        [tutorial.stageId]: status,
+      },
+    }))
 
     if (isReview) {
-      navigate(-1)
+      // Navigate to play screen in practice mode with editor state from tutorial
+      navigate(`/play/${tutorial.stageId}`, {
+        state: { practiceMode: true, reviewEditorState: editorState },
+        replace: true,
+      })
       return
     }
 

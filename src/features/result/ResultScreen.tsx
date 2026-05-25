@@ -23,6 +23,7 @@ interface LocationState {
   usedHint: boolean
   spells?: SpellEntry[]
   fromTutorial?: boolean
+  practiceMode?: boolean
 }
 
 export function ResultScreen() {
@@ -36,12 +37,14 @@ export function ResultScreen() {
   const state = (location.state as LocationState) ?? { damage: 0, usedHint: false, spells: [] }
   const spells = state.spells ?? []
   const fromTutorial = !!state.fromTutorial
+  const practiceMode = !!state.practiceMode
+  const noScore = fromTutorial || practiceMode
   const rawStars = stage ? calculateStars(state.damage, stage.stars) : (0 as StarRating)
   const stars = stage ? applyHintPenalty(rawStars, state.usedHint) : (0 as StarRating)
 
-  // Save progress once
+  // Save progress once (skip in practice mode)
   useEffect(() => {
-    if (!stage || saved.current) return
+    if (!stage || saved.current || practiceMode) return
     saved.current = true
 
     setProgress((prev) => {
@@ -190,7 +193,9 @@ export function ResultScreen() {
   return (
     <div className="result-screen">
       <div className="result-container">
-        <div className="clear-label">S T A G E&nbsp;&nbsp;C L E A R</div>
+        <div className="clear-label">
+          {practiceMode ? 'P R A C T I C E' : 'S T A G E&nbsp;&nbsp;C L E A R'}
+        </div>
         <div className="result-stage-name">
           {stage.id} — {stage.title}
         </div>
@@ -205,20 +210,20 @@ export function ResultScreen() {
             {[0, 1, 2].map((i) => (
               <span
                 key={i}
-                className={`star-result${!fromTutorial && i < stars ? ' earned' : ''}`}
+                className={`star-result${!noScore && i < stars ? ' earned' : ''}`}
                 style={{ animationDelay: `${i * 0.2}s` }}
               >
-                {!fromTutorial && i < stars ? '★' : '☆'}
+                {!noScore && i < stars ? '★' : '☆'}
               </span>
             ))}
           </div>
-          {!fromTutorial && state.usedHint && (
+          {!noScore && state.usedHint && (
             <div className="hint-notice">
               <span className="hint-label">ヒント使用</span>: ☆1確定
             </div>
           )}
           <div className="star-label">
-            {fromTutorial
+            {noScore
               ? ''
               : stars === 3
                 ? 'パーフェクト！'
@@ -259,21 +264,27 @@ export function ResultScreen() {
         {/* Stats */}
         <div className="stats" data-guide="stats">
           <div className="stat">
-            <div className="stat-value">{fromTutorial ? '—' : state.damage}</div>
+            <div className="stat-value">{noScore ? '—' : state.damage}</div>
             <div className="stat-label">DAMAGE</div>
           </div>
           <div className="stat">
             <div className="stat-value">
-              {fromTutorial ? '—' : `${stage.life - state.damage}/${stage.life}`}
+              {noScore ? '—' : `${stage.life - state.damage}/${stage.life}`}
             </div>
             <div className="stat-label">LIFE</div>
           </div>
           <div className="stat">
             <div className="stat-value best-value">
-              {fromTutorial ? '—' : (progress.stageResults[stage.id]?.bestDamage ?? state.damage)}
+              {(() => {
+                const existing = progress.stageResults[stage.id]
+                if (noScore) {
+                  return existing && existing.bestDamage < stage.life ? existing.bestDamage : '—'
+                }
+                return existing?.bestDamage ?? state.damage
+              })()}
             </div>
             <div className="stat-label">BEST</div>
-            {!fromTutorial &&
+            {!noScore &&
               progress.stageResults[stage.id] &&
               state.damage < progress.stageResults[stage.id].bestDamage && (
                 <div className="new-best">NEW BEST!</div>
