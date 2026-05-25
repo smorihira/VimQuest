@@ -6,21 +6,21 @@ import type { Stage } from '../../types/stage'
  */
 export const N27_STAGES: Stage[] = [
   // ── Teach 1: v で文字選択して削除 ──
-  // opt = 3 (f<(1)+v(0)+f>(1)+d(1)) → ☆3=3, ☆2=4, ☆1=6, life=9
+  // opt = 6 (f<(1)+v(0)+f>(1)+d(1) + f<(1)+v(0)+f>(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
     id: 'N27-1',
     nodeId: 'N27',
     type: 'teach',
     title: '文字を選べ',
     language: 'html',
-    initialText: 'Hello <World> end',
-    goalText: 'Hello  end',
+    initialText: 'Hello <World> and <Foo> end',
+    goalText: 'Hello  and  end',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
+    life: 12,
+    stars: [6, 7, 9],
     availableCommands: ['v', 'V', 'Ctrl+v', 'f', 't'],
     visualCommands: ['d'],
-    hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd'] }],
+    hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd', 'f<', 'v', 'f>', 'd'] }],
     flavor: 'v で選択開始。カーソルを動かして範囲を決め、d で消せ',
   },
 

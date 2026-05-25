@@ -22,7 +22,7 @@ export const N27_1_TUTORIAL: Tutorial = {
       expectedKey: 'd',
     },
     {
-      message: 'v で文字選択 → カーソル移動で範囲指定 → d で削除。これが Visual char だ',
+      message: 'v で文字選択 → f で範囲指定 → d で削除。残りの <Foo> も同じ要領で消せ',
       expectedKey: null,
     },
   ],
