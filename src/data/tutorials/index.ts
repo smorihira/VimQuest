@@ -29,6 +29,7 @@ import { N25_T_TUTORIAL } from './N25'
 import { N10_T_TUTORIAL } from './N10'
 import { N12_T_TUTORIAL } from './N12'
 import { N13_T_TUTORIAL } from './N13'
+import { N13_P_TUTORIAL } from './N13P'
 import { N17_T_TUTORIAL } from './N17'
 import { N18_T_TUTORIAL } from './N18'
 import { N20_T_TUTORIAL } from './N20'
@@ -72,6 +73,7 @@ const TUTORIALS: Record<string, Tutorial> = {
   'N10-T': N10_T_TUTORIAL,
   'N12-T': N12_T_TUTORIAL,
   'N13-T': N13_T_TUTORIAL,
+  'N13-P': N13_P_TUTORIAL,
   'N17-T': N17_T_TUTORIAL,
   'N18-T': N18_T_TUTORIAL,
   'N20-T': N20_T_TUTORIAL,

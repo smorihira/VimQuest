@@ -24,21 +24,21 @@ export const N13_STAGES: Stage[] = [
     flavor: 'D は d$ のショートカット。行末まで一発で消せ',
   },
 
-  // ── Practice: D の練習（2行のコメント削除） ──
-  // opt = 4 (D+j+l+D) → ☆3=4, ☆2=6, ☆1=8, life=10
+  // ── Practice: C/S を体験（2行） ──
+  // opt = 3 (C+ok;+Esc+j+S+new+Esc) → ☆3=3, ☆2=5, ☆1=7, life=9
   {
     id: 'N13-P',
     nodeId: 'N13',
     type: 'practice',
-    title: 'コメント除去',
+    title: 'C/Sで書き換え',
     language: 'javascript',
-    initialText: 'let x = 1; // debug\nlet y = 2; // temp',
-    goalText: 'let x = 1;\nlet y = 2;',
-    initialCursor: { line: 0, col: 10 },
-    life: 10,
-    stars: [4, 6, 8],
-    availableCommands: ['dd', 'd$', 'd0', 'D'],
-    hints: [{ cost: 1, commands: ['D', 'j', 'l', 'D'] }],
-    flavor: '2行のコメントを D で除去せよ',
+    initialText: 'let x = bad;\nold line',
+    goalText: 'let x = ok;\nnew',
+    initialCursor: { line: 0, col: 8 },
+    life: 9,
+    stars: [3, 5, 7],
+    availableCommands: ['D', 'C', 'S', 'f', 't'],
+    hints: [{ cost: 1, commands: ['C', 'ok;', 'Esc', 'j', 'S', 'new', 'Esc'] }],
+    flavor: 'C は行末まで変更、S は行全体を変更するショートカットだ',
   },
 ]
