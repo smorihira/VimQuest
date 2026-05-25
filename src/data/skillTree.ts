@@ -79,7 +79,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N09',
     name: 'cオペレータ',
     commands: ['cw', 'ce', 'cb', 'cc', 'c$', 'c0'],
-    stageCount: 0,
+    stageCount: 5,
     prerequisites: ['N08'],
   },
   {
@@ -121,7 +121,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N15',
     name: '数値操作',
     commands: ['Ctrl+a', 'Ctrl+x'],
-    stageCount: 0,
+    stageCount: 3,
     prerequisites: ['N01'],
   },
   {

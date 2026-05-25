@@ -18,13 +18,13 @@ import { N05_T_TUTORIAL } from './N05'
 import { N06_T_TUTORIAL, N06_Ta_TUTORIAL } from './N06'
 import { N07_T_TUTORIAL } from './N07'
 import { N08_T_TUTORIAL, N08_Ta_TUTORIAL, N08_Tb_TUTORIAL } from './N08'
-// N09 (cオペレータ) は未実装
+import { N09_T_TUTORIAL, N09_Ta_TUTORIAL, N09_Tb_TUTORIAL } from './N09'
 import { N10_T_TUTORIAL, N10_Ta_TUTORIAL, N10_Tb_TUTORIAL } from './N10'
 import { N11_T_TUTORIAL } from './N11'
 import { N12_T_TUTORIAL } from './N12'
 import { N13_T_TUTORIAL } from './N13'
 import { N14_T_TUTORIAL, N14_Ta_TUTORIAL } from './N14'
-// N15 (数値操作 Ctrl+a/x) は未実装
+import { N15_T_TUTORIAL, N15_Ta_TUTORIAL } from './N15'
 import { N16_T_TUTORIAL } from './N16'
 import { N17_T_TUTORIAL } from './N17'
 import { N18_T_TUTORIAL, N18_Ta_TUTORIAL } from './N18'
@@ -56,6 +56,9 @@ const TUTORIALS: Record<string, Tutorial> = {
   'N08-T': N08_T_TUTORIAL,
   'N08-Ta': N08_Ta_TUTORIAL,
   'N08-Tb': N08_Tb_TUTORIAL,
+  'N09-T': N09_T_TUTORIAL,
+  'N09-Ta': N09_Ta_TUTORIAL,
+  'N09-Tb': N09_Tb_TUTORIAL,
   'N10-T': N10_T_TUTORIAL,
   'N10-Ta': N10_Ta_TUTORIAL,
   'N10-Tb': N10_Tb_TUTORIAL,
@@ -64,6 +67,8 @@ const TUTORIALS: Record<string, Tutorial> = {
   'N13-T': N13_T_TUTORIAL,
   'N14-T': N14_T_TUTORIAL,
   'N14-Ta': N14_Ta_TUTORIAL,
+  'N15-T': N15_T_TUTORIAL,
+  'N15-Ta': N15_Ta_TUTORIAL,
   'N16-T': N16_T_TUTORIAL,
   'N17-T': N17_T_TUTORIAL,
   'N18-T': N18_T_TUTORIAL,
