@@ -44,7 +44,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N04',
     name: '検索',
     commands: ['/', '?', 'n', 'N', '*', '#'],
-    stageCount: 3,
+    stageCount: 4,
     prerequisites: ['N03'],
   },
   {

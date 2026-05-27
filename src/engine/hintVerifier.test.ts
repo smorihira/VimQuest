@@ -108,6 +108,7 @@ function simulateHintCommands(stage: Stage): EditorState {
         if (result.command.valid) {
           // Check if this command enters insert mode
           const wasNormal = state.mode !== 'insert'
+          const prevText = state.text
           state = executeCommand(state, result.command)
           if (wasNormal && state.mode === 'insert') {
             insertEntryState = { ...state }
@@ -116,8 +117,8 @@ function simulateHintCommands(stage: Stage): EditorState {
             // Track the command that entered insert mode
             lastEditCommand = result.command
           }
-          // Store lastCommand for non-insert editing commands
-          if (state.mode === 'normal' && result.command.operator) {
+          // Store lastCommand for text-changing commands (not dot, not insert entry)
+          if (state.mode === 'normal' && state.text !== prevText && result.command.raw !== '.') {
             state = { ...state, lastCommand: result.command }
           }
         }

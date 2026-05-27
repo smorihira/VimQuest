@@ -83,4 +83,39 @@ export const N06_STAGES: Stage[] = [
     hints: [{ cost: 1, commands: ['*', '*'] }],
     flavor: '* でカーソル下の単語を即検索。最後の foo を見つけ出せ',
   },
+
+  // ── Challenge: 検索と一括修正 ──
+  // opt = 8: /x(1)+ra(1)+n(1)+.(1)+n(1)+.(1)+/end(1)+ra(1)
+  {
+    id: 'N06-C',
+    nodeId: 'N04',
+    type: 'challenge',
+    title: '検索と一括修正',
+    language: 'javascript',
+    initialText:
+      'let x = 1;\n' +
+      'let y = "hello";\n' +
+      'let x = 2;\n' +
+      'let z = "world";\n' +
+      'let x = 3;\n' +
+      '// end',
+    goalText:
+      'let a = 1;\n' +
+      'let y = "hello";\n' +
+      'let a = 2;\n' +
+      'let z = "world";\n' +
+      'let a = 3;\n' +
+      '// and',
+    initialCursor: { line: 0, col: 0 },
+    life: 16,
+    stars: [8, 11, 14],
+    availableCommands: ['/', '*', '#'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['/x', 'Enter', 'ra', 'n', '.', 'n', '.', '/end', 'Enter', 'ra'],
+      },
+    ],
+    flavor: '/ で検索、n で次へ、. で繰り返す。Vim の基本ワークフローだ',
+  },
 ]
