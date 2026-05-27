@@ -247,3 +247,60 @@ describe('Skill tree integrity', () => {
     }
   })
 })
+
+// ─── D: Tutorial newCommands coverage ────────────────────────────────
+
+// Commands not yet covered by any tutorial's newCommands (TODO: remove as tutorials are created)
+const UNCOVERED_COMMANDS: Record<string, string[]> = {
+  N02: ['X'],
+  N04: ['?'],
+  N05: ['P'],
+  N06: ['s', 'p', "'", '(', '{', '[', '<'],
+  N08: ['o'],
+  N11: ['Y'],
+  N12: ['(', ')', '{', '}', '[[', ']]'],
+  N13: ['g~'],
+  N14: ['F', 'T', 'H', 'M', 'L'],
+  N16: ['Ctrl+f', 'Ctrl+b', 'm', "'", '`', 'gi'],
+  N17: ['Ctrl+e', 'Ctrl+y'],
+}
+
+describe('Tutorial newCommands coverage', () => {
+  // Build union of newCommands per node from all tutorials
+  const newCommandsByNode = new Map<string, Set<string>>()
+  for (const tutorial of Object.values(TUTORIALS)) {
+    if (!newCommandsByNode.has(tutorial.nodeId)) {
+      newCommandsByNode.set(tutorial.nodeId, new Set())
+    }
+    const set = newCommandsByNode.get(tutorial.nodeId)!
+    for (const cmd of tutorial.newCommands) {
+      set.add(cmd)
+    }
+  }
+
+  for (const node of SKILL_NODES) {
+    const uncovered = new Set(UNCOVERED_COMMANDS[node.id] ?? [])
+    const expected = new Set(node.commands.filter((cmd) => !uncovered.has(cmd)))
+    const actual = newCommandsByNode.get(node.id) ?? new Set()
+
+    it(`${node.id} (${node.name}): tutorial newCommands cover node commands`, () => {
+      // Every non-uncovered node command must appear in some tutorial's newCommands
+      for (const cmd of expected) {
+        expect(
+          actual.has(cmd),
+          `${node.id} command "${cmd}" is not covered by any tutorial's newCommands`,
+        ).toBe(true)
+      }
+    })
+
+    it(`${node.id} (${node.name}): tutorial newCommands ⊆ node commands`, () => {
+      // Every tutorial newCommand must be a valid node command
+      for (const cmd of actual) {
+        expect(
+          node.commands.includes(cmd),
+          `tutorial for ${node.id} declares newCommand "${cmd}" which is not in node.commands`,
+        ).toBe(true)
+      }
+    })
+  }
+})

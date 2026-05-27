@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N03_T_TUTORIAL: Tutorial = {
   nodeId: 'N02',
   stageId: 'N03-T',
+  newCommands: ['r'],
   steps: [
     {
       message: 'l で a の上にカーソルを移動しろ',

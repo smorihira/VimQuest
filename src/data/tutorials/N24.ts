@@ -3,6 +3,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N24_T_TUTORIAL: Tutorial = {
   nodeId: 'N09',
   stageId: 'N24-T',
+  newCommands: ['gn'],
   steps: [
     {
       message: 'まず /foo Enter で "foo" を検索しろ',

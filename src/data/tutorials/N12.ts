@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N12_T_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N12-T',
+  newCommands: ['f', 't', ';', ','],
   steps: [
     {
       message: 'f( と押せ。行内の ( に一瞬でジャンプ',

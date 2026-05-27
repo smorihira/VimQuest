@@ -9,6 +9,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N01_1_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-1',
+  newCommands: ['h', 'l'],
   initialSetup: {
     text: 'hello!',
     cursor: { line: 0, col: 0 },
@@ -59,6 +60,7 @@ export const N01_1_TUTORIAL: Tutorial = {
 export const N01_2_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-2',
+  newCommands: ['j', 'k'],
   steps: [
     {
       message: 'j で下に移動だ',
@@ -83,6 +85,7 @@ export const N01_2_TUTORIAL: Tutorial = {
 export const N01_3_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-3',
+  newCommands: ['w', 'b', 'e'],
   steps: [
     {
       message: 'w で次の単語にジャンプだ',
@@ -111,6 +114,7 @@ export const N01_3_TUTORIAL: Tutorial = {
 export const N01_4_TUTORIAL: Tutorial = {
   nodeId: 'N14',
   stageId: 'N01-4',
+  newCommands: ['W', 'B', 'E'],
   steps: [
     {
       message: 'w を押してみろ。. で止まるだろう',
@@ -135,6 +139,7 @@ export const N01_4_TUTORIAL: Tutorial = {
 export const N01_5_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-5',
+  newCommands: ['0', '^', '$'],
   steps: [
     {
       message: '$ で行末にジャンプだ',
@@ -159,6 +164,7 @@ export const N01_5_TUTORIAL: Tutorial = {
 export const N01_6_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-6',
+  newCommands: ['gg', 'G'],
   steps: [
     {
       message: 'G でファイルの最終行にジャンプだ',
@@ -179,6 +185,7 @@ export const N01_6_TUTORIAL: Tutorial = {
 export const N01_7_TUTORIAL: Tutorial = {
   nodeId: 'N02',
   stageId: 'N01-7',
+  newCommands: ['x'],
   steps: [
     {
       message: 'x でカーソル上の文字を消せ',
@@ -215,6 +222,7 @@ export const N01_7_TUTORIAL: Tutorial = {
 export const N01_8_TUTORIAL: Tutorial = {
   nodeId: 'N02',
   stageId: 'N01-8',
+  newCommands: ['i', 'a'],
   steps: [
     // ── Short insert with `i` ──
     {
@@ -285,6 +293,7 @@ export const N01_8_TUTORIAL: Tutorial = {
 export const N01_9_TUTORIAL: Tutorial = {
   nodeId: 'N11',
   stageId: 'N01-9',
+  newCommands: ['s'],
   steps: [
     {
       message: 's を押してみろ。カーソル上の文字を消して Insert に入るぞ',
@@ -313,6 +322,7 @@ export const N01_9_TUTORIAL: Tutorial = {
 export const N01_C_TUTORIAL: Tutorial = {
   nodeId: 'N01',
   stageId: 'N01-C',
+  newCommands: [],
   steps: [
     {
       message: '基礎訓練の総仕上げだ。全ての武器を使って、4行のタイプミスを修正しろ',

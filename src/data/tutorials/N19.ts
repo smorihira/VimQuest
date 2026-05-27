@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N19_T_TUTORIAL: Tutorial = {
   nodeId: 'N13',
   stageId: 'N19-T',
+  newCommands: ['~'],
   steps: [
     {
       message: '~ を押せ。大文字と小文字を入れ替えるぞ',
@@ -20,6 +21,7 @@ export const N19_T_TUTORIAL: Tutorial = {
 export const N19_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N13',
   stageId: 'N19-Ta',
+  newCommands: ['gu', 'gU'],
   steps: [
     {
       message: 'guiw と押せ。カーソル下の単語が小文字になる',

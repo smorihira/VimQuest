@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N20_T_TUTORIAL: Tutorial = {
   nodeId: 'N13',
   stageId: 'N20-T',
+  newCommands: ['>', '<'],
   steps: [
     {
       message: 'j で print の行に移動しろ',

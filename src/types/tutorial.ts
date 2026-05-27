@@ -32,6 +32,8 @@ export interface Tutorial {
   nodeId: string
   /** Target stage ID (required; links tutorial to its stage) */
   stageId: string
+  /** Commands newly introduced by this tutorial (empty = review of existing commands) */
+  newCommands: string[]
   /** Initial editor state for the tutorial (optional; omit to use stage data) */
   initialSetup?: {
     text: string

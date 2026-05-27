@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N09_T_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N09-T',
+  newCommands: ['c'],
   steps: [
     {
       message: 'cw を押せ。単語が消えて Insert モードに入る',
@@ -20,6 +21,7 @@ export const N09_T_TUTORIAL: Tutorial = {
 export const N09_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N09-Ta',
+  newCommands: [],
   steps: [
     {
       message: 'cc を押せ。行まるごと消えて Insert に入る',
@@ -36,6 +38,7 @@ export const N09_Ta_TUTORIAL: Tutorial = {
 export const N09_Tb_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N09-Tb',
+  newCommands: [],
   steps: [
     {
       message: 'c$ を押せ。カーソルから行末まで消えて Insert に入る',

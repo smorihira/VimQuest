@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N11_T_TUTORIAL: Tutorial = {
   nodeId: 'N02',
   stageId: 'N11-T',
+  newCommands: [],
   steps: [
     {
       message: 'I で行頭に移動し Insert モードに入れ',

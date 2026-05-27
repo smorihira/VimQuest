@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N05_T_TUTORIAL: Tutorial = {
   nodeId: 'N17',
   stageId: 'N05-T',
+  newCommands: ['zz', 'zt', 'zb'],
   steps: [
     {
       message: 'Ctrl+d で半ページ下へ飛べ',

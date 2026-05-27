@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N08_T_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N08-T',
+  newCommands: ['d'],
   steps: [
     {
       message: 'w で "this" に移動しろ',
@@ -32,6 +33,7 @@ export const N08_T_TUTORIAL: Tutorial = {
 export const N08_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N08-Ta',
+  newCommands: [],
   steps: [
     {
       message: 'j でデバッグ行に移動しろ',
@@ -52,6 +54,7 @@ export const N08_Ta_TUTORIAL: Tutorial = {
 export const N08_Tb_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N08-Tb',
+  newCommands: [],
   steps: [
     {
       message: 'd0 を押せ。カーソルから行頭まで一気に消える',

@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N22_T_TUTORIAL: Tutorial = {
   nodeId: 'N10',
   stageId: 'N22-T',
+  newCommands: ['"'],
   steps: [
     {
       message: '"ayiw と押せ。"hello" を "a レジスタに保存',

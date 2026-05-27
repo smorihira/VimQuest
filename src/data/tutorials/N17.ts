@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N17_T_TUTORIAL: Tutorial = {
   nodeId: 'N06',
   stageId: 'N17-T',
+  newCommands: ['"'],
   steps: [
     {
       message: 'ci" と押せ。引用符の中身が消えて Insert に入る',

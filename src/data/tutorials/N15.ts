@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N15_T_TUTORIAL: Tutorial = {
   nodeId: 'N15',
   stageId: 'N15-T',
+  newCommands: ['Ctrl+a'],
   steps: [
     {
       message: 'Ctrl+a を押せ。カーソル上の数値が +1 される',
@@ -20,6 +21,7 @@ export const N15_T_TUTORIAL: Tutorial = {
 export const N15_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N15',
   stageId: 'N15-Ta',
+  newCommands: ['Ctrl+x'],
   steps: [
     {
       message: 'Ctrl+x を押せ。カーソル上の数値が -1 される',

@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N06_T_TUTORIAL: Tutorial = {
   nodeId: 'N04',
   stageId: 'N06-T',
+  newCommands: ['/', 'n', 'N'],
   steps: [
     {
       message: '/ を押して bug と入力し Enter で検索しろ',
@@ -30,6 +31,7 @@ export const N06_T_TUTORIAL: Tutorial = {
 export const N06_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N04',
   stageId: 'N06-Ta',
+  newCommands: ['*', '#'],
   steps: [
     {
       message: '* を押せ。カーソル下の foo を前方検索して次に飛ぶ',

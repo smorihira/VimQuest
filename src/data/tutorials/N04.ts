@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N04_T_TUTORIAL: Tutorial = {
   nodeId: 'N16',
   stageId: 'N04-T',
+  newCommands: ['Ctrl+d', 'Ctrl+u'],
   steps: [
     {
       message: 'Ctrl+d を押せ。半ページ分カーソルが下に飛ぶ',

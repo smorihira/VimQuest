@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N14_T_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N14-T',
+  newCommands: [],
   steps: [
     {
       message: 'w で値の部分に向かえ',
@@ -28,6 +29,7 @@ export const N14_T_TUTORIAL: Tutorial = {
 export const N14_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N14-Ta',
+  newCommands: [],
   steps: [
     {
       message: 'w で値の部分に向かえ',

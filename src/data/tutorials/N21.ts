@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N21_T_TUTORIAL: Tutorial = {
   nodeId: 'N08',
   stageId: 'N21-T',
+  newCommands: ['v'],
   steps: [
     {
       message: 'f< で < に移動',
@@ -32,6 +33,7 @@ export const N21_T_TUTORIAL: Tutorial = {
 export const N21_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N08',
   stageId: 'N21-Ta',
+  newCommands: ['V'],
   steps: [
     {
       message: 'j で削除対象の行に移動',
@@ -60,6 +62,7 @@ export const N21_Ta_TUTORIAL: Tutorial = {
 export const N21_Tb_TUTORIAL: Tutorial = {
   nodeId: 'N08',
   stageId: 'N21-Tb',
+  newCommands: ['Ctrl+v'],
   steps: [
     {
       message: 'Ctrl+v を押せ。矩形選択モードに入る',

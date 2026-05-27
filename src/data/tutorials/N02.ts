@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N02_T_TUTORIAL: Tutorial = {
   nodeId: 'N02',
   stageId: 'N02-T',
+  newCommands: ['I', 'A'],
   steps: [
     {
       message: 'I を押せ。カーソルがどこにいても行頭で Insert に入る',
@@ -56,6 +57,7 @@ export const N02_T_TUTORIAL: Tutorial = {
 export const N02_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N02',
   stageId: 'N02-Ta',
+  newCommands: ['o', 'O'],
   steps: [
     {
       message: 'O を押せ。カーソルの上に新行を作って Insert に入る',

@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N07_T_TUTORIAL: Tutorial = {
   nodeId: 'N05',
   stageId: 'N07-T',
+  newCommands: ['y', 'p'],
   steps: [
     {
       message: 'yiw と押せ。カーソル下の単語をヤンク（コピー）',

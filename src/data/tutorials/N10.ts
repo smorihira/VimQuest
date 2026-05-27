@@ -4,6 +4,7 @@ import type { Tutorial } from '../../types/tutorial'
 export const N10_T_TUTORIAL: Tutorial = {
   nodeId: 'N11',
   stageId: 'N10-T',
+  newCommands: ['D'],
   steps: [
     {
       message: 'D を押せ。カーソルから行末まで一発で消える',
@@ -20,6 +21,7 @@ export const N10_T_TUTORIAL: Tutorial = {
 export const N10_Ta_TUTORIAL: Tutorial = {
   nodeId: 'N11',
   stageId: 'N10-Ta',
+  newCommands: ['C', 'S'],
   steps: [
     {
       message: 'C を押せ。カーソルから行末まで消して Insert に入る',
@@ -76,6 +78,7 @@ export const N10_Ta_TUTORIAL: Tutorial = {
 export const N10_Tb_TUTORIAL: Tutorial = {
   nodeId: 'N11',
   stageId: 'N10-Tb',
+  newCommands: ['J'],
   steps: [
     {
       message: 'J を押せ。下の行を現在行にくっつける',
