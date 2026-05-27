@@ -26,6 +26,19 @@ interface EditorViewProps {
 
 const VIEWPORT_HEIGHT = 16
 
+/** Derive condition tags from goal props for labels */
+function conditionLabel(
+  goalCursor?: CursorPosition,
+  goalViewportTop?: number,
+  goalRegisters?: Record<string, string>,
+): string[] {
+  const tags: string[] = []
+  if (goalCursor) tags.push('カーソル位置')
+  if (goalViewportTop !== undefined) tags.push('画面位置')
+  if (goalRegisters) tags.push('レジスタ条件')
+  return tags
+}
+
 export function EditorView({
   state,
   goalText,
@@ -88,11 +101,10 @@ export function EditorView({
         <span className="editor-dot green" />
         <span className="editor-filename">
           {showGoal
-            ? goalCursor
-              ? goalViewportTop !== undefined
-                ? 'GOAL — カーソル位置＋画面位置あり'
-                : 'GOAL — カーソル位置あり'
-              : 'GOAL (Space)'
+            ? (() => {
+                const tags = conditionLabel(goalCursor, goalViewportTop, goalRegisters)
+                return tags.length > 0 ? `GOAL — ${tags.join('＋')}あり` : 'GOAL (Space)'
+              })()
             : 'buffer'}
         </span>
       </div>
@@ -140,13 +152,10 @@ export function EditorView({
       {goalText !== undefined && !showGoal && (
         <div className="editor-goal">
           <div className="goal-label">
-            {goalCursor
-              ? goalViewportTop !== undefined
-                ? 'GOAL カーソル位置＋画面位置'
-                : 'GOAL カーソル位置'
-              : goalRegisters
-                ? 'GOAL レジスタ条件あり'
-                : 'GOAL'}
+            {(() => {
+              const tags = conditionLabel(goalCursor, goalViewportTop, goalRegisters)
+              return tags.length > 0 ? `GOAL ${tags.join('＋')}` : 'GOAL'
+            })()}
             <span className="goal-hint"> (Space長押しで重ね合わせ)</span>
           </div>
           <div className="goal-text" ref={goalTextRef}>
