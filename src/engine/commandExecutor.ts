@@ -14,7 +14,12 @@ import { lines, join, pushUndo, deleteRange } from './executors/helpers'
 
 import { executeMotion } from './executors/motions'
 
-import { executeOperatorMotion, executeOperatorTextObject } from './executors/operators'
+import {
+  executeOperatorMotion,
+  executeOperatorTextObject,
+  applyOperator,
+  resolveLineRange,
+} from './executors/operators'
 
 import {
   executeInsertBefore,
@@ -36,7 +41,6 @@ import {
   executeRedo,
   executeReplace,
   executeToggleCase,
-  executeDeleteLine,
   executeDeleteToEnd,
   executeChangeToEnd,
   executeJoinLines,
@@ -44,8 +48,6 @@ import {
   executePasteBefore,
   executeSubstitute,
   executeSubstituteLine,
-  executeIndent,
-  executeDedent,
   executeSearch,
   executeSearchNext,
   executeSearchPrev,
@@ -401,43 +403,9 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
   // Delete character before cursor (X)
   if (raw === 'X') return executeDeleteCharBefore(state)
 
-  // Delete line (dd)
-  if (cmd.operator === 'd' && !cmd.motion && !cmd.textObject && raw.includes('dd')) {
-    return executeDeleteLine(state, cmd.count ?? 1)
-  }
-
-  // Change line (cc)
-  if (cmd.operator === 'c' && !cmd.motion && !cmd.textObject && raw.includes('cc')) {
-    const ls = lines(state.text)
-    const line = ls[state.cursor.line]
-    const indent = line.match(/^(\s*)/)?.[1] ?? ''
-    const newLines = [...ls]
-    newLines[state.cursor.line] = indent
-    const newText = join(newLines)
-    return {
-      ...state,
-      text: newText,
-      cursor: { line: state.cursor.line, col: indent.length },
-      mode: 'insert',
-      registers: { ...state.registers, '': line },
-    }
-  }
-
-  // Yank line (yy)
-  if (cmd.operator === 'y' && !cmd.motion && !cmd.textObject && raw.includes('yy')) {
-    const ls = lines(state.text)
-    const line = ls[state.cursor.line]
-    return { ...state, registers: { ...state.registers, '': line + '\n' } }
-  }
-
-  // >> (indent)
-  if (cmd.operator === '>' && raw.includes('>>')) {
-    return executeIndent(state, cmd.count ?? 1)
-  }
-
-  // << (dedent)
-  if (cmd.operator === '<' && raw.includes('<<')) {
-    return executeDedent(state, cmd.count ?? 1)
+  // Doubled operator (dd, cc, yy, >>, <<)
+  if (cmd.operator && !cmd.motion && !cmd.textObject) {
+    return applyOperator(state, cmd.operator, resolveLineRange(state))
   }
 
   // D — delete to end of line

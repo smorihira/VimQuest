@@ -1,51 +1,238 @@
 /**
- * Operator commands — d/c/y + motion, d/c/y + text object, case change (gu/gU).
+ * Operator commands — d/c/y + motion, d/c/y + text object, case change (gu/gU),
+ * indent/dedent (>/<).
+ *
+ * All operators share `applyOperator(state, operator, range)`:
+ *   1. Resolve target range (doubled → line, motion → cursor-to-target, textobj → delimiters)
+ *   2. Apply the operator to that range
  */
 
-import type { EditorState, VimMode } from '../../types/editor'
+import type { EditorState } from '../../types/editor'
 import type { Command, TextObject } from '../../types/command'
-import {
-  lines,
-  join,
-  clampCursor,
-  pushUndo,
-  deleteRange,
-  offsetToPos,
-  isWordChar,
-  isSpace,
-} from './helpers'
+import { lines, join, clampCursor, pushUndo, offsetToPos, isWordChar, isSpace } from './helpers'
 import { resolveMotion, isMotionInclusive } from './motions'
 
-/** Indent lines (used by > operator) */
-function executeIndentLines(state: EditorState, count: number): EditorState {
-  const ls = lines(state.text)
-  const newLines = [...ls]
-  for (let i = 0; i < count && state.cursor.line + i < ls.length; i++) {
-    newLines[state.cursor.line + i] = '  ' + newLines[state.cursor.line + i]
-  }
-  const newText = join(newLines)
-  const line = newLines[state.cursor.line]
-  let col = 0
-  while (col < line.length && isSpace(line[col])) col++
-  return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
+// ─── Operator Range ────────────────────────────────────────────────
+
+export interface OperatorRange {
+  from: number // start character offset (inclusive)
+  to: number // end character offset (inclusive)
+  linewise: boolean
 }
 
-/** Dedent lines (used by < operator) */
-function executeDedentLines(state: EditorState, count: number): EditorState {
-  const ls = lines(state.text)
-  const newLines = [...ls]
-  for (let i = 0; i < count && state.cursor.line + i < ls.length; i++) {
-    const line = newLines[state.cursor.line + i]
-    if (line.startsWith('  ')) newLines[state.cursor.line + i] = line.slice(2)
-    else if (line.startsWith(' ')) newLines[state.cursor.line + i] = line.slice(1)
-    else if (line.startsWith('\t')) newLines[state.cursor.line + i] = line.slice(1)
-  }
-  const newText = join(newLines)
-  const line = newLines[state.cursor.line]
-  let col = 0
-  while (col < line.length && isSpace(line[col])) col++
-  return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
+function posToOffset(text: string, pos: { line: number; col: number }): number {
+  const ls = lines(text)
+  let offset = 0
+  for (let i = 0; i < pos.line; i++) offset += ls[i].length + 1
+  offset += pos.col
+  return offset
 }
+
+/** Resolve the range for a doubled operator (current line) */
+export function resolveLineRange(state: EditorState): OperatorRange {
+  const ls = lines(state.text)
+  const line = state.cursor.line
+  let from = 0
+  for (let i = 0; i < line; i++) from += ls[i].length + 1
+  return { from, to: from + ls[line].length - 1, linewise: true }
+}
+
+// ─── Case change helper ───────────────────────────────────────────
+
+function applyCaseChangeRange(
+  state: EditorState,
+  from: number,
+  to: number,
+  operator: string,
+): EditorState {
+  if (from > to) return state
+  const flat = state.text
+  const before = flat.slice(0, from)
+  const middle = flat.slice(from, to + 1)
+  const after = flat.slice(to + 1)
+  const changed =
+    operator === 'gU'
+      ? middle.toUpperCase()
+      : operator === 'gu'
+        ? middle.toLowerCase()
+        : middle
+            .split('')
+            .map((c) => (c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()))
+            .join('')
+  const newText = before + changed + after
+  return pushUndo(state, newText, state.cursor, 'normal', 1)
+}
+
+// ─── Unified operator application ─────────────────────────────────
+
+/** Apply an operator to a resolved range */
+export function applyOperator(
+  state: EditorState,
+  operator: string,
+  range: OperatorRange,
+  register: string = '',
+): EditorState {
+  const { from, to, linewise } = range
+  const flat = state.text
+  const ls = lines(flat)
+
+  if (linewise) {
+    const fromLine = offsetToPos(flat, from).line
+    const toLine = from > to ? fromLine : offsetToPos(flat, to).line
+
+    switch (operator) {
+      case 'd': {
+        const deleted = ls.slice(fromLine, toLine + 1).join('\n') + '\n'
+        const newLines = [...ls.slice(0, fromLine), ...ls.slice(toLine + 1)]
+        if (newLines.length === 0) newLines.push('')
+        const newText = join(newLines)
+        const newLine = Math.min(fromLine, newLines.length - 1)
+        let col = 0
+        while (col < newLines[newLine].length && isSpace(newLines[newLine][col])) col++
+        const newCursor = {
+          line: newLine,
+          col: Math.min(col, Math.max(0, newLines[newLine].length - 1)),
+        }
+        const result = pushUndo(state, newText, newCursor, 'normal', 1)
+        return { ...result, registers: { ...result.registers, [register]: deleted } }
+      }
+      case 'c': {
+        const line = ls[fromLine]
+        const indent = line.match(/^(\s*)/)?.[1] ?? ''
+        const newLines = [...ls]
+        newLines[fromLine] = indent
+        if (toLine > fromLine) {
+          newLines.splice(fromLine + 1, toLine - fromLine)
+        }
+        const newText = join(newLines)
+        return {
+          ...state,
+          text: newText,
+          cursor: { line: fromLine, col: indent.length },
+          mode: 'insert',
+          registers: { ...state.registers, [register]: line },
+        }
+      }
+      case 'y': {
+        const yanked = ls.slice(fromLine, toLine + 1).join('\n') + '\n'
+        return { ...state, registers: { ...state.registers, [register]: yanked } }
+      }
+      case '>': {
+        const newLines = [...ls]
+        for (let i = fromLine; i <= toLine && i < ls.length; i++) {
+          newLines[i] = '  ' + newLines[i]
+        }
+        const newText = join(newLines)
+        const resultLine = newLines[state.cursor.line]
+        let col = 0
+        while (col < resultLine.length && isSpace(resultLine[col])) col++
+        return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
+      }
+      case '<': {
+        const newLines = [...ls]
+        for (let i = fromLine; i <= toLine && i < ls.length; i++) {
+          const l = newLines[i]
+          if (l.startsWith('  ')) newLines[i] = l.slice(2)
+          else if (l.startsWith(' ')) newLines[i] = l.slice(1)
+          else if (l.startsWith('\t')) newLines[i] = l.slice(1)
+        }
+        const newText = join(newLines)
+        const resultLine = newLines[state.cursor.line]
+        let col = 0
+        while (col < resultLine.length && isSpace(resultLine[col])) col++
+        return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
+      }
+      case 'gu':
+      case 'gU':
+      case 'g~': {
+        let lineFrom = 0
+        for (let i = 0; i < fromLine; i++) lineFrom += ls[i].length + 1
+        let lineTo = lineFrom
+        for (let i = fromLine; i <= toLine; i++) lineTo += ls[i].length + 1
+        lineTo -= 2
+        return applyCaseChangeRange(state, lineFrom, Math.max(lineFrom, lineTo), operator)
+      }
+    }
+    return state
+  }
+
+  // ─── Charwise ──────────────────────────────────────────────────
+
+  if (from > to) {
+    if (operator === 'c') return { ...state, mode: 'insert' }
+    return state
+  }
+
+  switch (operator) {
+    case 'd': {
+      const deleted = flat.slice(from, to + 1)
+      const newText = flat.slice(0, from) + flat.slice(to + 1)
+      const newCursor = offsetToPos(newText, Math.min(from, newText.length - 1))
+      const result = pushUndo(
+        state,
+        newText,
+        clampCursor(newText, newCursor, 'normal'),
+        'normal',
+        1,
+      )
+      return { ...result, registers: { ...result.registers, [register]: deleted } }
+    }
+    case 'c': {
+      const deleted = flat.slice(from, to + 1)
+      const newText = flat.slice(0, from) + flat.slice(to + 1)
+      const cCursor = offsetToPos(newText, Math.min(from, newText.length))
+      return {
+        ...state,
+        text: newText,
+        cursor: clampCursor(newText, cCursor, 'insert'),
+        mode: 'insert',
+        registers: { ...state.registers, [register]: deleted },
+      }
+    }
+    case 'y': {
+      const yanked = flat.slice(from, to + 1)
+      return { ...state, registers: { ...state.registers, [register]: yanked } }
+    }
+    case '>': {
+      const fromLine = offsetToPos(flat, from).line
+      const toLine = offsetToPos(flat, to).line
+      const newLines = [...ls]
+      for (let i = fromLine; i <= toLine && i < ls.length; i++) {
+        newLines[i] = '  ' + newLines[i]
+      }
+      const newText = join(newLines)
+      const resultLine = newLines[state.cursor.line]
+      let col = 0
+      while (col < resultLine.length && isSpace(resultLine[col])) col++
+      return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
+    }
+    case '<': {
+      const fromLine = offsetToPos(flat, from).line
+      const toLine = offsetToPos(flat, to).line
+      const newLines = [...ls]
+      for (let i = fromLine; i <= toLine && i < ls.length; i++) {
+        const l = newLines[i]
+        if (l.startsWith('  ')) newLines[i] = l.slice(2)
+        else if (l.startsWith(' ')) newLines[i] = l.slice(1)
+        else if (l.startsWith('\t')) newLines[i] = l.slice(1)
+      }
+      const newText = join(newLines)
+      const resultLine = newLines[state.cursor.line]
+      let col = 0
+      while (col < resultLine.length && isSpace(resultLine[col])) col++
+      return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
+    }
+    case 'gu':
+    case 'gU':
+    case 'g~': {
+      return applyCaseChangeRange(state, from, to, operator)
+    }
+  }
+
+  return state
+}
+
+// ─── Operator + Motion ────────────────────────────────────────────
 
 /** Execute operator + motion (e.g., dw, de, db, cw, yw) */
 export function executeOperatorMotion(state: EditorState, cmd: Command): EditorState {
@@ -64,63 +251,13 @@ export function executeOperatorMotion(state: EditorState, cmd: Command): EditorS
     }
   }
 
-  if (operator === 'd') {
-    const inclusive = isMotionInclusive(motion)
-    const {
-      text: newText,
-      cursor: newCursor,
-      deleted,
-    } = deleteRange(state.text, state.cursor, target, inclusive)
+  let fromOffset = posToOffset(state.text, state.cursor)
+  let toOffset = posToOffset(state.text, target)
+  if (fromOffset > toOffset) [fromOffset, toOffset] = [toOffset, fromOffset]
+  const inclusive = isMotionInclusive(motion)
+  const to = inclusive ? toOffset : Math.max(fromOffset, toOffset - 1)
 
-    const result = pushUndo(state, newText, newCursor, 'normal', 1)
-    return { ...result, registers: { ...result.registers, '': deleted } }
-  }
-
-  if (operator === 'c') {
-    const inclusive = isMotionInclusive(motion)
-    const {
-      text: newText,
-      cursor: newCursor,
-      deleted,
-    } = deleteRange(state.text, state.cursor, target, inclusive)
-    return {
-      ...state,
-      text: newText,
-      cursor: newCursor,
-      mode: 'insert',
-      registers: { ...state.registers, '': deleted },
-    }
-  }
-
-  if (operator === 'y') {
-    const inclusive = isMotionInclusive(motion)
-    const ls = lines(state.text)
-    let fromOffset = 0
-    for (let i = 0; i < state.cursor.line; i++) fromOffset += ls[i].length + 1
-    fromOffset += state.cursor.col
-    let toOffset = 0
-    for (let i = 0; i < target.line; i++) toOffset += ls[i].length + 1
-    toOffset += target.col
-    if (fromOffset > toOffset) [fromOffset, toOffset] = [toOffset, fromOffset]
-    if (inclusive) toOffset++
-    const yanked = state.text.slice(fromOffset, toOffset)
-    return { ...state, registers: { ...state.registers, '': yanked } }
-  }
-
-  if (operator === 'gu' || operator === 'gU' || operator === 'g~') {
-    const mode = operator === 'gU' ? 'upper' : operator === 'gu' ? 'lower' : 'toggle'
-    return executeCaseChange(state, cmd, mode)
-  }
-
-  if (operator === '>') {
-    return executeIndentLines(state, cmd.count ?? 1)
-  }
-
-  if (operator === '<') {
-    return executeDedentLines(state, cmd.count ?? 1)
-  }
-
-  return state
+  return applyOperator(state, operator, { from: fromOffset, to, linewise: false })
 }
 
 /** Resolve a text object to a range [from, to] (inclusive on both ends) */
@@ -424,53 +561,6 @@ function findInsideDelimiters(
   return { from: start + 1, to: end - 1 }
 }
 
-/** Execute case change via gu/gU/g~ + text object or motion */
-export function executeCaseChange(
-  state: EditorState,
-  cmd: Command,
-  mode: 'upper' | 'lower' | 'toggle',
-): EditorState {
-  let from: number, to: number
-
-  if (cmd.textObject) {
-    const range = resolveTextObject(state, cmd.textObject)
-    if (!range) return state
-    from = range.from
-    to = range.to
-  } else if (cmd.motion) {
-    const count = cmd.count ?? 1
-    const target = resolveMotion(state, cmd.motion, count, cmd.char, cmd.count)
-    if (!target) return state
-    const ls = lines(state.text)
-    let fromOffset = 0
-    for (let i = 0; i < state.cursor.line; i++) fromOffset += ls[i].length + 1
-    fromOffset += state.cursor.col
-    let toOffset = 0
-    for (let i = 0; i < target.line; i++) toOffset += ls[i].length + 1
-    toOffset += target.col
-    from = Math.min(fromOffset, toOffset)
-    to = Math.max(fromOffset, toOffset)
-  } else {
-    return state
-  }
-
-  const flat = state.text
-  const before = flat.slice(0, from)
-  const middle = flat.slice(from, to + 1)
-  const after = flat.slice(to + 1)
-  const changed =
-    mode === 'upper'
-      ? middle.toUpperCase()
-      : mode === 'lower'
-        ? middle.toLowerCase()
-        : middle
-            .split('')
-            .map((c) => (c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()))
-            .join('')
-  const newText = before + changed + after
-  return pushUndo(state, newText, state.cursor, 'normal', 1)
-}
-
 /** Execute operator + text object (diw, ci", etc.) */
 export function executeOperatorTextObject(state: EditorState, cmd: Command): EditorState {
   const operator = cmd.operator!
@@ -478,45 +568,10 @@ export function executeOperatorTextObject(state: EditorState, cmd: Command): Edi
   const range = resolveTextObject(state, textObj)
   if (!range) return state
 
-  const flat = state.text
-  const { from, to } = range
-
-  if (from > to) {
-    if (operator === 'c') {
-      return { ...state, mode: 'insert' }
-    }
-    return state
-  }
-
-  const deleted = flat.slice(from, to + 1)
-  const newText = flat.slice(0, from) + flat.slice(to + 1)
-  const newCursor = offsetToPos(newText, Math.min(from, newText.length - 1))
-
-  if (operator === 'd') {
-    const result = pushUndo(state, newText, clampCursor(newText, newCursor, 'normal'), 'normal', 1)
-    return { ...result, registers: { ...result.registers, '': deleted } }
-  }
-
-  if (operator === 'c') {
-    const cCursor = offsetToPos(newText, Math.min(from, newText.length))
-    return {
-      ...state,
-      text: newText,
-      cursor: clampCursor(newText, cCursor, 'insert'),
-      mode: 'insert' as VimMode,
-      registers: { ...state.registers, '': deleted },
-    }
-  }
-
-  if (operator === 'y') {
-    const reg = cmd.register ?? ''
-    return { ...state, registers: { ...state.registers, [reg]: deleted } }
-  }
-
-  if (operator === 'gu' || operator === 'gU' || operator === 'g~') {
-    const mode = operator === 'gU' ? 'upper' : operator === 'gu' ? 'lower' : 'toggle'
-    return executeCaseChange(state, cmd, mode)
-  }
-
-  return state
+  return applyOperator(
+    state,
+    operator,
+    { from: range.from, to: range.to, linewise: false },
+    cmd.register,
+  )
 }

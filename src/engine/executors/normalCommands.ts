@@ -115,26 +115,6 @@ export function executeToggleCase(state: EditorState): EditorState {
   return pushUndo(state, newText, { line: state.cursor.line, col: newCol }, 'normal', 1)
 }
 
-/** Execute dd — delete current line */
-export function executeDeleteLine(state: EditorState, count: number): EditorState {
-  const ls = lines(state.text)
-  const from = state.cursor.line
-  const to = Math.min(from + count, ls.length)
-  const deleted = ls.slice(from, to).join('\n') + '\n'
-  const newLines = [...ls.slice(0, from), ...ls.slice(to)]
-  if (newLines.length === 0) newLines.push('')
-  const newText = join(newLines)
-  const newLine = Math.min(from, newLines.length - 1)
-  let col = 0
-  while (col < newLines[newLine].length && isSpace(newLines[newLine][col])) col++
-  const newCursor = {
-    line: newLine,
-    col: Math.min(col, Math.max(0, newLines[newLine].length - 1)),
-  }
-  const result = pushUndo(state, newText, newCursor, 'normal', 1)
-  return { ...result, registers: { ...result.registers, '': deleted } }
-}
-
 /** Execute D — delete from cursor to end of line */
 export function executeDeleteToEnd(state: EditorState): EditorState {
   const ls = lines(state.text)
@@ -267,39 +247,6 @@ export function executeSubstituteLine(state: EditorState): EditorState {
     mode: 'insert',
     registers: { ...state.registers, '': line },
   }
-}
-
-// ─── Indent / Dedent ───────────────────────────────────────────────
-
-/** Execute >> — indent line */
-export function executeIndent(state: EditorState, count: number): EditorState {
-  const ls = lines(state.text)
-  const newLines = [...ls]
-  for (let i = 0; i < count && state.cursor.line + i < ls.length; i++) {
-    newLines[state.cursor.line + i] = '  ' + newLines[state.cursor.line + i]
-  }
-  const newText = join(newLines)
-  const line = newLines[state.cursor.line]
-  let col = 0
-  while (col < line.length && isSpace(line[col])) col++
-  return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
-}
-
-/** Execute << — dedent line */
-export function executeDedent(state: EditorState, count: number): EditorState {
-  const ls = lines(state.text)
-  const newLines = [...ls]
-  for (let i = 0; i < count && state.cursor.line + i < ls.length; i++) {
-    const line = newLines[state.cursor.line + i]
-    if (line.startsWith('  ')) newLines[state.cursor.line + i] = line.slice(2)
-    else if (line.startsWith(' ')) newLines[state.cursor.line + i] = line.slice(1)
-    else if (line.startsWith('\t')) newLines[state.cursor.line + i] = line.slice(1)
-  }
-  const newText = join(newLines)
-  const line = newLines[state.cursor.line]
-  let col = 0
-  while (col < line.length && isSpace(line[col])) col++
-  return pushUndo(state, newText, { line: state.cursor.line, col }, 'normal', 1)
 }
 
 // ─── Search ────────────────────────────────────────────────────────

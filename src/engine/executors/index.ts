@@ -20,9 +20,11 @@ export { resolveMotion, isMotionInclusive, executeMotion, moveFirstNonBlank } fr
 export {
   executeOperatorMotion,
   resolveTextObject,
-  executeCaseChange,
   executeOperatorTextObject,
+  applyOperator,
+  resolveLineRange,
 } from './operators'
+export type { OperatorRange } from './operators'
 
 export {
   executeInsertBefore,
@@ -43,7 +45,6 @@ export {
   executeRedo,
   executeReplace,
   executeToggleCase,
-  executeDeleteLine,
   executeDeleteToEnd,
   executeChangeToEnd,
   executeJoinLines,
@@ -51,8 +52,6 @@ export {
   executePasteBefore,
   executeSubstitute,
   executeSubstituteLine,
-  executeIndent,
-  executeDedent,
   executeSearch,
   executeSearchNext,
   executeSearchPrev,
