@@ -80,7 +80,7 @@ const INSTANT_COMMANDS = new Set<string>([
 ])
 
 /** Commands that bypass hand restriction */
-const ALWAYS_ALLOWED = new Set<string>(['u', 'Ctrl+R', 'Esc', ';', ',', 'n', 'N'])
+const ALWAYS_ALLOWED = new Set<string>(['u', 'Ctrl+R', 'Esc', ';', ',', 'n', 'N', '.'])
 
 const OPERATORS = new Set<string>(['d', 'c', 'y', '>', '<'])
 

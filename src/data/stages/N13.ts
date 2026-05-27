@@ -9,7 +9,7 @@ export const N13_STAGES: Stage[] = [
   // opt = 4 (f{ + % + j + %)
   {
     id: 'N13-T',
-    nodeId: 'N13',
+    nodeId: 'N12',
     type: 'teach',
     title: '対を見つけろ',
     language: 'javascript',

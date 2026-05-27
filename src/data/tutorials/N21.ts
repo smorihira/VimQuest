@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N21-T: 文字を選べ (v + d) */
 export const N21_T_TUTORIAL: Tutorial = {
-  nodeId: 'N21',
+  nodeId: 'N08',
   stageId: 'N21-T',
   steps: [
     {
@@ -30,7 +30,7 @@ export const N21_T_TUTORIAL: Tutorial = {
 
 /** N21-Ta: 行を選べ (V + d) */
 export const N21_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N21',
+  nodeId: 'N08',
   stageId: 'N21-Ta',
   steps: [
     {
@@ -58,7 +58,7 @@ export const N21_Ta_TUTORIAL: Tutorial = {
 
 /** N21-Tb: 矩形で切れ (Ctrl+v + d) */
 export const N21_Tb_TUTORIAL: Tutorial = {
-  nodeId: 'N21',
+  nodeId: 'N08',
   stageId: 'N21-Tb',
   steps: [
     {

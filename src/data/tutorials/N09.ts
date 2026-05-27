@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N09-T: 単語を変えろ (cw の基本) */
 export const N09_T_TUTORIAL: Tutorial = {
-  nodeId: 'N09',
+  nodeId: 'N05',
   stageId: 'N09-T',
   steps: [
     {
@@ -18,7 +18,7 @@ export const N09_T_TUTORIAL: Tutorial = {
 
 /** N09-Ta: 行を書き換えろ (cc) */
 export const N09_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N09',
+  nodeId: 'N05',
   stageId: 'N09-Ta',
   steps: [
     {
@@ -34,7 +34,7 @@ export const N09_Ta_TUTORIAL: Tutorial = {
 
 /** N09-Tb: 末尾を変えろ (c$) */
 export const N09_Tb_TUTORIAL: Tutorial = {
-  nodeId: 'N09',
+  nodeId: 'N05',
   stageId: 'N09-Tb',
   steps: [
     {

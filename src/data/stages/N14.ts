@@ -8,7 +8,7 @@ export const N14_STAGES: Stage[] = [
   // opt = 2 (自力: w+dt2) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N14-T',
-    nodeId: 'N14',
+    nodeId: 'N05',
     type: 'teach',
     title: '範囲を断て',
     language: 'css',
@@ -25,7 +25,7 @@ export const N14_STAGES: Stage[] = [
   // opt = 4 (自力: j+w+w+ct;…large…Esc) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N14-Ta',
-    nodeId: 'N14',
+    nodeId: 'N05',
     type: 'teach',
     title: '書き換えろ',
     language: 'css',
@@ -48,7 +48,7 @@ export const N14_STAGES: Stage[] = [
   // opt = 6 (w+w+ct;…50px…Esc(1) + j+b+ct;…80px…Esc(1))
   {
     id: 'N14-P',
-    nodeId: 'N14',
+    nodeId: 'N05',
     type: 'practice',
     title: '一括修正',
     language: 'css',

@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N12-T: 狙い撃て (f, t, ;, ,) */
 export const N12_T_TUTORIAL: Tutorial = {
-  nodeId: 'N12',
+  nodeId: 'N01',
   stageId: 'N12-T',
   steps: [
     {

@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N19-T: トグルせよ (~) */
 export const N19_T_TUTORIAL: Tutorial = {
-  nodeId: 'N19',
+  nodeId: 'N13',
   stageId: 'N19-T',
   steps: [
     {
@@ -18,7 +18,7 @@ export const N19_T_TUTORIAL: Tutorial = {
 
 /** N19-Ta: 大文字にしろ (gu, gU) */
 export const N19_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N19',
+  nodeId: 'N13',
   stageId: 'N19-Ta',
   steps: [
     {

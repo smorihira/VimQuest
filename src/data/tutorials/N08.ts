@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N08-T: 単語を消せ (dw/de の違い) */
 export const N08_T_TUTORIAL: Tutorial = {
-  nodeId: 'N08',
+  nodeId: 'N05',
   stageId: 'N08-T',
   steps: [
     {
@@ -30,7 +30,7 @@ export const N08_T_TUTORIAL: Tutorial = {
 
 /** N08-Ta: 行を消せ (dd) */
 export const N08_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N08',
+  nodeId: 'N05',
   stageId: 'N08-Ta',
   steps: [
     {
@@ -50,7 +50,7 @@ export const N08_Ta_TUTORIAL: Tutorial = {
 
 /** N08-Tb: 末尾を切れ (d0, d$) */
 export const N08_Tb_TUTORIAL: Tutorial = {
-  nodeId: 'N08',
+  nodeId: 'N05',
   stageId: 'N08-Tb',
   steps: [
     {

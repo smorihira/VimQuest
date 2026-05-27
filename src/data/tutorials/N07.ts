@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N07-T: コピーせよ (yiw + p) */
 export const N07_T_TUTORIAL: Tutorial = {
-  nodeId: 'N07',
+  nodeId: 'N05',
   stageId: 'N07-T',
   steps: [
     {

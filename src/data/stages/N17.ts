@@ -9,7 +9,7 @@ export const N17_STAGES: Stage[] = [
   // opt = 2 (自力: f"+ci"…large…Esc) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N17-T',
-    nodeId: 'N17',
+    nodeId: 'N06',
     type: 'teach',
     title: '中身を変えろ',
     language: 'json',
@@ -27,7 +27,7 @@ export const N17_STAGES: Stage[] = [
   // opt = 4 (ci"…new…Esc(1) + f((1)+l(1) + ci(…y…Esc(1))
   {
     id: 'N17-P',
-    nodeId: 'N17',
+    nodeId: 'N06',
     type: 'practice',
     title: '中身総入替',
     language: 'javascript',

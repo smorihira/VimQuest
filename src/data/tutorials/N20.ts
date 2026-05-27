@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N20-T: インデントせよ (>>, <<) */
 export const N20_T_TUTORIAL: Tutorial = {
-  nodeId: 'N20',
+  nodeId: 'N13',
   stageId: 'N20-T',
   steps: [
     {

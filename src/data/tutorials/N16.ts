@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N16-T: 単語を掴め (iw, aw) */
 export const N16_T_TUTORIAL: Tutorial = {
-  nodeId: 'N16',
+  nodeId: 'N06',
   stageId: 'N16-T',
   steps: [
     {

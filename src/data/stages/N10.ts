@@ -8,7 +8,7 @@ export const N10_STAGES: Stage[] = [
   // opt = 3 (自力: j+l+D) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N10-T',
-    nodeId: 'N10',
+    nodeId: 'N11',
     type: 'teach',
     title: 'Dで断て',
     language: 'javascript',
@@ -26,7 +26,7 @@ export const N10_STAGES: Stage[] = [
   // opt = 3 (C+ok;+Esc+j+S+new+Esc) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N10-Ta',
-    nodeId: 'N10',
+    nodeId: 'N11',
     type: 'teach',
     title: 'C/Sで書き換え',
     language: 'javascript',
@@ -43,7 +43,7 @@ export const N10_STAGES: Stage[] = [
   // opt = 2 (J + J)
   {
     id: 'N10-Tb',
-    nodeId: 'N10',
+    nodeId: 'N11',
     type: 'teach',
     title: '行をつなげ',
     language: 'plaintext',

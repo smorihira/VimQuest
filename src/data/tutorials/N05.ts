@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N05-T: 画面を合わせろ (zz, zt, zb) */
 export const N05_T_TUTORIAL: Tutorial = {
-  nodeId: 'N05',
+  nodeId: 'N17',
   stageId: 'N05-T',
   steps: [
     {

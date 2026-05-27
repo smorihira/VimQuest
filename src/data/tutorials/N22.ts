@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N22-T: レジスタ入門 ("a レジスタでヤンク→ペースト) */
 export const N22_T_TUTORIAL: Tutorial = {
-  nodeId: 'N22',
+  nodeId: 'N10',
   stageId: 'N22-T',
   steps: [
     {

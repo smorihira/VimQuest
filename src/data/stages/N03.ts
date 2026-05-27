@@ -10,7 +10,7 @@ export const N03_STAGES: Stage[] = [
   // opt = 4 (l + re + j + ro)
   {
     id: 'N03-T',
-    nodeId: 'N03',
+    nodeId: 'N02',
     type: 'teach',
     title: '一文字直せ',
     language: 'plaintext',

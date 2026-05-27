@@ -41,7 +41,8 @@ describe('Tutorial data integrity', () => {
         const stage = getStage(tutorial.stageId)
         if (!stage) return // covered by B1
 
-        const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
+        const showBase =
+          stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
         const allCommands = new Set([
           ...stage.availableCommands,
           ...(stage.visualCommands ?? []),

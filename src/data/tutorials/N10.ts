@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N10-T: Dで断て (D = d$) */
 export const N10_T_TUTORIAL: Tutorial = {
-  nodeId: 'N10',
+  nodeId: 'N11',
   stageId: 'N10-T',
   steps: [
     {
@@ -18,7 +18,7 @@ export const N10_T_TUTORIAL: Tutorial = {
 
 /** N10-Ta: C/Sで書き換え */
 export const N10_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N10',
+  nodeId: 'N11',
   stageId: 'N10-Ta',
   steps: [
     {
@@ -74,7 +74,7 @@ export const N10_Ta_TUTORIAL: Tutorial = {
 
 /** N10-Tb: 行をつなげ (J) */
 export const N10_Tb_TUTORIAL: Tutorial = {
-  nodeId: 'N10',
+  nodeId: 'N11',
   stageId: 'N10-Tb',
   steps: [
     {

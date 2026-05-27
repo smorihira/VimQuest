@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N18-T: 精密除去 (diw) */
 export const N18_T_TUTORIAL: Tutorial = {
-  nodeId: 'N18',
+  nodeId: 'N06',
   stageId: 'N18-T',
   steps: [
     {
@@ -22,7 +22,7 @@ export const N18_T_TUTORIAL: Tutorial = {
 
 /** N18-Ta: 単語を変えろ (ciw) */
 export const N18_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N18',
+  nodeId: 'N06',
   stageId: 'N18-Ta',
   steps: [
     {

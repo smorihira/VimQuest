@@ -8,7 +8,7 @@ export const N06_STAGES: Stage[] = [
   // opt = 3 (/bug Enter + n + n)
   {
     id: 'N06-T',
-    nodeId: 'N06',
+    nodeId: 'N04',
     type: 'teach',
     title: '検索せよ',
     language: 'javascript',
@@ -39,7 +39,7 @@ export const N06_STAGES: Stage[] = [
   // opt = 3 (/TODO + Enter, n, n)
   {
     id: 'N06-P',
-    nodeId: 'N06',
+    nodeId: 'N04',
     type: 'practice',
     title: '全部見つけろ',
     language: 'javascript',
@@ -67,7 +67,7 @@ export const N06_STAGES: Stage[] = [
   // opt = 2 (* + *)
   {
     id: 'N06-Ta',
-    nodeId: 'N06',
+    nodeId: 'N04',
     type: 'teach',
     title: '同じ奴を探せ',
     language: 'javascript',

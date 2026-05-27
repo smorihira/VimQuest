@@ -109,7 +109,7 @@ export const N01_3_TUTORIAL: Tutorial = {
 
 /** N01-4: WORDで飛べ (W/B/E) */
 export const N01_4_TUTORIAL: Tutorial = {
-  nodeId: 'N01',
+  nodeId: 'N14',
   stageId: 'N01-4',
   steps: [
     {
@@ -177,7 +177,7 @@ export const N01_6_TUTORIAL: Tutorial = {
 
 /** N01-7: 文字を消せ (x + undo) */
 export const N01_7_TUTORIAL: Tutorial = {
-  nodeId: 'N01',
+  nodeId: 'N02',
   stageId: 'N01-7',
   steps: [
     {
@@ -213,7 +213,7 @@ export const N01_7_TUTORIAL: Tutorial = {
 
 /** N01-8: 文字を書け (i/a + Esc) */
 export const N01_8_TUTORIAL: Tutorial = {
-  nodeId: 'N01',
+  nodeId: 'N02',
   stageId: 'N01-8',
   steps: [
     // ── Short insert with `i` ──
@@ -283,7 +283,7 @@ export const N01_8_TUTORIAL: Tutorial = {
 
 /** N01-9: 文字を置き換えろ (s) */
 export const N01_9_TUTORIAL: Tutorial = {
-  nodeId: 'N01',
+  nodeId: 'N11',
   stageId: 'N01-9',
   steps: [
     {

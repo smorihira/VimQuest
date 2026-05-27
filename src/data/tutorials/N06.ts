@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N06-T: 検索せよ (/, n, N) */
 export const N06_T_TUTORIAL: Tutorial = {
-  nodeId: 'N06',
+  nodeId: 'N04',
   stageId: 'N06-T',
   steps: [
     {
@@ -28,7 +28,7 @@ export const N06_T_TUTORIAL: Tutorial = {
 
 /** N06-Ta: 同じ奴を探せ (*, #) */
 export const N06_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N06',
+  nodeId: 'N04',
   stageId: 'N06-Ta',
   steps: [
     {

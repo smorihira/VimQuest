@@ -80,7 +80,7 @@ function PlayScreenInner({
   playMode: PlayMode
   initialEditorState?: EditorState
 }) {
-  const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
+  const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
   const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined, initialEditorState)
   const [spaceHeld, setSpaceHeld] = useState(false)
   const [muted, setMutedState] = useState(isMuted())

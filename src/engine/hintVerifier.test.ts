@@ -40,7 +40,7 @@ function simulateHintCommands(stage: Stage): EditorState {
     stage.availableCommands,
     undefined,
     stage.visualCommands,
-    stage.nodeId !== 'N01' || stage.id === 'N01-C'
+    stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
       ? (BASE_COMMANDS as unknown as string[])
       : undefined,
   )

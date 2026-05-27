@@ -8,7 +8,7 @@ export const N19_STAGES: Stage[] = [
   // opt = 3 (~ + w + ~)
   {
     id: 'N19-T',
-    nodeId: 'N19',
+    nodeId: 'N13',
     type: 'teach',
     title: 'トグルせよ',
     language: 'plaintext',
@@ -25,7 +25,7 @@ export const N19_STAGES: Stage[] = [
   // opt = 5 (guiw + w + gUiw + w + guiw)
   {
     id: 'N19-Ta',
-    nodeId: 'N19',
+    nodeId: 'N13',
     type: 'teach',
     title: '大文字にしろ',
     language: 'javascript',

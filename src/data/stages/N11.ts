@@ -11,7 +11,7 @@ export const N11_STAGES: Stage[] = [
   // opt = 7 (I + '* ' + Esc + j + . + j + .)
   {
     id: 'N11-T',
-    nodeId: 'N11',
+    nodeId: 'N02',
     type: 'teach',
     title: 'リピートせよ',
     language: 'plaintext',
@@ -20,7 +20,7 @@ export const N11_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 11,
     stars: [5, 6, 8],
-    availableCommands: ['I', 'A', '.'],
+    availableCommands: ['I', 'A'],
     hints: [{ cost: 1, commands: ['I', '* ', 'Esc', 'j', '.', 'j', '.'] }],
     flavor: 'I で行頭に挿入。. で同じ操作を次の行にも一発リピート',
   },
@@ -29,7 +29,7 @@ export const N11_STAGES: Stage[] = [
   // opt = 7 (A + ';' + Esc + j + . + j + .)
   {
     id: 'N11-P',
-    nodeId: 'N11',
+    nodeId: 'N02',
     type: 'practice',
     title: '一括追加',
     language: 'css',
@@ -38,7 +38,7 @@ export const N11_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 11,
     stars: [5, 7, 9],
-    availableCommands: ['I', 'A', '.'],
+    availableCommands: ['I', 'A'],
     hints: [{ cost: 1, commands: ['A', ';', 'Esc', 'j', '.', 'j', '.'] }],
     flavor: 'A で行末にセミコロンを追加、. で残りも一発だ',
   },
@@ -47,7 +47,7 @@ export const N11_STAGES: Stage[] = [
   // opt = 7 (dd + j + . + j + . + j + .)
   {
     id: 'N11-C',
-    nodeId: 'N11',
+    nodeId: 'N07',
     type: 'challenge',
     title: 'デバッグ一掃',
     language: 'javascript',
@@ -63,7 +63,7 @@ export const N11_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 15,
     stars: [7, 10, 13],
-    availableCommands: ['dd', '.'],
+    availableCommands: ['dd'],
     hints: [{ cost: 1, commands: ['dd', 'j', '.', 'j', '.', 'j', '.'] }],
     flavor: 'dd でデバッグ行を消し、j で飛ばして . で繰り返せ',
   },

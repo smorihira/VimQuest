@@ -8,7 +8,7 @@ export const N18_STAGES: Stage[] = [
   // opt = 2 (自力: diw×2) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N18-T',
-    nodeId: 'N18',
+    nodeId: 'N06',
     type: 'teach',
     title: '精密除去',
     language: 'javascript',
@@ -26,7 +26,7 @@ export const N18_STAGES: Stage[] = [
   // opt = 2 (f"+di")
   {
     id: 'N18-P',
-    nodeId: 'N18',
+    nodeId: 'N06',
     type: 'practice',
     title: '外科手術',
     language: 'javascript',
@@ -43,7 +43,7 @@ export const N18_STAGES: Stage[] = [
   // opt = 3 (自力: w+w+ciw…new…Esc) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N18-Ta',
-    nodeId: 'N18',
+    nodeId: 'N06',
     type: 'teach',
     title: '単語を変えろ',
     language: 'javascript',
@@ -61,7 +61,7 @@ export const N18_STAGES: Stage[] = [
   // opt = 3 (ci"…#333…Esc(1) + j(1) + ci"…20px…Esc(1))
   {
     id: 'N18-Tb',
-    nodeId: 'N18',
+    nodeId: 'N06',
     type: 'practice',
     title: '属性を直せ',
     language: 'css',
@@ -79,7 +79,7 @@ export const N18_STAGES: Stage[] = [
   // opt = 9 (j+fA+ci"…Bob…Esc(1) + j+ft+ci"…30…Esc(1) + j+fu+ci"…admin…Esc(1))
   {
     id: 'N18-C',
-    nodeId: 'N18',
+    nodeId: 'N06',
     type: 'challenge',
     title: 'JSON外科',
     language: 'json',

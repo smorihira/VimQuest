@@ -9,7 +9,7 @@ export const N07_STAGES: Stage[] = [
   // opt = 3 (yw + $ + p) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N07-T',
-    nodeId: 'N07',
+    nodeId: 'N05',
     type: 'teach',
     title: 'コピーせよ',
     language: 'plaintext',
@@ -27,7 +27,7 @@ export const N07_STAGES: Stage[] = [
   // opt = 3 (j + yy + p) → ☆3=3, ☆2=5, ☆1=7, life=9
   {
     id: 'N07-P',
-    nodeId: 'N07',
+    nodeId: 'N05',
     type: 'practice',
     title: '行を複製',
     language: 'javascript',
@@ -45,7 +45,7 @@ export const N07_STAGES: Stage[] = [
   // opt = 5 (w + y$ + j + 0 + P) → ☆3=5, ☆2=8, ☆1=11, life=13
   {
     id: 'N07-C',
-    nodeId: 'N07',
+    nodeId: 'N05',
     type: 'challenge',
     title: 'ヤンク＆ペースト',
     language: 'plaintext',

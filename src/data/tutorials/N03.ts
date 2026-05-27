@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N03-T: 一文字直せ (r) */
 export const N03_T_TUTORIAL: Tutorial = {
-  nodeId: 'N03',
+  nodeId: 'N02',
   stageId: 'N03-T',
   steps: [
     {

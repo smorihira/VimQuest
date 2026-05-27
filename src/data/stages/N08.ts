@@ -8,7 +8,7 @@ export const N08_STAGES: Stage[] = [
   // opt = 2 (自力: dw×2) → ☆3=2, ☆2=3, ☆1=5, life=8
   {
     id: 'N08-T',
-    nodeId: 'N08',
+    nodeId: 'N05',
     type: 'teach',
     title: '単語を消せ',
     language: 'plaintext',
@@ -26,7 +26,7 @@ export const N08_STAGES: Stage[] = [
   // opt = 4 (wdwwdw等) → ☆3=4, ☆2=6, ☆1=8, life=10
   {
     id: 'N08-P',
-    nodeId: 'N08',
+    nodeId: 'N05',
     type: 'practice',
     title: '連続削除',
     language: 'javascript',
@@ -44,7 +44,7 @@ export const N08_STAGES: Stage[] = [
   // opt = 5 → ☆3=5, ☆2=8, ☆1=11, life=13
   {
     id: 'N08-C',
-    nodeId: 'N08',
+    nodeId: 'N05',
     type: 'challenge',
     title: '精密削除',
     language: 'css',
@@ -61,7 +61,7 @@ export const N08_STAGES: Stage[] = [
   // opt = 4 (j + dd + j + dd)
   {
     id: 'N08-Ta',
-    nodeId: 'N08',
+    nodeId: 'N05',
     type: 'teach',
     title: '行を消せ',
     language: 'javascript',
@@ -85,7 +85,7 @@ export const N08_STAGES: Stage[] = [
   // opt = 3 (自力: w+l+d$) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N08-Tb',
-    nodeId: 'N08',
+    nodeId: 'N05',
     type: 'teach',
     title: '末尾を切れ',
     language: 'javascript',

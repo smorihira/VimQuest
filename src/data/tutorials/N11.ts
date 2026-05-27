@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N11-T: リピートせよ (I + .) */
 export const N11_T_TUTORIAL: Tutorial = {
-  nodeId: 'N11',
+  nodeId: 'N02',
   stageId: 'N11-T',
   steps: [
     {

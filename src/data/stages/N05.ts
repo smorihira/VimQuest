@@ -10,7 +10,7 @@ export const N05_STAGES: Stage[] = [
   // opt = 5 (Ctrl+d + Ctrl+d + j + j + zz)
   {
     id: 'N05-T',
-    nodeId: 'N05',
+    nodeId: 'N17',
     type: 'teach',
     title: '画面を合わせろ',
     language: 'javascript',

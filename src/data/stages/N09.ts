@@ -8,7 +8,7 @@ export const N09_STAGES: Stage[] = [
   // opt = 4 (cw+Esc=1, w=1, w=1, cw+Esc=1) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N09-T',
-    nodeId: 'N09',
+    nodeId: 'N05',
     type: 'teach',
     title: '単語を変えろ',
     language: 'javascript',
@@ -26,7 +26,7 @@ export const N09_STAGES: Stage[] = [
   // opt = 3 (cc + '// done'(7chars→1+2=3) + Esc) → ☆3=3, ☆2=4, ☆1=6, life=9
   {
     id: 'N09-Ta',
-    nodeId: 'N09',
+    nodeId: 'N05',
     type: 'teach',
     title: '行を書き換えろ',
     language: 'javascript',
@@ -44,7 +44,7 @@ export const N09_STAGES: Stage[] = [
   // opt = 4 (c$+Esc=1, j=1, b=1, c$+Esc=1) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N09-Tb',
-    nodeId: 'N09',
+    nodeId: 'N05',
     type: 'teach',
     title: '末尾を変えろ',
     language: 'javascript',
@@ -62,7 +62,7 @@ export const N09_STAGES: Stage[] = [
   // opt = 4 (cw+Esc=1, j=1, b=1, cw+Esc=1) → ☆3=4, ☆2=6, ☆1=8, life=10
   {
     id: 'N09-P',
-    nodeId: 'N09',
+    nodeId: 'N05',
     type: 'practice',
     title: '書き換え連打',
     language: 'css',
@@ -80,7 +80,7 @@ export const N09_STAGES: Stage[] = [
   // opt = 6 (cw+Esc=1, j=1, cc+Esc=1, j=1, w=1, cw+Esc=1) → ☆3=6, ☆2=9, ☆1=12, life=14
   {
     id: 'N09-C',
-    nodeId: 'N09',
+    nodeId: 'N05',
     type: 'challenge',
     title: '全面書き換え',
     language: 'javascript',

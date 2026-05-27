@@ -9,7 +9,7 @@ export const N04_STAGES: Stage[] = [
   // opt = 2 (Ctrl+d + Ctrl+d)
   {
     id: 'N04-T',
-    nodeId: 'N04',
+    nodeId: 'N16',
     type: 'teach',
     title: 'ページを飛べ',
     language: 'javascript',

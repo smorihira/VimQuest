@@ -2,6 +2,7 @@
 
 /**
  * BASE_COMMANDS — always-available commands after N01 clear.
+ * Includes N01 (motions) + N02 (basic editing) commands.
  * Displayed as small badges in the "base row" above regular hand cards.
  * Not included in per-stage availableCommands.
  */
@@ -13,16 +14,20 @@ export const BASE_COMMANDS: readonly string[] = [
   'w',
   'b',
   'e',
-  'W',
-  'B',
-  'E',
   '0',
   '^',
   '$',
   'gg',
   'G',
+  'f',
+  't',
   'x',
+  'X',
+  'r',
   'i',
   'a',
-  's',
+  'I',
+  'A',
+  'o',
+  'O',
 ] as const

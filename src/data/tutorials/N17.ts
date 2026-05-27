@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N17-T: 中身を変えろ (ci") */
 export const N17_T_TUTORIAL: Tutorial = {
-  nodeId: 'N17',
+  nodeId: 'N06',
   stageId: 'N17-T',
   steps: [
     {

@@ -9,7 +9,7 @@ export const N22_STAGES: Stage[] = [
   // opt = 4 (自力: j+"byiw+$+"bp) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N22-T',
-    nodeId: 'N22',
+    nodeId: 'N10',
     type: 'teach',
     title: 'レジスタ入門',
     language: 'plaintext',
@@ -30,7 +30,7 @@ export const N22_STAGES: Stage[] = [
   // opt = 9 ("ayiw(1)+w(1)+"byiw(1)+j(1)+$(1)+a+Esc(1)+"ap(1)+a+Esc(1)+"bp(1))
   {
     id: 'N22-P',
-    nodeId: 'N22',
+    nodeId: 'N10',
     type: 'practice',
     title: 'レジスタ活用',
     language: 'plaintext',

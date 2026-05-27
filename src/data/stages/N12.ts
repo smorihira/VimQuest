@@ -9,7 +9,7 @@ export const N12_STAGES: Stage[] = [
   // opt = 2 (f; + ;)
   {
     id: 'N12-T',
-    nodeId: 'N12',
+    nodeId: 'N01',
     type: 'teach',
     title: '狙い撃て',
     language: 'javascript',
@@ -28,7 +28,7 @@ export const N12_STAGES: Stage[] = [
   // opt = 3 (f/ + ; + ;) → third '/' in path
   {
     id: 'N12-P',
-    nodeId: 'N12',
+    nodeId: 'N01',
     type: 'practice',
     title: '繰り返し撃て',
     language: 'plaintext',
@@ -47,7 +47,7 @@ export const N12_STAGES: Stage[] = [
   // opt = 3 (fr + l + x)
   {
     id: 'N12-C',
-    nodeId: 'N12',
+    nodeId: 'N01',
     type: 'challenge',
     title: '精密射撃',
     language: 'css',

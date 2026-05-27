@@ -9,7 +9,7 @@ export const N21_STAGES: Stage[] = [
   // opt = 6 (f<(1)+v(0)+f>(1)+d(1) + f<(1)+v(0)+f>(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
     id: 'N21-T',
-    nodeId: 'N21',
+    nodeId: 'N08',
     type: 'teach',
     title: '文字を選べ',
     language: 'html',
@@ -28,7 +28,7 @@ export const N21_STAGES: Stage[] = [
   // opt = 4 (j(1)+V(0)+j(1)+d(1) + V(0)+d(1)) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
     id: 'N21-Ta',
-    nodeId: 'N21',
+    nodeId: 'N08',
     type: 'teach',
     title: '行を選べ',
     language: 'javascript',
@@ -47,7 +47,7 @@ export const N21_STAGES: Stage[] = [
   // opt = 6 (Ctrl+v(0)+j(1)+d(1) + jj(2)+Ctrl+v(0)+j(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
     id: 'N21-Tb',
-    nodeId: 'N21',
+    nodeId: 'N08',
     type: 'teach',
     title: '矩形で切れ',
     language: 'plaintext',
@@ -66,7 +66,7 @@ export const N21_STAGES: Stage[] = [
   // opt = 5 (Ctrl+v(0) + jjj(3) + l(1) + d(1))
   {
     id: 'N21-P',
-    nodeId: 'N21',
+    nodeId: 'N08',
     type: 'practice',
     title: '列を消せ',
     language: 'plaintext',

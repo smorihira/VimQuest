@@ -9,7 +9,7 @@ export const N16_STAGES: Stage[] = [
   // opt = 3 (w + daw + daw)
   {
     id: 'N16-T',
-    nodeId: 'N16',
+    nodeId: 'N06',
     type: 'teach',
     title: '単語を掴め',
     language: 'plaintext',
@@ -27,7 +27,7 @@ export const N16_STAGES: Stage[] = [
   // opt = 3 (w + daw + daw)
   {
     id: 'N16-P',
-    nodeId: 'N16',
+    nodeId: 'N06',
     type: 'practice',
     title: '不要語削除',
     language: 'plaintext',

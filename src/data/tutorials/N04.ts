@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N04-T: ページを飛べ (Ctrl+d, Ctrl+u) */
 export const N04_T_TUTORIAL: Tutorial = {
-  nodeId: 'N04',
+  nodeId: 'N16',
   stageId: 'N04-T',
   steps: [
     {

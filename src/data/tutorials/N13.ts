@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N13-T: 対を見つけろ (%) */
 export const N13_T_TUTORIAL: Tutorial = {
-  nodeId: 'N13',
+  nodeId: 'N12',
   stageId: 'N13-T',
   steps: [
     {

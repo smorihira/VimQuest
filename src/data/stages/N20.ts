@@ -9,7 +9,7 @@ export const N20_STAGES: Stage[] = [
   // opt = 6 (j + >> + j + >> + j + <<)
   {
     id: 'N20-T',
-    nodeId: 'N20',
+    nodeId: 'N13',
     type: 'teach',
     title: 'インデントせよ',
     language: 'python',

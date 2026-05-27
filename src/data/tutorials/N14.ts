@@ -2,7 +2,7 @@ import type { Tutorial } from '../../types/tutorial'
 
 /** N14-T: 範囲を断て (dt) */
 export const N14_T_TUTORIAL: Tutorial = {
-  nodeId: 'N14',
+  nodeId: 'N05',
   stageId: 'N14-T',
   steps: [
     {
@@ -26,7 +26,7 @@ export const N14_T_TUTORIAL: Tutorial = {
 
 /** N14-Ta: 書き換えろ (cf/ct 比較) */
 export const N14_Ta_TUTORIAL: Tutorial = {
-  nodeId: 'N14',
+  nodeId: 'N05',
   stageId: 'N14-Ta',
   steps: [
     {
