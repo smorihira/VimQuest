@@ -16,6 +16,10 @@
   background: var(--bg-visual, #2a1a3e);
 }
 
+.play-screen.replace-mode {
+  background: var(--bg-replace, #2e2a1a);
+}
+
 /* ── Top Bar ─────────────────────────────────────────── */
 
 .play-top-bar {

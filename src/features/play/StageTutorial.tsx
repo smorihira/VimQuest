@@ -436,8 +436,10 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
     }
   }, [handleKeyDown, handleKeyUp])
 
-  const modeClass =
-    editorState.mode === 'insert'
+  const isReplace = editorState.mode === 'insert' && editorState.replaceMode === true
+  const modeClass = isReplace
+    ? ' replace-mode'
+    : editorState.mode === 'insert'
       ? ' insert-mode'
       : editorState.mode === 'visual'
         ? ' visual-mode'
@@ -483,7 +485,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
         </div>
 
         <span className={`tutorial-mode${editorState.mode === 'insert' ? ' insert' : ''}`}>
-          {editorState.mode.toUpperCase()}
+          {isReplace ? 'REPLACE' : editorState.mode.toUpperCase()}
         </span>
       </div>
 

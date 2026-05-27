@@ -249,8 +249,10 @@ function PlayScreenInner({
     }
   }, [onKeyDown, onKeyUp])
 
-  const modeClass =
-    play.editorState.mode === 'insert'
+  const isReplace = play.editorState.mode === 'insert' && play.editorState.replaceMode === true
+  const modeClass = isReplace
+    ? 'replace-mode'
+    : play.editorState.mode === 'insert'
       ? 'insert-mode'
       : play.editorState.mode === 'visual'
         ? 'visual-mode'
@@ -269,7 +271,7 @@ function PlayScreenInner({
         damage={play.damage}
         lifePercent={play.lifePercent}
         projectedStars={play.projectedStars}
-        mode={play.editorState.mode}
+        mode={isReplace ? 'replace' : play.editorState.mode}
         muted={muted}
         toggleMute={toggleMute}
         onQuit={() => navigate('/tree', { state: { nodeId: stage.nodeId } })}

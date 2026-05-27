@@ -16,6 +16,10 @@
   background: var(--bg-visual, #2a1a3e);
 }
 
+.tutorial-screen.replace-mode {
+  background: var(--bg-replace, #2e2a1a);
+}
+
 /* Top Bar */
 .tutorial-top-bar {
   display: flex;

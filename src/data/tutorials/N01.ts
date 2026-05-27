@@ -324,7 +324,7 @@ export const N01_C_TUTORIAL: Tutorial = {
       expectedKey: null,
     },
     {
-      message: 'さぁ、始めろ。x で消して i/a で挿入、s で置き換えだ',
+      message: 'さぁ、始めろ。f でジャンプ、r で置換、i/a で挿入だ',
       expectedKey: null,
     },
   ],

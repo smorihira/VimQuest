@@ -207,7 +207,7 @@ export const N01_STAGES: Stage[] = [
   },
 
   // ── N01-C: 卒業試験 ──
-  // opt = 12 → ☆3=12, ☆2=15, ☆1=18, life=20
+  // opt = 11 → ☆3=11, ☆2=14, ☆1=17, life=19
   {
     id: 'N01-C',
     nodeId: 'N01',
@@ -217,30 +217,13 @@ export const N01_STAGES: Stage[] = [
     initialText: 'helo world\nthx quick brown fox\njumps ovr the\n  lazy dogg',
     goalText: 'hello world\nthe quick brown fox\njumps over the\n  lazy dog',
     initialCursor: { line: 0, col: 0 },
-    life: 20,
-    stars: [12, 15, 18],
+    life: 19,
+    stars: [11, 14, 17],
     availableCommands: [],
     hints: [
       {
         cost: 1,
-        commands: [
-          'e',
-          'i',
-          'l',
-          'Esc',
-          'j',
-          'h',
-          're',
-          'j',
-          'w',
-          'l',
-          'a',
-          'e',
-          'Esc',
-          'j',
-          'e',
-          'x',
-        ],
+        commands: ['e', 'i', 'l', 'Esc', 'j', 'h', 're', 'j', 'fv', 'a', 'e', 'Esc', 'j', 'e', 'x'],
       },
     ],
     flavor: '全ての武器を使いこなせ',
