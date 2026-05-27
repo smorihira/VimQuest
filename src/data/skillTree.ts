@@ -30,14 +30,14 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N02',
     name: '編集基礎',
     commands: ['x', 'X', 'r', 'i', 'a', 'I', 'A', 'o', 'O'],
-    stageCount: 7,
+    stageCount: 8,
     prerequisites: ['N01'],
   },
   {
     id: 'N03',
     name: 'モード概念',
     commands: ['v', 'R'],
-    stageCount: 3,
+    stageCount: 4,
     prerequisites: ['N02'],
   },
   {

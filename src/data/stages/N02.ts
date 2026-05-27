@@ -48,4 +48,27 @@ export const N02_STAGES: Stage[] = [
     ],
     flavor: 'O で上に、o で下に新行を作れ',
   },
+
+  // ── Challenge: 編集基礎の総合 (r, I, x, .) ──
+  // opt = 11: l(1)+a…p…Esc(1)+j(1)+x(1)+j(1)+re(1)+I…Esc(1)+k(1)+.(1)+k(1)+.(1)
+  {
+    id: 'N02-C',
+    nodeId: 'N02',
+    type: 'challenge',
+    title: '編集基礎の総合',
+    language: 'plaintext',
+    initialText: 'aple\nbannana\ncharry',
+    goalText: '- apple\n- banana\n- cherry',
+    initialCursor: { line: 0, col: 0 },
+    life: 19,
+    stars: [11, 14, 17],
+    availableCommands: [],
+    hints: [
+      {
+        cost: 1,
+        commands: ['l', 'a', 'p', 'Esc', 'j', 'x', 'j', 're', 'I', '- ', 'Esc', 'k', '.', 'k', '.'],
+      },
+    ],
+    flavor: 'タイプミスを直し、整形せよ。基礎コマンドの総合力が試される',
+  },
 ]

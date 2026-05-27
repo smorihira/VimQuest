@@ -56,4 +56,27 @@ export const N23_STAGES: Stage[] = [
     ],
     flavor: 'Visual で消し、Replace で上書き。モードを使い分けろ',
   },
+
+  // ─── Practice: Visual消去の反復 ───────────────────────────────
+  // opt = 8: f[(1)+v(0)+f](1)+l(1)+x(1) × 2
+  {
+    id: 'N23-P',
+    nodeId: 'N03',
+    type: 'practice',
+    title: 'Visual消去',
+    language: 'plaintext',
+    initialText: 'The [old] brown [tired] fox',
+    goalText: 'The brown fox',
+    initialCursor: { line: 0, col: 0 },
+    life: 14,
+    stars: [8, 10, 12],
+    availableCommands: ['v'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['f[', 'v', 'f]', 'l', 'x', 'f[', 'v', 'f]', 'l', 'x'],
+      },
+    ],
+    flavor: '不要な語を Visual 選択で消去。f で目標にジャンプしろ',
+  },
 ]
