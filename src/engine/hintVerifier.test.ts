@@ -233,3 +233,82 @@ describe('Hint Damage Calculation', () => {
     })
   }
 })
+
+// ─── CommandSession verification (Phase 1 — must match existing tests) ──────
+
+import { CommandSession } from './commandSession'
+
+describe('CommandSession: Hint replay matches simulateHintCommands', () => {
+  const stages = Object.values(ALL_STAGES)
+
+  for (const stage of stages) {
+    it(`${stage.id}: feedHintCommand produces correct result`, () => {
+      const showBase =
+        stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
+      const baseCommands = showBase ? (BASE_COMMANDS as unknown as string[]) : undefined
+
+      const session = new CommandSession({
+        initialText: stage.initialText,
+        initialCursor: stage.initialCursor,
+        availableCommands: stage.availableCommands,
+        baseCommands,
+        visualCommands: stage.visualCommands,
+        life: 999,
+        stage,
+      })
+
+      for (const cmd of stage.hints[0].commands) {
+        session.feedHintCommand(cmd)
+      }
+
+      const snap = session.getSnapshot()
+
+      // 1. Text must match goalText
+      expect(snap.editorState.text).toBe(stage.goalText)
+
+      // 2. Cursor must match clearConditions.cursor (if specified)
+      if (stage.clearConditions?.cursor) {
+        expect(snap.editorState.cursor).toEqual(stage.clearConditions.cursor)
+      }
+
+      // 3. Registers must match clearConditions.registers (if specified)
+      if (stage.clearConditions?.registers) {
+        for (const [reg, value] of Object.entries(stage.clearConditions.registers)) {
+          expect(snap.editorState.registers[reg]).toBe(value)
+        }
+      }
+
+      // 4. viewportTop must match clearConditions.viewportTop (if specified)
+      if (stage.clearConditions?.viewportTop != null) {
+        expect(snap.editorState.viewportTop).toBe(stage.clearConditions.viewportTop)
+      }
+    })
+  }
+})
+
+describe('CommandSession: calculateDamage matches calculateHintDamage', () => {
+  const stages = Object.values(ALL_STAGES)
+
+  for (const stage of stages) {
+    it(`${stage.id}: CommandSession damage === opt (opt=${stage.stars[0]})`, () => {
+      const showBase =
+        stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
+      const baseCommands = showBase ? (BASE_COMMANDS as unknown as readonly string[]) : undefined
+
+      const damage = CommandSession.calculateDamage(stage.hints[0].commands, {
+        initialText: stage.initialText,
+        initialCursor: stage.initialCursor,
+        availableCommands: stage.availableCommands,
+        baseCommands,
+        visualCommands: stage.visualCommands,
+        stage,
+      })
+
+      expect(damage).toBeGreaterThan(0)
+
+      if (stage.stars[0] !== 999) {
+        expect(damage, `session damage ${damage} !== opt ${stage.stars[0]}`).toBe(stage.stars[0])
+      }
+    })
+  }
+})
