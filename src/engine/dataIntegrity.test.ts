@@ -17,13 +17,8 @@ import { BASE_COMMANDS } from '../data/constants'
 
 const TUTORIALS = getAllTutorials()
 
-// Tutorials for stages/nodes not yet implemented
-const UNIMPLEMENTED_TUTORIALS = new Set(['N23-T', 'N30-T'])
-
 describe('Tutorial data integrity', () => {
   for (const [key, tutorial] of Object.entries(TUTORIALS)) {
-    if (UNIMPLEMENTED_TUTORIALS.has(key)) continue
-
     describe(`${key} (stageId=${tutorial.stageId})`, () => {
       // B1: stageId references a valid stage
       it('stageId references an existing stage', () => {
