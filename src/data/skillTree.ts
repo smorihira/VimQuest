@@ -37,7 +37,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N03',
     name: 'モード概念',
     commands: ['v', 'R'],
-    stageCount: 0,
+    stageCount: 3,
     prerequisites: ['N02'],
   },
   {
@@ -132,7 +132,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N09',
     name: 'Visual応用',
     commands: ['gn'],
-    stageCount: 0,
+    stageCount: 2,
     prerequisites: ['N08'],
   },
   {

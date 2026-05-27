@@ -599,6 +599,13 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
     return executeOperatorTextObject(state, cmd)
   }
 
+  // Operator + gn — apply operator to next search match
+  if (cmd.operator && cmd.motion === 'gn') {
+    const gnState = executeGn(state)
+    if (gnState.mode !== 'visual') return state
+    return executeVisualModeCommand(gnState, cmd, cmd.operator)
+  }
+
   // Operator + motion
   if (cmd.operator && cmd.motion) {
     return executeOperatorMotion(state, cmd)

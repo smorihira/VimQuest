@@ -659,6 +659,12 @@ export class CommandParser {
       return null
     }
 
+    // g prefix after operator (e.g., cgg, cgn, dgg)
+    if (key === 'g') {
+      this.state = 'gPending'
+      return null
+    }
+
     // Esc cancels
     if (key === 'Esc') {
       return this.emit({ raw: 'Esc', valid: true }, 0)
@@ -730,7 +736,10 @@ export class CommandParser {
         return this.emitInvalid(raw)
       }
       const count = mergeCount(this.countPrefix, this.countAfterOp)
-      return this.emit({ raw, motion: 'gg' as Motion, count, valid: true }, 1)
+      return this.emit(
+        { raw, operator: this.operator, motion: 'gg' as Motion, count, valid: true },
+        1,
+      )
     }
 
     // gj, gk
@@ -741,7 +750,7 @@ export class CommandParser {
         return this.emitInvalid(raw)
       }
       const count = mergeCount(this.countPrefix, this.countAfterOp)
-      return this.emit({ raw, motion: motionKey, count, valid: true }, 1)
+      return this.emit({ raw, operator: this.operator, motion: motionKey, count, valid: true }, 1)
     }
 
     // gu (lowercase)
@@ -795,7 +804,7 @@ export class CommandParser {
       if (!isInHand('gn', this.getEffectiveHand())) {
         return this.emitInvalid(raw)
       }
-      return this.emit({ raw, motion: 'gn' as Motion, valid: true }, 1)
+      return this.emit({ raw, operator: this.operator, motion: 'gn' as Motion, valid: true }, 1)
     }
 
     return this.emitInvalid(this.buffer)
