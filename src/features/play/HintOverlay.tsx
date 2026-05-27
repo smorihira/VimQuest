@@ -7,8 +7,9 @@ import { useState, useEffect, useMemo, useRef } from 'react'
 import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import { createEditorState } from '../../types/editor'
-import { applyHintCommand, calculateHintDamage } from '../../engine/commandReplayer'
+import { CommandSession } from '../../engine/commandSession'
 import { BASE_COMMANDS } from '../../data/constants'
+import { isScoredStage } from '../../types/stage'
 import { EditorView } from './EditorView'
 import './HintOverlay.css'
 
@@ -27,19 +28,34 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
   const [currentCmd, setCurrentCmd] = useState('')
   const editorRef = useRef<HTMLDivElement>(null)
 
-  const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C'
+  const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
   const baseCommands = showBase ? (BASE_COMMANDS as unknown as readonly string[]) : undefined
+  const life = isScoredStage(stage.type) ? stage.life : 999
+
+  // Session used for step-by-step replay
+  const sessionRef = useRef(
+    new CommandSession({
+      initialText: stage.initialText,
+      initialCursor: stage.initialCursor,
+      availableCommands: stage.availableCommands,
+      baseCommands: baseCommands as string[] | undefined,
+      visualCommands: stage.visualCommands,
+      life,
+      stage,
+      noClearCheck: true,
+    }),
+  )
 
   const hintDamage = useMemo(
     () =>
-      calculateHintDamage(
-        commands,
-        stage.initialText,
-        stage.initialCursor,
-        stage.availableCommands,
+      CommandSession.calculateDamage(commands, {
+        initialText: stage.initialText,
+        initialCursor: stage.initialCursor,
+        availableCommands: stage.availableCommands,
         baseCommands,
-        stage.visualCommands,
-      ),
+        visualCommands: stage.visualCommands,
+        stage,
+      }),
     [commands, stage, baseCommands],
   )
 
@@ -53,15 +69,8 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
         if (nextStep < commands.length) {
           const cmd = commands[nextStep]
           setCurrentCmd(cmd)
-          setEditorState((prev) =>
-            applyHintCommand(
-              prev,
-              cmd,
-              stage.availableCommands,
-              baseCommands,
-              stage.visualCommands,
-            ),
-          )
+          sessionRef.current.feedHintCommand(cmd)
+          setEditorState(sessionRef.current.editorState)
         }
         setStep(nextStep)
       },
@@ -69,7 +78,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
     )
 
     return () => clearTimeout(timer)
-  }, [step, commands, stage.availableCommands, baseCommands, stage.visualCommands])
+  }, [step, commands])
 
   // Auto-scroll to keep active line centered in hint editor
   useEffect(() => {

@@ -51,6 +51,11 @@ export interface SessionConfig {
   life: number
   stage: Stage
   /**
+   * Pre-built editor state (e.g., from tutorial completion).
+   * When provided, overrides initialText/initialCursor.
+   */
+  initialState?: EditorState
+  /**
    * When true, skip damage for commands that don't change visible state
    * (text, cursor, mode, viewportTop). Useful for gameplay (wall-hit protection).
    * Default: true.
@@ -121,11 +126,15 @@ export class CommandSession {
       config.visualCommands as string[] | undefined,
       config.baseCommands as string[] | undefined,
     )
-    this.state = createEditorState(config.initialText, config.initialCursor)
+    this.state = config.initialState ?? createEditorState(config.initialText, config.initialCursor)
     this.life = config.life
     this.stage = config.stage
     this.skipDamageIfUnchanged = config.skipDamageIfUnchanged ?? true
     this.noClearCheck = config.noClearCheck ?? false
+    // If initial state already clears the stage, start as 'clear'
+    if (this.checkClear(this.state)) {
+      this._status = 'clear'
+    }
   }
 
   private checkClear(state: EditorState): boolean {
