@@ -38,4 +38,40 @@ export const N19_STAGES: Stage[] = [
     hints: [{ cost: 1, commands: ['guiw', 'w', 'gUiw', 'w', 'guiw'] }],
     flavor: 'gu で小文字、gU で大文字。TextObj と組み合わせろ',
   },
+
+  // ── Practice: ~ + >> + << + gu/gU ──
+  // opt = 5: <<(1)+guiw(1)+j(1)+>>(1)+gUiw(1)
+  {
+    id: 'N19-P',
+    nodeId: 'N13',
+    type: 'practice',
+    title: '大小文字とインデント',
+    language: 'plaintext',
+    initialText: '  HELLO\nworld',
+    goalText: 'hello\n  WORLD',
+    initialCursor: { line: 0, col: 0 },
+    life: 11,
+    stars: [5, 7, 9],
+    availableCommands: ['~', 'gu', 'gU', '>>', '<<'],
+    hints: [{ cost: 1, commands: ['<<', 'guiw', 'j', '>>', 'gUiw'] }],
+    flavor: '<< でインデント削除、gu/gU で大小変換。組み合わせろ',
+  },
+
+  // ── Challenge: 変換総合 ──
+  // opt = 6: guiw(1)+j(1)+<<(1)+j(1)+>>(1)+gUiw(1)
+  {
+    id: 'N19-C',
+    nodeId: 'N13',
+    type: 'challenge',
+    title: '変換総合',
+    language: 'plaintext',
+    initialText: 'HELLO\n  world\nhey',
+    goalText: 'hello\nworld\n  HEY',
+    initialCursor: { line: 0, col: 0 },
+    life: 14,
+    stars: [6, 9, 12],
+    availableCommands: ['~', 'gu', 'gU', '>>', '<<'],
+    hints: [{ cost: 1, commands: ['guiw', 'j', '<<', 'j', '>>', 'gUiw'] }],
+    flavor: '大小変換とインデントを使いこなせ',
+  },
 ]

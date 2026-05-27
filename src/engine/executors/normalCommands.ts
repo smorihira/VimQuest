@@ -347,49 +347,23 @@ export function executeSearch(state: EditorState, pattern: string): EditorState 
 /** Execute n — repeat search in same direction */
 export function executeSearchNext(state: EditorState): EditorState {
   if (!state.lastSearchPattern) return state
-  if (state.lastSearchDirection === 'backward') {
-    return executeSearchBackward(state, state.lastSearchPattern)
-  }
-  return executeSearch(state, state.lastSearchPattern)
+  const dir = state.lastSearchDirection
+  const result =
+    dir === 'backward'
+      ? executeSearchBackward(state, state.lastSearchPattern)
+      : executeSearch(state, state.lastSearchPattern)
+  return { ...result, lastSearchDirection: dir }
 }
 
 /** Execute N — repeat search in opposite direction */
 export function executeSearchPrev(state: EditorState): EditorState {
   if (!state.lastSearchPattern) return state
-  if (state.lastSearchDirection === 'backward') {
-    return executeSearch(state, state.lastSearchPattern)
-  }
-  const pattern = state.lastSearchPattern
-  const flat = state.text
-  const ls = lines(flat)
-
-  let curOffset = 0
-  for (let i = 0; i < state.cursor.line; i++) curOffset += ls[i].length + 1
-  curOffset += state.cursor.col
-
-  try {
-    const regex = new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')
-    let lastMatch: number | null = null
-    let m: RegExpExecArray | null
-    while ((m = regex.exec(flat)) !== null) {
-      if (m.index < curOffset) lastMatch = m.index
-      else break
-    }
-    if (lastMatch !== null) {
-      return { ...state, cursor: offsetToPos(flat, lastMatch) }
-    }
-    regex.lastIndex = 0
-    let wrapMatch: number | null = null
-    while ((m = regex.exec(flat)) !== null) {
-      wrapMatch = m.index
-    }
-    if (wrapMatch !== null) {
-      return { ...state, cursor: offsetToPos(flat, wrapMatch) }
-    }
-  } catch {
-    // Invalid pattern
-  }
-  return state
+  const dir = state.lastSearchDirection
+  const result =
+    dir === 'backward'
+      ? executeSearch(state, state.lastSearchPattern)
+      : executeSearchBackward(state, state.lastSearchPattern)
+  return { ...result, lastSearchDirection: dir }
 }
 
 /** Execute * — search for word under cursor forward */

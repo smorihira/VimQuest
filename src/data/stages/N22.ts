@@ -51,4 +51,23 @@ export const N22_STAGES: Stage[] = [
     ],
     flavor: '"a と "b に別々の単語を保存し、組み合わせてペーストせよ',
   },
+
+  // ── Challenge: レジスタ保存 ──
+  // opt = 4: "ayiw(1)+j(1)+$(1)+"byiw(1)
+  {
+    id: 'N22-C',
+    nodeId: 'N10',
+    type: 'challenge',
+    title: 'レジスタ保存',
+    language: 'plaintext',
+    initialText: 'foo bar\nbaz qux',
+    goalText: 'foo bar\nbaz qux',
+    initialCursor: { line: 0, col: 0 },
+    life: 12,
+    stars: [4, 7, 10],
+    availableCommands: ['y', 'p', 'P', '"a', '"b', '"0'],
+    clearConditions: { registers: { a: 'foo', b: 'qux' } },
+    hints: [{ cost: 1, commands: ['"ayiw', 'j', '$', '"byiw'] }],
+    flavor: '離れた単語を別々のレジスタに保存せよ',
+  },
 ]

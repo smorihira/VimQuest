@@ -49,8 +49,8 @@ export function applyHintCommand(
     return s
   }
 
-  // Search command: /pattern → feed /, chars, and Enter in one go
-  if (state.mode !== 'insert' && cmdStr.startsWith('/')) {
+  // Search command: /pattern or ?pattern → feed prefix, chars, and Enter in one go
+  if (state.mode !== 'insert' && (cmdStr.startsWith('/') || cmdStr.startsWith('?'))) {
     const parser = new CommandParser(
       availableCommands as string[],
       undefined,
@@ -58,7 +58,7 @@ export function applyHintCommand(
       baseCommands as string[] | undefined,
     )
     parser.setEditorMode(state.mode)
-    parser.feed('/')
+    parser.feed(cmdStr[0])
     for (const ch of cmdStr.slice(1)) {
       parser.feed(ch)
     }
@@ -138,8 +138,8 @@ export function calculateHintDamage(
         damage += 1 // operations/motions in visual cost 1
       }
     } else {
-      if (cmd.startsWith('/')) {
-        // Search: /pattern + Enter = 1 damage total
+      if (cmd.startsWith('/') || cmd.startsWith('?')) {
+        // Search: /pattern or ?pattern + Enter = 1 damage total
         damage += 1
         skipNext = true // skip the following Enter
       } else if (state.mode === 'insert') {

@@ -17,6 +17,8 @@ export function mapKeyEvent(e: KeyboardEvent): string | null {
   if (e.ctrlKey && e.key === 'y') return 'Ctrl+y'
   if (e.ctrlKey && e.key === 'o') return 'Ctrl+o'
   if (e.ctrlKey && e.key === 'i') return 'Ctrl+i'
+  if (e.ctrlKey && e.key === 'f') return 'Ctrl+f'
+  if (e.ctrlKey && e.key === 'b') return 'Ctrl+b'
 
   // Ignore other Ctrl/Meta combos
   if (e.ctrlKey || e.metaKey) return null

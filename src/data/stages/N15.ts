@@ -57,4 +57,22 @@ export const N15_STAGES: Stage[] = [
     hints: [{ cost: 1, commands: ['Ctrl+a', 'j', 'Ctrl+x', 'j', 'Ctrl+a'] }],
     flavor: 'RGB値を Ctrl+a / Ctrl+x で微調整せよ',
   },
+
+  // ── Challenge: 数値一括調整 ──
+  // opt = 5: Ctrl+a(1)+j(1)+Ctrl+x(1)+j(1)+Ctrl+x(1)
+  {
+    id: 'N15-C',
+    nodeId: 'N15',
+    type: 'challenge',
+    title: '数値一括調整',
+    language: 'javascript',
+    initialText: 'a = 0;\nb = 2;\nc = 1;',
+    goalText: 'a = 1;\nb = 1;\nc = 0;',
+    initialCursor: { line: 0, col: 4 },
+    life: 13,
+    stars: [5, 8, 11],
+    availableCommands: ['Ctrl+a', 'Ctrl+x'],
+    hints: [{ cost: 1, commands: ['Ctrl+a', 'j', 'Ctrl+x', 'j', 'Ctrl+x'] }],
+    flavor: 'Ctrl+a で増やし Ctrl+x で減らす。数値を自在に操れ',
+  },
 ]

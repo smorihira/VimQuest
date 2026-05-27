@@ -44,4 +44,40 @@ export const N24_STAGES: Stage[] = [
     ],
     flavor: 'cgn で検索マッチを一発変更。. で次々と繰り返せ',
   },
+
+  // ── Challenge: cgn 一括置換（2パターン） ──
+  // opt = 6: /TODO(1)+cgn(0)+DONE+Esc(1)+.(1)+/old(1)+cgn(0)+new+Esc(1)+.(1)
+  {
+    id: 'N24-C',
+    nodeId: 'N09',
+    type: 'challenge',
+    title: 'cgn 一括置換',
+    language: 'plaintext',
+    initialText: 'TODO fix old\nTODO fix old',
+    goalText: 'DONE fix new\nDONE fix new',
+    initialCursor: { line: 0, col: 0 },
+    life: 14,
+    stars: [6, 9, 12],
+    availableCommands: ['gn', '/', 'c', 'cgn'],
+    hints: [
+      {
+        cost: 1,
+        commands: [
+          '/TODO',
+          'Enter',
+          'cgn',
+          'DONE',
+          'Esc',
+          '.',
+          '/old',
+          'Enter',
+          'cgn',
+          'new',
+          'Esc',
+          '.',
+        ],
+      },
+    ],
+    flavor: '2種類の単語を cgn + . で一括置換せよ',
+  },
 ]
