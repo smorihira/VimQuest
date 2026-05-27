@@ -125,7 +125,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N08',
     name: 'Visual基礎',
     commands: ['v', 'V', 'Ctrl+v', 'o'],
-    stageCount: 4,
+    stageCount: 5,
     prerequisites: ['N07'],
   },
   {

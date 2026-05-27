@@ -80,4 +80,23 @@ export const N21_STAGES: Stage[] = [
     hints: [{ cost: 1, commands: ['Ctrl+v', 'j', 'j', 'j', 'l', 'd'] }],
     flavor: '全行の -- を矩形選択で一括削除せよ',
   },
+
+  // ── Challenge: V + Ctrl+v 使い分け ──
+  // opt = 5: V(0)+d(1) + Ctrl+v(0)+l(1)+j(1)+j(1)+d(1)
+  {
+    id: 'N21-C',
+    nodeId: 'N08',
+    type: 'challenge',
+    title: 'Visual 総合',
+    language: 'plaintext',
+    initialText: '~~top~~\n- alpha\n- beta\n- gamma',
+    goalText: 'alpha\nbeta\ngamma',
+    initialCursor: { line: 0, col: 0 },
+    life: 13,
+    stars: [5, 8, 11],
+    availableCommands: ['v', 'V', 'Ctrl+v', 'f', 't'],
+    visualCommands: ['d'],
+    hints: [{ cost: 1, commands: ['V', 'd', 'Ctrl+v', 'l', 'j', 'j', 'd'] }],
+    flavor: 'V で行削除、Ctrl+v で列削除。Visual モードを使い分けろ',
+  },
 ]
