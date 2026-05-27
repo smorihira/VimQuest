@@ -9,13 +9,13 @@ import { useAtomValue } from 'jotai'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES } from '../../data/skillTree'
 import { getStagesByNode } from '../../data/stages'
-import { hasTutorial } from '../../data/tutorials'
+import { hasTutorial, getTutorial } from '../../data/tutorials'
 import type { SkillNodeDef } from '../../types/game'
 import type { GameProgress } from '../../types/game'
 import type { Stage } from '../../types/stage'
 import { isScoredStage } from '../../types/stage'
 import './SkillTreeScreen.css'
-import { playTick } from '../../engine/sound'
+import { playTick, playLock } from '../../engine/sound'
 
 type NodeStatus = 'locked' | 'available' | 'cleared'
 
@@ -80,7 +80,10 @@ export function SkillTreeScreen() {
   const handleNodeClick = useCallback(
     (node: SkillNodeDef) => {
       const status = getNodeStatus(node, progress)
-      if (status === 'locked') return
+      if (status === 'locked') {
+        playLock()
+        return
+      }
 
       // If no stages played yet (first visit), show WeaponGet screen
       const stages = getStagesByNode(node.id)
@@ -227,7 +230,7 @@ export function SkillTreeScreen() {
       case 'challenge':
         return 'C'
       case 'tutorial':
-        return '★'
+        return 'T'
       default:
         return '?'
     }
@@ -315,6 +318,8 @@ export function SkillTreeScreen() {
                 const stars = result?.bestStars ?? 0
                 const scored = isScoredStage(stage.type)
                 const hasTut = hasTutorial(stage.id, stage.nodeId)
+                const tut =
+                  stage.type === 'tutorial' ? getTutorial(stage.id, stage.nodeId) : undefined
                 return (
                   <div
                     key={stage.id}
@@ -323,6 +328,9 @@ export function SkillTreeScreen() {
                   >
                     <span className="stage-type">{typeLabel(stage.type)}</span>
                     <span className="stage-name">{stage.title}</span>
+                    {tut && tut.newCommands.length > 0 && (
+                      <span className="stage-commands">{tut.newCommands.join(' ')}</span>
+                    )}
                     {scored ? (
                       <span className="stage-stars">
                         {[0, 1, 2].map((i) => (

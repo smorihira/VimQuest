@@ -55,12 +55,14 @@
 }
 
 .mute-btn {
-  font-size: 14px;
+  font-family: var(--font-code);
+  font-size: 11px;
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 4px;
-  padding: 4px 6px;
+  padding: 2px 6px;
   cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
   transition: all 0.2s ease;
 }
 

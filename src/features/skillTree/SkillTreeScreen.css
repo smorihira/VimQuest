@@ -282,6 +282,15 @@
   color: var(--text-primary);
 }
 
+.stage-commands {
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--accent);
+  opacity: 0.7;
+  white-space: nowrap;
+  margin-right: 4px;
+}
+
 .stage-stars {
   display: flex;
   gap: 1px;

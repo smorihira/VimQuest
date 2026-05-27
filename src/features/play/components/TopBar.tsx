@@ -76,7 +76,7 @@ export function TopBar({
           </button>
         )}
         <button className="mute-btn" onClick={toggleMute} title={muted ? '音声ON' : '音声OFF'}>
-          {muted ? '🔇' : '🔊'}
+          {muted ? 'OFF' : 'ON'}
         </button>
         <div className="life-gauge">
           <span className="life-icon">♥</span>
@@ -90,7 +90,7 @@ export function TopBar({
             />
           </div>
           <span className="life-text" style={{ color: lifeColor }}>
-            {stage.life - damage}/{stage.life}
+            {stage.type === 'tutorial' ? '∞' : `${stage.life - damage}/${stage.life}`}
           </span>
         </div>
       </div>
