@@ -31,6 +31,7 @@ import {
 
 import {
   executeDeleteChar,
+  executeDeleteCharBefore,
   executeUndo,
   executeRedo,
   executeReplace,
@@ -54,6 +55,8 @@ import {
   ensureCursorVisible,
   executeHalfPageDown,
   executeHalfPageUp,
+  executeFullPageDown,
+  executeFullPageUp,
   executeViewportZZ,
   executeViewportZT,
   executeViewportZB,
@@ -67,6 +70,7 @@ import {
   executeJumpBack,
   executeJumpForward,
   executeReplaceMode,
+  executeGn,
 } from './executors/normalCommands'
 
 // Re-export for external consumers
@@ -123,6 +127,14 @@ function executeCommandInner(state: EditorState, cmd: Command): EditorState {
 function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string): EditorState {
   // Motions extend selection
   if (cmd.motion && !cmd.operator) {
+    if (cmd.motion === 'gn') {
+      // In visual mode, gn extends selection to end of next match
+      const result = executeGn(state)
+      if (result.mode === 'visual') {
+        return { ...result, visualStart: state.visualStart }
+      }
+      return state
+    }
     if (cmd.motion === 'n')
       return {
         ...executeSearchNext(state),
@@ -208,6 +220,26 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
     if (!state.visualStart) return { ...state, mode: 'normal' }
     const ls = lines(state.text)
 
+    // Visual block
+    if (state.visualType === 'block') {
+      const startLine = Math.min(state.visualStart.line, state.cursor.line)
+      const endLine = Math.max(state.visualStart.line, state.cursor.line)
+      const startCol = Math.min(state.visualStart.col, state.cursor.col)
+      const endCol = Math.max(state.visualStart.col, state.cursor.col)
+      const yanked = ls
+        .slice(startLine, endLine + 1)
+        .map((line) => line.slice(startCol, endCol + 1))
+        .join('\n')
+      return {
+        ...state,
+        mode: 'normal',
+        visualStart: undefined,
+        visualType: undefined,
+        cursor: { line: startLine, col: startCol },
+        registers: { ...state.registers, '': yanked },
+      }
+    }
+
     if (state.visualType === 'line') {
       const startLine = Math.min(state.visualStart.line, state.cursor.line)
       const endLine = Math.max(state.visualStart.line, state.cursor.line)
@@ -245,6 +277,22 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
 
     const startLine = Math.min(state.visualStart.line, state.cursor.line)
     const endLine = Math.max(state.visualStart.line, state.cursor.line)
+
+    // Visual block — delete block region, enter insert
+    if (state.visualType === 'block') {
+      const ls = lines(state.text)
+      const startCol = Math.min(state.visualStart.col, state.cursor.col)
+      const endCol = Math.max(state.visualStart.col, state.cursor.col)
+      const newLines = ls.map((line, i) => {
+        if (i >= startLine && i <= endLine) {
+          return line.slice(0, startCol) + line.slice(endCol + 1)
+        }
+        return line
+      })
+      const newText = join(newLines)
+      const result = pushUndo(state, newText, { line: startLine, col: startCol }, 'insert', 1)
+      return { ...result, mode: 'insert', visualStart: undefined, visualType: undefined }
+    }
 
     if (state.visualType === 'line') {
       const ls = lines(state.text)
@@ -350,6 +398,9 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
   // Delete character
   if (raw === 'x') return executeDeleteChar(state, cmd)
 
+  // Delete character before cursor (X)
+  if (raw === 'X') return executeDeleteCharBefore(state)
+
   // Delete line (dd)
   if (cmd.operator === 'd' && !cmd.motion && !cmd.textObject && raw.includes('dd')) {
     return executeDeleteLine(state, cmd.count ?? 1)
@@ -419,6 +470,15 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
   // s — substitute character
   if (raw === 's') return executeSubstitute(state)
 
+  // m{a-zA-Z} — set mark
+  if (raw.length === 2 && raw[0] === 'm') {
+    const markName = raw[1]
+    return {
+      ...state,
+      marks: { ...state.marks, [markName]: { ...state.cursor } },
+    }
+  }
+
   // S — substitute line
   if (raw === 'S') return executeSubstituteLine(state)
 
@@ -466,6 +526,12 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
 
   // Ctrl+u — half page up
   if (raw === 'Ctrl+u') return executeHalfPageUp(state)
+
+  // Ctrl+f — full page down
+  if (raw === 'Ctrl+f') return executeFullPageDown(state)
+
+  // Ctrl+b — full page up
+  if (raw === 'Ctrl+b') return executeFullPageUp(state)
 
   // Ctrl+e — scroll down 1 line
   if (raw === 'Ctrl+e') return executeScrollDown1(state)
@@ -540,9 +606,32 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
 
   // Pure motions
   if (cmd.motion && !cmd.operator) {
+    // gn — select next search match in visual mode
+    if (cmd.motion === 'gn') {
+      return executeGn(state)
+    }
+
     // Jump-list motions: record position before jumping
-    const JUMP_MOTIONS = new Set(['G', 'gg', '%', '{', '}', 'H', 'M', 'L', 'n', 'N', '*', '#'])
-    if (JUMP_MOTIONS.has(cmd.motion)) {
+    const JUMP_MOTIONS = new Set([
+      'G',
+      'gg',
+      '%',
+      '{',
+      '}',
+      '(',
+      ')',
+      '[[',
+      ']]',
+      'H',
+      'M',
+      'L',
+      'n',
+      'N',
+      '*',
+      '#',
+    ])
+    const isMarkJump = cmd.motion.length === 2 && (cmd.motion[0] === "'" || cmd.motion[0] === '`')
+    if (JUMP_MOTIONS.has(cmd.motion) || isMarkJump) {
       const s = pushJumpList(state)
       if (cmd.motion === 'n') return executeSearchNext(s)
       if (cmd.motion === 'N') return executeSearchPrev(s)

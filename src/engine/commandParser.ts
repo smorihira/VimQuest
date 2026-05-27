@@ -46,6 +46,8 @@ const SIMPLE_MOTIONS = new Set<string>([
   'N',
   '{',
   '}',
+  '(',
+  ')',
   'H',
   'M',
   'L',
@@ -98,6 +100,8 @@ const TEXT_OBJ_TARGETS = new Set<string>([
   '<',
   '>',
   't',
+  's',
+  'p',
 ])
 
 // ─── Guard helpers ──────────────────────────────────────────────────
@@ -291,12 +295,22 @@ export class CommandParser {
         return this.handleGuPending(key)
       case 'gUPending':
         return this.handleGUPending(key)
+      case 'g~Pending':
+        return this.handleGTildePending(key)
       case 'zPending':
         return this.handleZPending(key)
       case 'registerPending':
         return this.handleRegisterPending(key)
       case 'registerAction':
         return this.handleRegisterAction(key)
+      case 'bracketPending':
+        return this.handleBracketPending(key)
+      case 'markSetPending':
+        return this.handleMarkSetPending(key)
+      case 'markJumpPending':
+        return this.handleMarkJumpPending(key)
+      case 'markJumpExactPending':
+        return this.handleMarkJumpExactPending(key)
       default:
         this.reset()
         return null
@@ -358,6 +372,33 @@ export class CommandParser {
       return null
     }
 
+    // m — set mark
+    if (key === 'm') {
+      if (!isInHand('m', this.getEffectiveHand())) {
+        return this.emitInvalid('m')
+      }
+      this.state = 'markSetPending'
+      return null
+    }
+
+    // ' — jump to mark (line)
+    if (key === "'") {
+      if (!isInHand("'", this.getEffectiveHand())) {
+        return this.emitInvalid("'")
+      }
+      this.state = 'markJumpPending'
+      return null
+    }
+
+    // ` — jump to mark (exact)
+    if (key === '`') {
+      if (!isInHand('`', this.getEffectiveHand())) {
+        return this.emitInvalid('`')
+      }
+      this.state = 'markJumpExactPending'
+      return null
+    }
+
     // Register prefix ("a, "b, etc.)
     if (key === '"') {
       this.state = 'registerPending'
@@ -394,6 +435,14 @@ export class CommandParser {
 
     // Ctrl+d, Ctrl+u
     if (key === 'Ctrl+d' || key === 'Ctrl+u') {
+      if (!isInHand(key, this.getEffectiveHand())) {
+        return this.emitInvalid(key)
+      }
+      return this.emit({ raw: key, valid: true }, 1)
+    }
+
+    // Ctrl+f, Ctrl+b — full page scroll
+    if (key === 'Ctrl+f' || key === 'Ctrl+b') {
       if (!isInHand(key, this.getEffectiveHand())) {
         return this.emitInvalid(key)
       }
@@ -438,6 +487,15 @@ export class CommandParser {
         return this.emitInvalid(key)
       }
       return this.emit({ raw: key, motion: key as Motion, valid: true }, 1)
+    }
+
+    // [ and ] prefix for [[ and ]]
+    if (key === '[' || key === ']') {
+      if (!isInHand(`${key}${key}`, this.getEffectiveHand())) {
+        return this.emitInvalid(key)
+      }
+      this.state = 'bracketPending'
+      return null
     }
 
     // >> and << (indent/dedent) — first > or < enters operator
@@ -722,9 +780,22 @@ export class CommandParser {
       return this.emit({ raw, valid: true }, 1)
     }
 
-    // Esc cancels
-    if (key === 'Esc') {
-      return this.emit({ raw: 'Esc', valid: true }, 0)
+    // g~ — toggle case operator
+    if (key === '~') {
+      if (!isInHand('g~', this.getEffectiveHand())) {
+        return this.emitInvalid(this.buffer)
+      }
+      this.state = 'g~Pending'
+      return null
+    }
+
+    // gn — select next search match in visual mode
+    if (key === 'n') {
+      const raw = this.buffer
+      if (!isInHand('gn', this.getEffectiveHand())) {
+        return this.emitInvalid(raw)
+      }
+      return this.emit({ raw, motion: 'gn' as Motion, valid: true }, 1)
     }
 
     return this.emitInvalid(this.buffer)
@@ -904,6 +975,35 @@ export class CommandParser {
     return this.emitInvalid(this.buffer)
   }
 
+  private handleGTildePending(key: string): ParseResult | null {
+    this.buffer += key
+
+    if (key === 'Esc') {
+      return this.emit({ raw: 'Esc', valid: true }, 0)
+    }
+
+    // g~ + text object
+    if (key === 'i' || key === 'a') {
+      this.operator = 'g~'
+      this.textobjPrefix = key
+      this.state = 'textobjPending'
+      return null
+    }
+
+    // g~ + motion
+    if (SIMPLE_MOTIONS.has(key)) {
+      const raw = this.buffer
+      const cmdKey = `g~${key}`
+      if (!isInHand(cmdKey, this.getEffectiveHand())) {
+        return this.emitInvalid(raw)
+      }
+      const count = mergeCount(this.countPrefix, this.countAfterOp)
+      return this.emit({ raw, operator: 'g~', motion: key as Motion, count, valid: true }, 1)
+    }
+
+    return this.emitInvalid(this.buffer)
+  }
+
   private handleZPending(key: string): ParseResult | null {
     this.buffer += key
 
@@ -930,8 +1030,8 @@ export class CommandParser {
       return this.emit({ raw: 'Esc', valid: true }, 0)
     }
 
-    // Register name is a-z, A-Z, 0-9
-    if (/^[a-zA-Z0-9]$/.test(key)) {
+    // Register name is a-z, A-Z, 0-9, +
+    if (/^[a-zA-Z0-9+]$/.test(key)) {
       // Check if register is in hand (e.g., "a → check '"a')
       const regKey = `"${key}`
       if (!isInHand(regKey, this.getEffectiveHand())) {
@@ -974,6 +1074,62 @@ export class CommandParser {
 
     return this.emitInvalid(this.buffer)
   }
+
+  private handleBracketPending(key: string): ParseResult | null {
+    this.buffer += key
+
+    if (key === 'Esc') {
+      return this.emit({ raw: 'Esc', valid: true }, 0)
+    }
+
+    // [[ or ]]
+    const first = this.buffer[0]
+    if (key === first) {
+      const raw = `${first}${first}`
+      if (!isInHand(raw, this.getEffectiveHand())) {
+        return this.emitInvalid(raw)
+      }
+      return this.emit({ raw, motion: raw as Motion, valid: true }, 1)
+    }
+
+    return this.emitInvalid(this.buffer)
+  }
+
+  private handleMarkSetPending(key: string): ParseResult | null {
+    this.buffer += key
+    if (key === 'Esc') {
+      return this.emit({ raw: 'Esc', valid: true }, 0)
+    }
+    if (/^[a-zA-Z]$/.test(key)) {
+      const raw = `m${key}`
+      return this.emit({ raw, valid: true }, 1)
+    }
+    return this.emitInvalid(this.buffer)
+  }
+
+  private handleMarkJumpPending(key: string): ParseResult | null {
+    this.buffer += key
+    if (key === 'Esc') {
+      return this.emit({ raw: 'Esc', valid: true }, 0)
+    }
+    if (/^[a-zA-Z]$/.test(key)) {
+      const raw = `'${key}`
+      return this.emit({ raw, motion: raw as Motion, valid: true }, 1)
+    }
+    return this.emitInvalid(this.buffer)
+  }
+
+  private handleMarkJumpExactPending(key: string): ParseResult | null {
+    this.buffer += key
+    if (key === 'Esc') {
+      return this.emit({ raw: 'Esc', valid: true }, 0)
+    }
+    if (/^[a-zA-Z]$/.test(key)) {
+      const raw = `\`${key}`
+      return this.emit({ raw, motion: raw as Motion, valid: true }, 1)
+    }
+    return this.emitInvalid(this.buffer)
+  }
 }
 
 // ─── State type ─────────────────────────────────────────────────────
@@ -990,9 +1146,14 @@ type ParserState =
   | 'searchInput'
   | 'guPending'
   | 'gUPending'
+  | 'g~Pending'
   | 'zPending'
   | 'registerPending'
   | 'registerAction'
+  | 'bracketPending'
+  | 'markSetPending'
+  | 'markJumpPending'
+  | 'markJumpExactPending'
 
 // ─── Convenience: one-shot parse ────────────────────────────────────
 

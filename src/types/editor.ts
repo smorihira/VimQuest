@@ -68,6 +68,8 @@ export interface EditorState {
   /** Jump list for Ctrl+o / Ctrl+i */
   jumpList?: CursorPosition[]
   jumpIndex?: number
+  /** Named marks: ma sets marks['a'] = cursor position */
+  marks?: Record<string, CursorPosition>
 }
 
 /** Create initial editor state from text and cursor */

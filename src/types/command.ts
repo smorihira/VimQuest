@@ -5,7 +5,7 @@
  */
 
 /** Operator verbs that combine with motions/text objects */
-export type Operator = 'd' | 'c' | 'y' | 'gu' | 'gU' | '>' | '<'
+export type Operator = 'd' | 'c' | 'y' | 'gu' | 'gU' | 'g~' | '>' | '<'
 
 /** Motion targets */
 export type Motion =
@@ -37,8 +37,13 @@ export type Motion =
   | '#'
   | 'gj'
   | 'gk'
+  | 'gn'
   | '{'
   | '}'
+  | '('
+  | ')'
+  | '[['
+  | ']]'
   | 'H'
   | 'M'
   | 'L'
@@ -69,6 +74,10 @@ export type TextObject =
   | 'a>'
   | 'it'
   | 'at'
+  | 'is'
+  | 'as'
+  | 'ip'
+  | 'ap'
 
 /** Parsed command — output of the command parser */
 export interface Command {

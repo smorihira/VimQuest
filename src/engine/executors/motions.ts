@@ -377,6 +377,117 @@ function moveParagraphDown(state: EditorState, count: number): CursorPosition {
   return { line, col: 0 }
 }
 
+// ─── Sentence motions ──────────────────────────────────────────────
+
+/** Move to start of previous sentence ( ( ) */
+function moveSentenceBackward(state: EditorState, count: number): CursorPosition {
+  const flat = state.text
+  const ls = lines(flat)
+  let curOffset = 0
+  for (let i = 0; i < state.cursor.line; i++) curOffset += ls[i].length + 1
+  curOffset += state.cursor.col
+
+  for (let i = 0; i < count; i++) {
+    // Move back past whitespace
+    let pos = curOffset - 1
+    while (pos > 0 && (flat[pos] === ' ' || flat[pos] === '\t' || flat[pos] === '\n')) pos--
+    // Move back to sentence end (.!?)
+    while (pos > 0 && flat[pos] !== '.' && flat[pos] !== '!' && flat[pos] !== '?') pos--
+    if (pos <= 0) {
+      curOffset = 0
+      continue
+    }
+    // Skip past the sentence-ending char and whitespace to find start of next sentence
+    pos++
+    while (pos < flat.length && (flat[pos] === ' ' || flat[pos] === '\t' || flat[pos] === '\n'))
+      pos++
+    curOffset = pos
+  }
+
+  // Convert offset to position
+  let line = 0,
+    col = curOffset
+  for (let i = 0; i < ls.length; i++) {
+    if (col <= ls[i].length) {
+      line = i
+      break
+    }
+    col -= ls[i].length + 1
+  }
+  return { line, col: Math.max(0, col) }
+}
+
+/** Move to start of next sentence ( ) ) */
+function moveSentenceForward(state: EditorState, count: number): CursorPosition {
+  const flat = state.text
+  const ls = lines(flat)
+  let curOffset = 0
+  for (let i = 0; i < state.cursor.line; i++) curOffset += ls[i].length + 1
+  curOffset += state.cursor.col
+
+  for (let i = 0; i < count; i++) {
+    // Find next .!? from current position
+    let pos = curOffset
+    while (pos < flat.length && flat[pos] !== '.' && flat[pos] !== '!' && flat[pos] !== '?') pos++
+    if (pos >= flat.length) {
+      curOffset = flat.length - 1
+      continue
+    }
+    // Skip past sentence end and whitespace
+    pos++
+    while (pos < flat.length && (flat[pos] === ' ' || flat[pos] === '\t' || flat[pos] === '\n'))
+      pos++
+    curOffset = Math.min(pos, flat.length - 1)
+  }
+
+  let line = 0,
+    col = curOffset
+  for (let i = 0; i < ls.length; i++) {
+    if (col <= ls[i].length) {
+      line = i
+      break
+    }
+    col -= ls[i].length + 1
+  }
+  return { line, col: Math.max(0, col) }
+}
+
+// ─── Section motions ───────────────────────────────────────────────
+
+/** Move to previous section boundary ( [[ ) — lines starting with { */
+function moveSectionBackward(state: EditorState, count: number): CursorPosition {
+  const ls = lines(state.text)
+  let line = state.cursor.line
+
+  for (let i = 0; i < count; i++) {
+    line--
+    while (line > 0 && !ls[line].startsWith('{')) line--
+    if (line <= 0) {
+      line = 0
+      break
+    }
+  }
+
+  return { line, col: 0 }
+}
+
+/** Move to next section boundary ( ]] ) — lines starting with { */
+function moveSectionForward(state: EditorState, count: number): CursorPosition {
+  const ls = lines(state.text)
+  let line = state.cursor.line
+
+  for (let i = 0; i < count; i++) {
+    line++
+    while (line < ls.length - 1 && !ls[line].startsWith('{')) line++
+    if (line >= ls.length - 1) {
+      line = ls.length - 1
+      break
+    }
+  }
+
+  return { line, col: 0 }
+}
+
 // ─── Viewport cursor motions ───────────────────────────────────────
 
 const VIEWPORT_HEIGHT = 16
@@ -468,6 +579,14 @@ export function resolveMotion(
       return moveParagraphUp(state, count)
     case '}':
       return moveParagraphDown(state, count)
+    case '(':
+      return moveSentenceBackward(state, count)
+    case ')':
+      return moveSentenceForward(state, count)
+    case '[[':
+      return moveSectionBackward(state, count)
+    case ']]':
+      return moveSectionForward(state, count)
     case 'H':
       return moveToViewportTop(state)
     case 'M':
@@ -488,8 +607,27 @@ export function resolveMotion(
         state.lastFindMotion.char,
       )
     }
-    default:
+    default: {
+      // 'x — jump to mark x (beginning of line)
+      if (motion.length === 2 && motion[0] === "'") {
+        const markName = motion[1]
+        const mark = state.marks?.[markName]
+        if (!mark) return null
+        // ' jumps to first non-blank of marked line
+        const ls = lines(state.text)
+        const line = ls[mark.line] ?? ''
+        const firstNonBlank = line.search(/\S/)
+        return { line: mark.line, col: firstNonBlank >= 0 ? firstNonBlank : 0 }
+      }
+      // `x — jump to mark x (exact position)
+      if (motion.length === 2 && motion[0] === '`') {
+        const markName = motion[1]
+        const mark = state.marks?.[markName]
+        if (!mark) return null
+        return { ...mark }
+      }
       return null
+    }
   }
 }
 

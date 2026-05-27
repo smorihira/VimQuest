@@ -107,8 +107,9 @@ export function executeOperatorMotion(state: EditorState, cmd: Command): EditorS
     return { ...state, registers: { ...state.registers, '': yanked } }
   }
 
-  if (operator === 'gu' || operator === 'gU') {
-    return executeCaseChange(state, cmd, operator === 'gU')
+  if (operator === 'gu' || operator === 'gU' || operator === 'g~') {
+    const mode = operator === 'gU' ? 'upper' : operator === 'gu' ? 'lower' : 'toggle'
+    return executeCaseChange(state, cmd, mode)
   }
 
   if (operator === '>') {
@@ -189,6 +190,117 @@ export function resolveTextObject(
       const inner = findInsideDelimiters(flat, curOffset, delim)
       if (!inner) return null
       return { from: inner.from - 1, to: inner.to + 1 }
+    }
+    case 'ip': {
+      // Paragraph = contiguous non-blank lines containing cursor
+      const currentLine = state.cursor.line
+      if (ls[currentLine].trim() === '') {
+        // On a blank line: select contiguous blank lines
+        let from = currentLine
+        let to = currentLine
+        while (from > 0 && ls[from - 1].trim() === '') from--
+        while (to < ls.length - 1 && ls[to + 1].trim() === '') to++
+        let fromOffset = 0
+        for (let i = 0; i < from; i++) fromOffset += ls[i].length + 1
+        let toOffset = 0
+        for (let i = 0; i <= to; i++) toOffset += ls[i].length + 1
+        return { from: fromOffset, to: toOffset - 2 }
+      }
+      let fromLine = currentLine
+      let toLine = currentLine
+      while (fromLine > 0 && ls[fromLine - 1].trim() !== '') fromLine--
+      while (toLine < ls.length - 1 && ls[toLine + 1].trim() !== '') toLine++
+      let fromOffset = 0
+      for (let i = 0; i < fromLine; i++) fromOffset += ls[i].length + 1
+      let toOffset = 0
+      for (let i = 0; i <= toLine; i++) toOffset += ls[i].length + 1
+      return { from: fromOffset, to: toOffset - 2 }
+    }
+    case 'ap': {
+      const inner = resolveTextObject(state, 'ip')
+      if (!inner) return null
+      let { from, to } = inner
+      // Include trailing blank lines
+      let lineAfter = 0
+      let offset = to + 1
+      for (let i = 0; i < ls.length; i++) {
+        if (offset <= 0) {
+          lineAfter = i
+          break
+        }
+        offset -= ls[i].length + 1
+      }
+      // Recalculate lineAfter properly
+      let accumulated = 0
+      for (let i = 0; i < ls.length; i++) {
+        accumulated += ls[i].length + 1
+        if (accumulated > to + 1) {
+          lineAfter = i + 1
+          break
+        }
+      }
+      if (lineAfter < ls.length && ls[lineAfter].trim() === '') {
+        let endLine = lineAfter
+        while (endLine < ls.length - 1 && ls[endLine + 1].trim() === '') endLine++
+        let endOffset = 0
+        for (let i = 0; i <= endLine; i++) endOffset += ls[i].length + 1
+        to = endOffset - 2
+      } else if (from > 0) {
+        // Include leading blank lines
+        let startLine = 0
+        accumulated = 0
+        for (let i = 0; i < ls.length; i++) {
+          if (accumulated >= from) {
+            startLine = i
+            break
+          }
+          accumulated += ls[i].length + 1
+        }
+        if (startLine > 0 && ls[startLine - 1].trim() === '') {
+          let bl = startLine - 1
+          while (bl > 0 && ls[bl - 1].trim() === '') bl--
+          let newFrom = 0
+          for (let i = 0; i < bl; i++) newFrom += ls[i].length + 1
+          from = newFrom
+        }
+      }
+      return { from, to }
+    }
+    case 'is': {
+      // Sentence: delimited by .!? followed by space/newline/EOT
+      const text = flat
+      // Find sentence containing cursor
+      const sentenceEnd = /[.!?][\s]/g
+      const boundaries = [0] // start of text is a sentence boundary
+      let m: RegExpExecArray | null
+      while ((m = sentenceEnd.exec(text)) !== null) {
+        // The next sentence starts after the whitespace
+        let nextStart = m.index + m[0].length
+        while (nextStart < text.length && (text[nextStart] === ' ' || text[nextStart] === '\t'))
+          nextStart++
+        boundaries.push(nextStart)
+      }
+      boundaries.push(text.length)
+
+      let from = 0
+      let to = text.length - 1
+      for (let i = 0; i < boundaries.length - 1; i++) {
+        if (curOffset >= boundaries[i] && curOffset < boundaries[i + 1]) {
+          from = boundaries[i]
+          to = boundaries[i + 1] - 1
+          break
+        }
+      }
+      return { from, to }
+    }
+    case 'as': {
+      const inner = resolveTextObject(state, 'is')
+      if (!inner) return null
+      const { from } = inner
+      let { to } = inner
+      // Include trailing whitespace
+      while (to + 1 < flat.length && (flat[to + 1] === ' ' || flat[to + 1] === '\t')) to++
+      return { from, to }
     }
     default:
       return null
@@ -312,8 +424,12 @@ function findInsideDelimiters(
   return { from: start + 1, to: end - 1 }
 }
 
-/** Execute case change via gu/gU + text object or motion */
-export function executeCaseChange(state: EditorState, cmd: Command, toUpper: boolean): EditorState {
+/** Execute case change via gu/gU/g~ + text object or motion */
+export function executeCaseChange(
+  state: EditorState,
+  cmd: Command,
+  mode: 'upper' | 'lower' | 'toggle',
+): EditorState {
   let from: number, to: number
 
   if (cmd.textObject) {
@@ -342,7 +458,15 @@ export function executeCaseChange(state: EditorState, cmd: Command, toUpper: boo
   const before = flat.slice(0, from)
   const middle = flat.slice(from, to + 1)
   const after = flat.slice(to + 1)
-  const changed = toUpper ? middle.toUpperCase() : middle.toLowerCase()
+  const changed =
+    mode === 'upper'
+      ? middle.toUpperCase()
+      : mode === 'lower'
+        ? middle.toLowerCase()
+        : middle
+            .split('')
+            .map((c) => (c === c.toUpperCase() ? c.toLowerCase() : c.toUpperCase()))
+            .join('')
   const newText = before + changed + after
   return pushUndo(state, newText, state.cursor, 'normal', 1)
 }
@@ -389,8 +513,9 @@ export function executeOperatorTextObject(state: EditorState, cmd: Command): Edi
     return { ...state, registers: { ...state.registers, [reg]: deleted } }
   }
 
-  if (operator === 'gu' || operator === 'gU') {
-    return executeCaseChange(state, cmd, operator === 'gU')
+  if (operator === 'gu' || operator === 'gU' || operator === 'g~') {
+    const mode = operator === 'gU' ? 'upper' : operator === 'gu' ? 'lower' : 'toggle'
+    return executeCaseChange(state, cmd, mode)
   }
 
   return state

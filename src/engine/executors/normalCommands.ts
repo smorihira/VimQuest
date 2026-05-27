@@ -38,6 +38,23 @@ export function executeDeleteChar(state: EditorState, cmd: Command): EditorState
   return { ...result, registers: { ...result.registers, '': deleted } }
 }
 
+/** Execute X — delete character before cursor */
+export function executeDeleteCharBefore(state: EditorState): EditorState {
+  const ls = lines(state.text)
+  const line = ls[state.cursor.line]
+  if (state.cursor.col === 0) return state
+
+  const deleted = line[state.cursor.col - 1]
+  const newLine = line.slice(0, state.cursor.col - 1) + line.slice(state.cursor.col)
+  const newLines = [...ls]
+  newLines[state.cursor.line] = newLine
+  const newText = join(newLines)
+
+  const newCol = state.cursor.col - 1
+  const result = pushUndo(state, newText, { line: state.cursor.line, col: newCol }, 'normal', 1)
+  return { ...result, registers: { ...result.registers, '': deleted } }
+}
+
 /** Execute u (undo) — FREE, no damage */
 export function executeUndo(state: EditorState): EditorState {
   if (state.undoStack.length === 0) return state
@@ -494,6 +511,22 @@ export function executeHalfPageUp(state: EditorState): EditorState {
   return { ...state, cursor: { line: target, col: 0 }, viewportTop: newViewport }
 }
 
+/** Execute Ctrl+f — full page down */
+export function executeFullPageDown(state: EditorState): EditorState {
+  const totalLines = lineCount(state.text)
+  const target = Math.min(state.cursor.line + VIEWPORT_HEIGHT, totalLines - 1)
+  const newViewport = clampViewport(state.viewportTop + VIEWPORT_HEIGHT, totalLines)
+  return { ...state, cursor: { line: target, col: 0 }, viewportTop: newViewport }
+}
+
+/** Execute Ctrl+b — full page up */
+export function executeFullPageUp(state: EditorState): EditorState {
+  const totalLines = lineCount(state.text)
+  const target = Math.max(state.cursor.line - VIEWPORT_HEIGHT, 0)
+  const newViewport = clampViewport(state.viewportTop - VIEWPORT_HEIGHT, totalLines)
+  return { ...state, cursor: { line: target, col: 0 }, viewportTop: newViewport }
+}
+
 /** Execute zz — scroll viewport to center cursor */
 export function executeViewportZZ(state: EditorState): EditorState {
   const totalLines = lineCount(state.text)
@@ -649,4 +682,54 @@ export function executeJumpForward(state: EditorState): EditorState {
 /** Execute R — enter replace mode */
 export function executeReplaceMode(state: EditorState): EditorState {
   return { ...state, mode: 'insert', replaceMode: true }
+}
+
+/** Execute gn — select next search match in visual mode */
+export function executeGn(state: EditorState): EditorState {
+  if (!state.lastSearchPattern) return state
+
+  const flat = state.text
+  const ls = lines(flat)
+  let curOffset = 0
+  for (let i = 0; i < state.cursor.line; i++) curOffset += ls[i].length + 1
+  curOffset += state.cursor.col
+
+  try {
+    const escaped = state.lastSearchPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(escaped, 'g')
+
+    // Find first match at or after cursor
+    let match: RegExpExecArray | null
+    while ((match = regex.exec(flat)) !== null) {
+      if (match.index >= curOffset) {
+        const matchStart = offsetToPos(flat, match.index)
+        const matchEnd = offsetToPos(flat, match.index + match[0].length - 1)
+        return {
+          ...state,
+          mode: 'visual',
+          visualStart: matchStart,
+          cursor: matchEnd,
+          visualType: 'char',
+        }
+      }
+    }
+
+    // Wrap around
+    regex.lastIndex = 0
+    match = regex.exec(flat)
+    if (match) {
+      const matchStart = offsetToPos(flat, match.index)
+      const matchEnd = offsetToPos(flat, match.index + match[0].length - 1)
+      return {
+        ...state,
+        mode: 'visual',
+        visualStart: matchStart,
+        cursor: matchEnd,
+        visualType: 'char',
+      }
+    }
+  } catch {
+    // Invalid pattern
+  }
+  return state
 }
