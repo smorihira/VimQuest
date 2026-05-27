@@ -118,7 +118,7 @@ export const SKILL_NODES: SkillNodeDef[] = [
     id: 'N07',
     name: '行単位操作',
     commands: ['dd', 'cc', 'yy'],
-    stageCount: 1,
+    stageCount: 4,
     prerequisites: ['N06'],
   },
   {
