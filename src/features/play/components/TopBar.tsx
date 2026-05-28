@@ -76,7 +76,7 @@ export function TopBar({
           </button>
         )}
         <button className="mute-btn" onClick={toggleMute} title={muted ? '音声ON' : '音声OFF'}>
-          {muted ? 'OFF' : 'ON'}
+          {muted ? '♪OFF' : '♪ON'}
         </button>
         <div className="life-gauge">
           <span className="life-icon">♥</span>
