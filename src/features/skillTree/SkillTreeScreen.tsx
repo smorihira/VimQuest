@@ -169,11 +169,18 @@ export function SkillTreeScreen() {
           setFocusIdx((i) => Math.max(0, i - cols))
           playTick()
           break
-        case 'Enter':
+        case 'Enter': {
           e.preventDefault()
-          playTick()
-          handleNodeClick(SKILL_NODES[focusIdx])
+          const node = SKILL_NODES[focusIdx]
+          const nodeStatus = getNodeStatus(node, progress)
+          if (nodeStatus === 'locked') {
+            playLock()
+          } else {
+            playTick()
+          }
+          handleNodeClick(node)
           break
+        }
         case 'Escape':
           e.preventDefault()
           navigate('/')

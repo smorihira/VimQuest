@@ -104,17 +104,17 @@ export const SKILL_NODES: SkillNodeDef[] = [
     prerequisites: ['N08'],
   },
   {
-    id: 'N13',
-    name: '発展オペレータ',
-    commands: ['>', '<', 'gu', 'gU', 'g~', '~'],
-    stageCount: 5,
-    prerequisites: ['N08'],
-  },
-  {
     id: 'N14',
     name: '発展モーション（その他）',
     commands: ['W', 'B', 'E', 'F', 'T', 'H', 'M', 'L'],
     stageCount: 6,
+    prerequisites: ['N08'],
+  },
+  {
+    id: 'N13',
+    name: '発展オペレータ',
+    commands: ['>', '<', 'gu', 'gU', 'g~', '~'],
+    stageCount: 5,
     prerequisites: ['N08'],
   },
   {

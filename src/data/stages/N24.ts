@@ -13,7 +13,7 @@ export const N24_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 11,
     stars: [5, 6, 8],
-    availableCommands: ['gn', '/', 'c'],
+    availableCommands: ['/', 'c'],
     hints: [
       {
         cost: 1,
@@ -35,7 +35,7 @@ export const N24_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 10,
     stars: [4, 6, 8],
-    availableCommands: ['gn', '/', 'c', 'cgn'],
+    availableCommands: ['/', 'c', 'cgn'],
     hints: [
       {
         cost: 1,
@@ -58,7 +58,7 @@ export const N24_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 14,
     stars: [6, 9, 12],
-    availableCommands: ['gn', '/', 'c', 'cgn'],
+    availableCommands: ['/', 'c', 'cgn'],
     hints: [
       {
         cost: 1,

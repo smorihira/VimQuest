@@ -90,9 +90,13 @@ export function getCardClass(cmd: string): string {
   return ''
 }
 
-export function getCardHint(cmd: string): string | null {
+export function getCardHint(cmd: string, nodeId?: string): string | null {
   if (cmd === 'f' || cmd === 't') return '; ,'
-  if (cmd === '/' || cmd === '*' || cmd === '#') return 'n N'
+  if (cmd === '/' || cmd === '*' || cmd === '#') {
+    const POST_VISUAL_NODES = new Set(['N09', 'N10', 'N11', 'N12', 'N13', 'N14'])
+    if (nodeId && POST_VISUAL_NODES.has(nodeId)) return 'n N gn gN'
+    return 'n N'
+  }
   return null
 }
 
@@ -102,6 +106,7 @@ export function getCardHint(cmd: string): string | null {
  */
 export function buildCardDisplayList(
   commands: readonly string[],
+  nodeId?: string,
 ): Array<{ cmd: string; hint: string | null }> {
   const OPERATOR_KEYS = ['d', 'c', 'y', '>', '<']
 
@@ -133,7 +138,7 @@ export function buildCardDisplayList(
         result.push({ cmd, hint: groups.get(cmd)!.join(' ') })
       }
     } else {
-      result.push({ cmd, hint: getCardHint(cmd) })
+      result.push({ cmd, hint: getCardHint(cmd, nodeId) })
     }
   }
 

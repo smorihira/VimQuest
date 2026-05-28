@@ -322,6 +322,7 @@ function PlayScreenInner({
         baseCommands={baseCommands}
         baseExpanded={baseExpanded}
         setBaseExpanded={setBaseExpanded}
+        nodeId={stage.nodeId}
       />
 
       {/* Status overlays */}

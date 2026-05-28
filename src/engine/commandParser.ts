@@ -82,7 +82,7 @@ const INSTANT_COMMANDS = new Set<string>([
 ])
 
 /** Commands that bypass hand restriction */
-const ALWAYS_ALLOWED = new Set<string>(['u', 'Ctrl+R', 'Esc', ';', ',', 'n', 'N', '.'])
+const ALWAYS_ALLOWED = new Set<string>(['u', 'Ctrl+R', 'Esc', '.'])
 
 const OPERATORS = new Set<string>(['d', 'c', 'y', '>', '<'])
 
@@ -114,11 +114,23 @@ function isDigitOrZero(key: string): boolean {
   return key.length === 1 && key >= '0' && key <= '9'
 }
 
+/** Commands implied by parent commands in hand */
+const IMPLIED_BY: Record<string, string[]> = {
+  n: ['/', '?', '*', '#'],
+  N: ['/', '?', '*', '#'],
+  gn: ['/', '?', '*', '#'],
+  ';': ['f', 't', 'F', 'T'],
+  ',': ['f', 't', 'F', 'T'],
+}
+
 /** Check if the resolved command key is in the available hand */
 function isInHand(commandKey: string, available: string[] | undefined): boolean {
   if (available === undefined) return true
   if (ALWAYS_ALLOWED.has(commandKey)) return true
   if (available.includes(commandKey)) return true
+  // Implied commands: n/N allowed when /,?,*,# in hand; ;/, allowed when f,t,F,T in hand
+  const parents = IMPLIED_BY[commandKey]
+  if (parents && parents.some((p) => available.includes(p))) return true
   // If a standalone base operator is in hand, allow operator+any motion/textobj
   // Only for multi-char operators (gU, gu) and yank (y) where stages list the base only
   const expandableOperators = ['gU', 'gu', 'y']
@@ -196,6 +208,40 @@ export class CommandParser {
   /** Set result callback */
   setOnResult(cb: (result: ParseResult) => void): void {
     this.onResult = cb
+  }
+
+  /** Check if any g-prefix command is available in the effective hand */
+  private hasAnyGCommand(): boolean {
+    const hand = this.getEffectiveHand()
+    if (hand === undefined) return true
+    return hand.some(
+      (cmd) =>
+        cmd === 'gg' ||
+        cmd === 'gj' ||
+        cmd === 'gk' ||
+        cmd === 'gu' ||
+        cmd === 'gU' ||
+        cmd === 'gi' ||
+        cmd === 'gv' ||
+        cmd === 'g~' ||
+        cmd === 'gn' ||
+        cmd.startsWith('gu') ||
+        cmd.startsWith('gU'),
+    )
+  }
+
+  /** Check if any z-prefix command is available in the effective hand */
+  private hasAnyZCommand(): boolean {
+    const hand = this.getEffectiveHand()
+    if (hand === undefined) return true
+    return hand.some((cmd) => cmd === 'zz' || cmd === 'zt' || cmd === 'zb')
+  }
+
+  /** Check if any register command is available in the effective hand */
+  private hasAnyRegisterCommand(): boolean {
+    const hand = this.getEffectiveHand()
+    if (hand === undefined) return true
+    return hand.some((cmd) => cmd.startsWith('"'))
   }
 
   /** Reset parser to idle */
@@ -341,7 +387,7 @@ export class CommandParser {
     // Only enter number prefix mode if G is in hand (since {count}G is the only allowed count command)
     if (isDigit(key)) {
       if (!isInHand('G', this.getEffectiveHand())) {
-        return null // silently ignore digits when G is not available
+        return this.emitInvalid(key)
       }
       this.countPrefix = parseInt(key, 10)
       this.state = 'numberPrefix'
@@ -350,6 +396,9 @@ export class CommandParser {
 
     // g prefix
     if (key === 'g') {
+      if (!this.hasAnyGCommand()) {
+        return this.emitInvalid('g')
+      }
       this.state = 'gPending'
       return null
     }
@@ -401,6 +450,9 @@ export class CommandParser {
 
     // Register prefix ("a, "b, etc.)
     if (key === '"') {
+      if (!this.hasAnyRegisterCommand()) {
+        return this.emitInvalid('"')
+      }
       this.state = 'registerPending'
       return null
     }
@@ -429,6 +481,9 @@ export class CommandParser {
 
     // z prefix (zz, zt, zb)
     if (key === 'z') {
+      if (!this.hasAnyZCommand()) {
+        return this.emitInvalid('z')
+      }
       this.state = 'zPending'
       return null
     }
@@ -552,13 +607,18 @@ export class CommandParser {
     // Insert mode key passthrough (when parser is used in insert mode,
     // the executor handles these, but the parser just passes through)
     if (key === 'Backspace' || key === 'Enter') {
-      return this.emit({ raw: key, valid: true }, 0)
+      if (this.editorMode === 'insert') {
+        return this.emit({ raw: key, valid: true }, 0)
+      }
+      return this.emitInvalid(key)
     }
 
-    // Unknown key — single printable character in insert mode
-    // passed through; in normal mode treated as invalid
+    // Single printable character: pass through in insert mode, invalid in normal/visual
     if (key.length === 1) {
-      return this.emit({ raw: key, valid: true }, 0)
+      if (this.editorMode === 'insert') {
+        return this.emit({ raw: key, valid: true }, 0)
+      }
+      return this.emitInvalid(key)
     }
 
     return this.emitInvalid(key)

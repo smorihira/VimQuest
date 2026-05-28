@@ -423,18 +423,30 @@ describe('insert mode passthrough', () => {
     expect(r.command.valid).toBe(true)
   })
 
-  it('Backspace passes through', () => {
+  it('Backspace passes through in insert mode', () => {
+    parser.setEditorMode('insert')
     const r = parser.feed('Backspace')!
     expect(r.command.valid).toBe(true)
     expect(r.command.raw).toBe('Backspace')
     expect(r.damage).toBe(0)
   })
 
-  it('Enter passes through', () => {
+  it('Enter passes through in insert mode', () => {
+    parser.setEditorMode('insert')
     const r = parser.feed('Enter')!
     expect(r.command.valid).toBe(true)
     expect(r.command.raw).toBe('Enter')
     expect(r.damage).toBe(0)
+  })
+
+  it('Backspace is invalid in normal mode', () => {
+    const r = parser.feed('Backspace')!
+    expect(r.command.valid).toBe(false)
+  })
+
+  it('Enter is invalid in normal mode', () => {
+    const r = parser.feed('Enter')!
+    expect(r.command.valid).toBe(false)
   })
 })
 

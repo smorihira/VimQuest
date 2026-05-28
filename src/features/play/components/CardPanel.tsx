@@ -14,6 +14,7 @@ interface CardPanelProps {
   baseCommands?: readonly string[]
   baseExpanded: boolean
   setBaseExpanded: (fn: (v: boolean) => boolean) => void
+  nodeId?: string
 }
 
 export function CardPanel({
@@ -25,11 +26,12 @@ export function CardPanel({
   baseCommands,
   baseExpanded,
   setBaseExpanded,
+  nodeId,
 }: CardPanelProps) {
   return (
     <div className="play-card-panel">
       <div className="card-label-row">
-        <span className="card-label">{mode === 'insert' ? 'INSERT' : 'HAND'}</span>
+        {mode === 'insert' && <span className="card-label">INSERT</span>}
         {showBase && mode !== 'insert' && (
           <button
             className={`base-toggle${baseExpanded ? ' expanded' : ''}`}
@@ -70,6 +72,7 @@ export function CardPanel({
                     ...visualCommands,
                   ]
                 : availableCommands,
+              nodeId,
             ).map((item) => {
               const cmd = item.cmd
               const pendingOp = getPendingOperator(parserBuffer)

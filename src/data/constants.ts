@@ -21,8 +21,6 @@ export const BASE_N01: readonly string[] = [
   'G',
   'f',
   't',
-  ';',
-  ',',
 ] as const
 
 /**
