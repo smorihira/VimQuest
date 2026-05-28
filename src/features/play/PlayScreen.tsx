@@ -8,7 +8,7 @@ import { useEffect, useCallback, useState } from 'react'
 import { useParams, useNavigate, useLocation, Navigate } from 'react-router'
 import { useAtomValue } from 'jotai'
 import { getStage } from '../../data/stages'
-import { getTutorial } from '../../data/tutorials'
+import { getTutorial } from '../../data/stages'
 import { getBaseForStage } from '../../data/constants'
 import { gameProgressAtom } from '../../store/atoms'
 import type { EditorState } from '../../types/editor'
@@ -42,7 +42,7 @@ export function PlayScreen() {
     return <div className="play-error">Stage not found: {stageId}</div>
   }
 
-  const tutorial = getTutorial(stage.id, stage.nodeId)
+  const tutorial = getTutorial(stage.id)
   const alreadyDone = progress.tutorialStatus[stage.id] != null
 
   // Redirect to TutorialScreen if tutorial exists and not done
@@ -88,8 +88,8 @@ function PlayScreenInner({
   const [focused, setFocused] = useState(true)
   const [colonBuffer, setColonBuffer] = useState('')
 
-  // Base row: only N01-P auto-expands, all others default closed
-  const [baseExpanded, setBaseExpanded] = useState(stage.id === 'N01-P' || stage.id === 'N01-C')
+  // Base row: auto-expand when there are no hand cards (all commands in BASE)
+  const [baseExpanded, setBaseExpanded] = useState(stage.availableCommands.length === 0)
 
   // Focus loss detection
   useEffect(() => {

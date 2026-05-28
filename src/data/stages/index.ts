@@ -1,4 +1,5 @@
 import type { Stage } from '../../types/stage'
+import type { Tutorial } from '../../types/tutorial'
 import { N01_STAGES } from './N01'
 import { N02_STAGES } from './N02'
 import { N03_STAGES } from './N03'
@@ -60,12 +61,36 @@ export const ALL_STAGES: Record<string, Stage> = Object.fromEntries(
   ALL_STAGE_ARRAYS.flat().map((s) => [s.id, s]),
 )
 
-/** Get all stages for a given node */
+/** Get all stages for a given node (practice stages sorted to end) */
 export function getStagesByNode(nodeId: string): Stage[] {
-  return ALL_STAGE_ARRAYS.flat().filter((s) => s.nodeId === nodeId)
+  const stages = ALL_STAGE_ARRAYS.flat().filter((s) => s.nodeId === nodeId)
+  return stages.sort((a, b) => {
+    const ap = a.type === 'practice' ? 1 : 0
+    const bp = b.type === 'practice' ? 1 : 0
+    return ap - bp
+  })
 }
 
 /** Get a single stage by ID */
 export function getStage(stageId: string): Stage | undefined {
   return ALL_STAGES[stageId]
+}
+
+/** Check if a stage has tutorial steps */
+export function hasTutorial(stageId: string): boolean {
+  const stage = ALL_STAGES[stageId]
+  return stage?.tutorial != null && stage.tutorial.length > 0
+}
+
+/** Build a Tutorial object from a stage's embedded data */
+export function getTutorial(stageId: string): Tutorial | undefined {
+  const stage = ALL_STAGES[stageId]
+  if (!stage?.tutorial || stage.tutorial.length === 0) return undefined
+  return {
+    nodeId: stage.nodeId,
+    stageId: stage.id,
+    newCommands: stage.newCommands,
+    initialSetup: stage.tutorialSetup,
+    steps: stage.tutorial,
+  }
 }

@@ -43,24 +43,25 @@ export const BASE_COMMANDS: readonly string[] = [
 /**
  * Determine which base commands are available for a given stage.
  *
- * - N01 tutorial/teach: no base (player is still learning basics)
- * - N01-P/C: BASE_N01 only (motion commands)
- * - N02 teach/tutorial: BASE_N01 (inherited from completing N01)
- * - N02-P/C: full BASE (N01 + N02)
- * - N03+, N12, N14 etc.: full BASE
+ * - N01 tutorial: no base (player is still learning basics)
+ * - N01 practice/challenge: BASE_N01 only (motion commands)
+ * - N02 tutorial: BASE_N01 (inherited from completing N01)
+ * - N02 practice/challenge: full BASE (N01 + N02)
+ * - N03+: full BASE
  */
 export function getBaseForStage(stage: Stage): readonly string[] | undefined {
-  const id = stage.id
-  // N01 tutorial/teach stages: no base
-  if (id.startsWith('N01-') && stage.type !== 'practice' && stage.type !== 'challenge') {
+  const node = stage.nodeId
+  // N01 tutorial stages: no base
+  if (node === 'N01' && stage.type === 'tutorial') {
     return undefined
   }
   // N01 practice/challenge: BASE_N01 only
-  if (id.startsWith('N01-')) {
+  if (node === 'N01') {
     return BASE_N01
   }
-  // N02 teach/tutorial: BASE_N01 inherited
-  if (id.startsWith('N02-') && stage.type !== 'practice' && stage.type !== 'challenge') {
+  // N02 tutorial: BASE_N01 inherited (full BASE if no hand cards)
+  if (node === 'N02' && stage.type === 'tutorial') {
+    if (stage.availableCommands.length === 0) return BASE_COMMANDS
     return BASE_N01
   }
   // Everything else: full BASE

@@ -3,7 +3,12 @@
  */
 
 import { playTick } from '../../../engine/sound'
-import { getCardClass, getPendingOperator, buildCardDisplayList } from '../commandMetadata'
+import {
+  getCardClass,
+  getPendingOperator,
+  buildCardDisplayList,
+  displayLabel,
+} from '../commandMetadata'
 
 interface CardPanelProps {
   mode: string
@@ -59,19 +64,14 @@ export function CardPanel({
                 : baseCommands
               ).map((cmd) => (
                 <span key={cmd} className={`base-card ${getCardClass(cmd)}`}>
-                  {cmd}
+                  {displayLabel(cmd)}
                 </span>
               ))}
             </div>
           )}
           <div className="card-row">
             {buildCardDisplayList(
-              mode === 'visual' && visualCommands
-                ? [
-                    ...availableCommands.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v'),
-                    ...visualCommands,
-                  ]
-                : availableCommands,
+              mode === 'visual' && visualCommands ? visualCommands : availableCommands,
               nodeId,
             ).map((item) => {
               const cmd = item.cmd
@@ -88,7 +88,7 @@ export function CardPanel({
 
               return (
                 <div key={cmd} className={`card ${getCardClass(cmd)}${cardState}`}>
-                  {cmd}
+                  {displayLabel(cmd)}
                   {item.hint && <span className="card-hint">{item.hint}</span>}
                 </div>
               )

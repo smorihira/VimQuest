@@ -1,64 +1,60 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N25: 発展モーション W/B/E (nodeId: N14)
- * Teach + Practice + Challenge = 3ステージ
+ * N14: 発展モーション（その他）(F, T, H, M, L)
  */
 export const N25_STAGES: Stage[] = [
-  // ── Teach: W で WORD 単位移動 ──
-  // opt = 3 (W + W + W)
+  // ── 🆕 Teach: 後方文字検索 ──
   {
-    id: 'N25-T',
+    id: 'N14-T1',
     nodeId: 'N14',
-    type: 'teach',
-    title: 'WORDで飛べ',
-    language: 'javascript',
-    initialText: 'a.b c.d e.f g.h',
-    goalText: 'a.b c.d e.f g.h',
+    type: 'tutorial' as const,
+    title: '後方文字検索',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
-    availableCommands: ['W', 'B', 'E'],
-    clearConditions: { cursor: { line: 0, col: 12 } },
-    hints: [{ cost: 1, commands: ['W', 'W', 'W'] }],
-    flavor: 'W は記号を含む WORD 単位で移動。w より大股で飛べる',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['F', 'T'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['F', 'T'],
   },
 
-  // ── Practice: B で WORD 逆走 ──
-  // opt = 2 (B + B)
+  // ── 🆕 Teach: 画面位置ジャンプ ──
   {
-    id: 'N25-P',
+    id: 'N14-T2',
     nodeId: 'N14',
-    type: 'practice',
-    title: 'WORD逆走',
-    language: 'javascript',
-    initialText: 'std::cout << obj.val;',
-    goalText: 'std::cout << obj.val;',
-    initialCursor: { line: 0, col: 13 },
-    life: 8,
-    stars: [2, 4, 6],
-    availableCommands: ['W', 'B', 'E'],
-    clearConditions: { cursor: { line: 0, col: 0 } },
-    hints: [{ cost: 1, commands: ['B', 'B'] }],
-    flavor: 'B は W の逆。記号を飛ばして前の WORD へ一気に戻れ',
+    type: 'tutorial' as const,
+    title: '画面位置ジャンプ',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['H', 'M', 'L'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['H', 'M', 'L'],
   },
 
-  // ── Challenge: W 高速移動 ──
-  // opt = 4 (W × 4)
+  // ── 🆕 Practice: 発展モーション総合 ──
   {
-    id: 'N25-C',
+    id: 'N14-P',
     nodeId: 'N14',
-    type: 'challenge',
-    title: 'WORD総合',
-    language: 'javascript',
-    initialText: 'a.b c.d e.f g.h i.j',
-    goalText: 'a.b c.d e.f g.h i.j',
+    type: 'practice' as const,
+    title: '発展モーション総合',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 12,
-    stars: [4, 7, 10],
-    availableCommands: ['W', 'B', 'E'],
-    clearConditions: { cursor: { line: 0, col: 16 } },
-    hints: [{ cost: 1, commands: ['W', 'W', 'W', 'W'] }],
-    flavor: 'w だと . で止まるが、W なら一気に飛べる',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['W', 'B', 'E', 'F', 'T', 'H', 'M', 'L'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

@@ -1,10 +1,11 @@
 import type { CursorPosition } from './editor'
+import type { TutorialStep } from './tutorial'
 
 /** Supported syntax highlighting languages (Shiki) */
 export type Language = 'plaintext' | 'css' | 'html' | 'json' | 'javascript' | 'python' | 'markdown'
 
 /** Stage difficulty type */
-export type StageType = 'tutorial' | 'teach' | 'practice' | 'challenge'
+export type StageType = 'tutorial' | 'practice' | 'challenge'
 
 /** Whether a stage type contributes to scoring (stars, damage records) */
 export function isScoredStage(type: StageType): boolean {
@@ -64,6 +65,15 @@ export interface Stage {
   hints: Hint[]
   /** Flavor text / mission description */
   flavor: string
+  /** Commands newly introduced by this stage (displayed in stage selector) */
+  newCommands: string[]
+  /** Tutorial steps (omit if no tutorial) */
+  tutorial?: TutorialStep[]
+  /** Initial editor state for tutorial (omit to use stage's initialText/initialCursor) */
+  tutorialSetup?: {
+    text: string
+    cursor: CursorPosition
+  }
 }
 
 /** Record of a single stage attempt result */

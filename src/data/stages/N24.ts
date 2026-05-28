@@ -5,7 +5,7 @@ export const N24_STAGES: Stage[] = [
   {
     id: 'N24-T',
     nodeId: 'N09',
-    type: 'teach',
+    type: 'tutorial',
     title: '検索マッチを選べ',
     language: 'javascript',
     initialText: 'let foo = 1;\nlet bar = foo;',
@@ -13,7 +13,7 @@ export const N24_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 11,
     stars: [5, 6, 8],
-    availableCommands: ['/', 'c'],
+    availableCommands: ['/', '?', 'y', 'd', 'c'],
     hints: [
       {
         cost: 1,
@@ -21,63 +21,100 @@ export const N24_STAGES: Stage[] = [
       },
     ],
     flavor: '/で検索してからgnで次のマッチをVisual選択。cで書き換えろ',
-  },
-
-  // ─── Practice: cgn workflow ───────────────────────────────────
-  {
-    id: 'N24-P',
-    nodeId: 'N09',
-    type: 'practice',
-    title: 'cgn 連続置換',
-    language: 'javascript',
-    initialText: 'old + old + old',
-    goalText: 'new + new + new',
-    initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 6, 8],
-    availableCommands: ['/', 'c', 'cgn'],
-    hints: [
+    newCommands: ['gn', 'gN'],
+    tutorial: [
       {
-        cost: 1,
-        commands: ['/old', 'Enter', 'cgn', 'new', 'Esc', '.', '.'],
+        message: 'まず /foo Enter で "foo" を検索しろ',
+        type: 'search',
+        searchCommand: '/foo',
+        expectedKey: null,
+      },
+      {
+        message: 'gn を押せ。次の検索マッチが Visual 選択される',
+        expectedKey: 'gn',
+      },
+      {
+        message: 'c で選択範囲を変更だ。baz と打って Esc',
+        expectedKey: 'c',
+      },
+      {
+        message: 'もう一度 gn → c で次の foo も書き換えろ',
+        expectedKey: null,
       },
     ],
-    flavor: 'cgn で検索マッチを一発変更。. で次々と繰り返せ',
   },
 
-  // ── Challenge: cgn 一括置換（2パターン） ──
-  // opt = 6: /TODO(1)+cgn(0)+DONE+Esc(1)+.(1)+/old(1)+cgn(0)+new+Esc(1)+.(1)
+  // ── 🆕 Teach: 選択を操れ ──
   {
-    id: 'N24-C',
+    id: 'N09-T1',
     nodeId: 'N09',
-    type: 'challenge',
-    title: 'cgn 一括置換',
-    language: 'plaintext',
-    initialText: 'TODO fix old\nTODO fix old',
-    goalText: 'DONE fix new\nDONE fix new',
+    type: 'tutorial' as const,
+    title: '選択を操れ',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 14,
-    stars: [6, 9, 12],
-    availableCommands: ['/', 'c', 'cgn'],
-    hints: [
-      {
-        cost: 1,
-        commands: [
-          '/TODO',
-          'Enter',
-          'cgn',
-          'DONE',
-          'Esc',
-          '.',
-          '/old',
-          'Enter',
-          'cgn',
-          'new',
-          'Esc',
-          '.',
-        ],
-      },
-    ],
-    flavor: '2種類の単語を cgn + . で一括置換せよ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['v', 'V', 'Ctrl+v'],
+    visualCommands: ['y', 'd', 'c', 'o', 'O', 'gv'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['o', 'O', 'gv'],
+  },
+
+  // ── 🆕 Teach: 矩形コメント ──
+  {
+    id: 'N09-T2',
+    nodeId: 'N09',
+    type: 'tutorial' as const,
+    title: '矩形コメント',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['v', 'V', 'Ctrl+v'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
+  },
+
+  // ── 🆕 Teach: 連続置換 ──
+  {
+    id: 'N09-T3',
+    nodeId: 'N09',
+    type: 'tutorial' as const,
+    title: '連続置換',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['/', '?', '*', '#', 'y', 'd', 'c'],
+    visualCommands: ['y', 'd', 'c'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['cgn', 'dgn'],
+  },
+
+  // ── 🆕 Practice: Visual応用 総合 ──
+  {
+    id: 'N09-P',
+    nodeId: 'N09',
+    type: 'practice' as const,
+    title: 'Visual応用 総合',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: [],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

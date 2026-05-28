@@ -11,7 +11,7 @@ export const N03_STAGES: Stage[] = [
   {
     id: 'N03-T',
     nodeId: 'N02',
-    type: 'teach',
+    type: 'tutorial',
     title: '一文字直せ',
     language: 'plaintext',
     initialText: 'hallo\nwarld',
@@ -19,8 +19,23 @@ export const N03_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 10,
     stars: [4, 5, 7],
-    availableCommands: ['r'],
+    availableCommands: ['x', 'X', 'i', 'a', 'I', 'A', 'o', 'O', 'r'],
     hints: [{ cost: 1, commands: ['l', 're', 'j', 'ro'] }],
     flavor: 'r で 1 文字だけ置換。x+i より速いぞ',
+    newCommands: ['r'],
+    tutorial: [
+      {
+        message: 'l で a の上にカーソルを移動しろ',
+        expectedKey: 'l',
+      },
+      {
+        message: 'r を押してから e と打て。1文字だけ入れ替える',
+        expectedKey: 're',
+      },
+      {
+        message: 'r は Insert に入らず1文字置換。2行目の typo も直せ',
+        expectedKey: null,
+      },
+    ],
   },
 ]

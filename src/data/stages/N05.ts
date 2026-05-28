@@ -1,9 +1,7 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N7: 画面位置調整 (zz, zt, zb)
- * ビューポートコマンド。viewportTop を合わせないとクリアできない。
- * Teach(T) = 1ステージ
+ * N05/N17: 画面操作 (zz, zt, zb, Ctrl+e, Ctrl+y)
  */
 export const N05_STAGES: Stage[] = [
   // ── Teach: カーソルを移動 + zz で画面中央に合わせる ──
@@ -11,7 +9,7 @@ export const N05_STAGES: Stage[] = [
   {
     id: 'N05-T',
     nodeId: 'N17',
-    type: 'teach',
+    type: 'tutorial',
     title: '画面を合わせろ',
     language: 'javascript',
     initialText:
@@ -76,147 +74,64 @@ export const N05_STAGES: Stage[] = [
     hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d', 'j', 'j', 'zz'] }],
     flavor:
       'Ctrl+d でカーソルを移動し、zz で現在行を画面中央に合わせろ。両方揃わないとクリアできない',
+    newCommands: ['zz', 'zt', 'zb'],
+    tutorial: [
+      {
+        message: 'Ctrl+d で半ページ下へ飛べ',
+        expectedKey: 'Ctrl+d',
+      },
+      {
+        message: 'zz を押せ。カーソル行が画面中央に来る',
+        expectedKey: 'zz',
+      },
+      {
+        message: 'zt を押せ。今度はカーソル行が画面上端に来る',
+        expectedKey: 'zt',
+      },
+      {
+        message: 'zb を押せ。画面下端に配置する',
+        expectedKey: 'zb',
+      },
+      {
+        message: '3つの画面調整を覚えた。TARGET 行で zz を決めろ',
+        expectedKey: null,
+      },
+    ],
   },
 
-  // ── Practice: zz で中央配置 ──
-  // opt = 4: Ctrl+d(1)+j(1)+j(1)+zz(1)
+  // ── 🆕 Teach: 1行スクロール ──
   {
-    id: 'N05-P',
+    id: 'N17-T1',
     nodeId: 'N17',
-    type: 'practice',
-    title: '画面調整',
-    language: 'javascript',
-    initialText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
-    goalText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
+    type: 'tutorial' as const,
+    title: '1行スクロール',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 10,
-    stars: [4, 6, 8],
-    availableCommands: ['zz', 'zt', 'zb', 'Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 10, col: 0 }, viewportTop: 2 },
-    hints: [{ cost: 1, commands: ['Ctrl+d', 'j', 'j', 'zz'] }],
-    flavor: 'Ctrl+d で移動し、zz で中央に合わせろ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['Ctrl+e', 'Ctrl+y'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['Ctrl+e', 'Ctrl+y'],
   },
 
-  // ── Challenge: zt で上端配置 ──
-  // opt = 5: Ctrl+d(1)+Ctrl+d(1)+j(1)+j(1)+zt(1)
+  // ── 🆕 Practice: 画面操作総合 ──
   {
-    id: 'N05-C',
+    id: 'N17-P',
     nodeId: 'N17',
-    type: 'challenge',
+    type: 'practice' as const,
     title: '画面操作総合',
-    language: 'javascript',
-    initialText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
-    goalText:
-      'function render() {\n' +
-      '  const header = getHeader();\n' +
-      '  const nav = getNav();\n' +
-      '  const sidebar = getSidebar();\n' +
-      '  const content = getContent();\n' +
-      '  const footer = getFooter();\n' +
-      '  const modal = getModal();\n' +
-      '  const toast = getToast();\n' +
-      '  const loader = getLoader();\n' +
-      '  const error = getError();\n' +
-      '  const theme = getTheme();\n' +
-      '  const locale = getLocale();\n' +
-      '  const auth = getAuth();\n' +
-      '  const router = getRouter();\n' +
-      '  const store = getStore();\n' +
-      '  const api = getApi();\n' +
-      '  const cache = getCache();\n' +
-      '  const logger = getLogger();\n' +
-      '  // TARGET\n' +
-      '  const config = getConfig();\n' +
-      '  const db = getDb();\n' +
-      '  const queue = getQueue();\n' +
-      '  const worker = getWorker();\n' +
-      '  const scheduler = getScheduler();\n' +
-      '  return compose(header, nav, content);\n' +
-      '}',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 13,
-    stars: [5, 8, 11],
-    availableCommands: ['zz', 'zt', 'zb', 'Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 18, col: 0 }, viewportTop: 18 },
-    hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d', 'j', 'j', 'zt'] }],
-    flavor: 'zt で現在行を画面上端に。スクロールを自在に操れ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['zz', 'zt', 'zb', 'Ctrl+e', 'Ctrl+y'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

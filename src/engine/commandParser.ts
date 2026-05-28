@@ -131,9 +131,8 @@ function isInHand(commandKey: string, available: string[] | undefined): boolean 
   // Implied commands: n/N allowed when /,?,*,# in hand; ;/, allowed when f,t,F,T in hand
   const parents = IMPLIED_BY[commandKey]
   if (parents && parents.some((p) => available.includes(p))) return true
-  // If a standalone base operator is in hand, allow operator+any motion/textobj
-  // Only for multi-char operators (gU, gu) and yank (y) where stages list the base only
-  const expandableOperators = ['gU', 'gu', 'y']
+  // If a standalone operator is in hand, allow operator+any motion/textobj combo
+  const expandableOperators = ['d', 'c', 'y', '>', '<', 'gU', 'gu', 'g~']
   for (const op of expandableOperators) {
     if (commandKey.startsWith(op) && commandKey.length > op.length && available.includes(op)) {
       return true
@@ -659,11 +658,12 @@ export class CommandParser {
       return this.emitInvalid(this.buffer)
     }
 
-    // Same operator doubled (dd, cc, yy)
+    // Same operator doubled (dd, cc, yy, >>, <<)
     if (key === this.operator) {
       const raw = this.buffer
-      const doubled = `${this.operator}${this.operator}` as string
-      if (!isInHand(doubled, this.getEffectiveHand())) {
+      // Allow doubled if the operator itself is in hand (e.g. 'd' in hand allows 'dd')
+      const hand = this.getEffectiveHand()
+      if (!isInHand(this.operator, hand)) {
         return this.emitInvalid(raw)
       }
       const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -673,8 +673,7 @@ export class CommandParser {
     // Motion after operator
     if (SIMPLE_MOTIONS.has(key)) {
       const raw = this.buffer
-      const cmdKey = `${this.operator}${key}`
-      if (!isInHand(cmdKey, this.getEffectiveHand())) {
+      if (!isInHand(key, this.getEffectiveHand())) {
         return this.emitInvalid(raw)
       }
       const count = mergeCount(this.countPrefix, this.countAfterOp)
@@ -695,8 +694,7 @@ export class CommandParser {
 
     // f/F/t/T after operator (e.g., df(, dt;)
     if (key === 'f' || key === 'F' || key === 't' || key === 'T') {
-      const cmdKey = `${this.operator}${key}`
-      if (!isInHand(cmdKey, this.getEffectiveHand())) {
+      if (!isInHand(key, this.getEffectiveHand())) {
         return this.emitInvalid(this.buffer)
       }
       this.state = 'fPending'
@@ -705,17 +703,7 @@ export class CommandParser {
 
     // Text object prefix (i/a after operator → textobjPending)
     if (key === 'i' || key === 'a') {
-      // Check if any text object combo exists for this prefix (e.g., di*, da*)
-      const hand = this.getEffectiveHand()
-      if (hand) {
-        const prefix = `${this.operator}${key}`
-        // Expandable operators (y, gU, gu) accept any text object when bare form is in hand
-        const expandableOps = ['y', 'gU', 'gu']
-        const isExpandable = expandableOps.includes(this.operator!) && hand.includes(this.operator!)
-        if (!isExpandable && !hand.some((cmd) => cmd.startsWith(prefix))) {
-          return this.emitInvalid(this.buffer)
-        }
-      }
+      // Any operator with its bare form in hand accepts any text object
       this.textobjPrefix = key
       this.state = 'textobjPending'
       return null
@@ -747,8 +735,7 @@ export class CommandParser {
     // Motion after operator + count
     if (SIMPLE_MOTIONS.has(key)) {
       const raw = this.buffer
-      const cmdKey = `${this.operator}${key}`
-      if (!isInHand(cmdKey, this.getEffectiveHand())) {
+      if (!isInHand(key, this.getEffectiveHand())) {
         return this.emitInvalid(raw)
       }
       const count = mergeCount(this.countPrefix, this.countAfterOp)

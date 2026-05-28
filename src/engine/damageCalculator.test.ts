@@ -73,7 +73,7 @@ describe('evaluateAttempt', () => {
   const stage: Stage = {
     id: 'TEST-T',
     nodeId: 'TEST',
-    type: 'teach',
+    type: 'tutorial',
     title: 'Test',
     language: 'plaintext',
     initialText: 'hello',
@@ -84,6 +84,7 @@ describe('evaluateAttempt', () => {
     availableCommands: ['h', 'l'],
     hints: [],
     flavor: 'test',
+    newCommands: [],
   }
 
   it('returns 3 stars for optimal play', () => {
@@ -111,7 +112,7 @@ describe('isStageClear', () => {
   const stage: Stage = {
     id: 'CC-T',
     nodeId: 'CC',
-    type: 'teach',
+    type: 'tutorial',
     title: 'Clear Test',
     language: 'plaintext',
     initialText: 'abc',
@@ -122,6 +123,7 @@ describe('isStageClear', () => {
     availableCommands: ['h', 'l'],
     hints: [],
     flavor: 'test',
+    newCommands: [],
   }
 
   it('returns true when text matches goalText', () => {
@@ -144,7 +146,7 @@ describe('isStageClear with cursor condition', () => {
   const stage: Stage = {
     id: 'CC2-T',
     nodeId: 'CC2',
-    type: 'teach',
+    type: 'tutorial',
     title: 'Cursor Test',
     language: 'plaintext',
     initialText: 'abc',
@@ -156,6 +158,7 @@ describe('isStageClear with cursor condition', () => {
     clearConditions: { cursor: { line: 0, col: 2 } },
     hints: [],
     flavor: 'test',
+    newCommands: [],
   }
 
   it('returns true when text and cursor match', () => {

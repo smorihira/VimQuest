@@ -5,7 +5,7 @@ export const N23_STAGES: Stage[] = [
   {
     id: 'N23-T',
     nodeId: 'N03',
-    type: 'teach',
+    type: 'tutorial',
     title: '選んで消せ',
     language: 'plaintext',
     initialText: 'keep[trash]save',
@@ -16,13 +16,28 @@ export const N23_STAGES: Stage[] = [
     availableCommands: ['v'],
     hints: [{ cost: 1, commands: ['v', 'f]', 'x'] }],
     flavor: 'v で Visual モードに入り、範囲を選んで x で消せ',
+    newCommands: ['v'],
+    tutorial: [
+      {
+        message: 'v を押せ。Visual モードに入るぞ',
+        expectedKey: 'v',
+      },
+      {
+        message: 'f] で ] まで選択範囲を広げろ',
+        expectedKey: 'f]',
+      },
+      {
+        message: 'x で選択範囲を削除だ',
+        expectedKey: 'x',
+      },
+    ],
   },
 
   // ─── Teach: R (replace mode) ──────────────────────────────────
   {
     id: 'N23-Ta',
     nodeId: 'N03',
-    type: 'teach',
+    type: 'tutorial',
     title: '上書きモード',
     language: 'plaintext',
     initialText: 'abc def ghi',
@@ -33,20 +48,53 @@ export const N23_STAGES: Stage[] = [
     availableCommands: ['R'],
     hints: [{ cost: 1, commands: ['R', 'xyz', 'Esc', 'fg', 'R', 'mno', 'Esc'] }],
     flavor: 'R で上書きモードに入る。連続する文字を一気に書き換えろ',
+    newCommands: ['R'],
+    tutorial: [
+      {
+        message: 'R を押せ。上書き（Replace）モードに入る',
+        expectedKey: 'R',
+      },
+      {
+        message: 'そのまま xyz と打て。1文字ずつ上書きされる',
+        expectedKey: null,
+      },
+      {
+        message: 'Esc でノーマルに戻ったら fg でジャンプし、もう一度 R で書き換えろ',
+        expectedKey: null,
+      },
+    ],
   },
 
-  // ─── Challenge: v + R combined ─────────────────────────────────
+  // ── 🆕 Teach: 置換コマンド ──
   {
-    id: 'N23-C',
+    id: 'N03-Tb',
     nodeId: 'N03',
-    type: 'challenge',
+    type: 'tutorial' as const,
+    title: '置換コマンド',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: [],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [':s'],
+  },
+
+  // ─── Practice: v + R combined (旧 N23-C) ─────────────────────────────────
+  {
+    id: 'N23-P',
+    nodeId: 'N03',
+    type: 'practice',
     title: 'モード総合',
     language: 'javascript',
     initialText: 'keep [REMOVE] rest\naaa fghij zzz',
     goalText: 'keep rest\naaa klmno zzz',
     initialCursor: { line: 0, col: 5 },
-    life: 14,
-    stars: [6, 9, 12],
+    life: 12,
+    stars: [6, 8, 10],
     availableCommands: ['v', 'R'],
     hints: [
       {
@@ -55,28 +103,6 @@ export const N23_STAGES: Stage[] = [
       },
     ],
     flavor: 'Visual で消し、Replace で上書き。モードを使い分けろ',
-  },
-
-  // ─── Practice: Visual消去の反復 ───────────────────────────────
-  // opt = 8: f[(1)+v(0)+f](1)+l(1)+x(1) × 2
-  {
-    id: 'N23-P',
-    nodeId: 'N03',
-    type: 'practice',
-    title: 'Visual消去',
-    language: 'plaintext',
-    initialText: 'The [old] brown [tired] fox',
-    goalText: 'The brown fox',
-    initialCursor: { line: 0, col: 0 },
-    life: 14,
-    stars: [8, 10, 12],
-    availableCommands: ['v'],
-    hints: [
-      {
-        cost: 1,
-        commands: ['f[', 'v', 'f]', 'l', 'x', 'f[', 'v', 'f]', 'l', 'x'],
-      },
-    ],
-    flavor: '不要な語を Visual 選択で消去。f で目標にジャンプしろ',
+    newCommands: [],
   },
 ]

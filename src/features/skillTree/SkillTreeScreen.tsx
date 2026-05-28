@@ -9,7 +9,6 @@ import { useAtomValue } from 'jotai'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES } from '../../data/skillTree'
 import { getStagesByNode } from '../../data/stages'
-import { hasTutorial, getTutorial } from '../../data/tutorials'
 import type { SkillNodeDef } from '../../types/game'
 import type { GameProgress } from '../../types/game'
 import type { Stage } from '../../types/stage'
@@ -230,14 +229,12 @@ export function SkillTreeScreen() {
 
   const typeLabel = (type: string) => {
     switch (type) {
-      case 'teach':
+      case 'tutorial':
         return 'T'
       case 'practice':
         return 'P'
       case 'challenge':
         return 'C'
-      case 'tutorial':
-        return 'T'
       default:
         return '?'
     }
@@ -283,7 +280,10 @@ export function SkillTreeScreen() {
               <div className="node-id">{node.id}</div>
               <div className="node-name">{node.name}</div>
               <div className="node-commands">
-                {node.commands.slice(0, 4).join(' ')}
+                {node.commands
+                  .slice(0, 4)
+                  .map((c) => c.replace(/^Ctrl\+/, 'C-'))
+                  .join(' ')}
                 {node.commands.length > 4 && ' …'}
               </div>
               {total > 0 && (
@@ -324,9 +324,6 @@ export function SkillTreeScreen() {
                 const result = progress.stageResults[stage.id]
                 const stars = result?.bestStars ?? 0
                 const scored = isScoredStage(stage.type)
-                const hasTut = hasTutorial(stage.id, stage.nodeId)
-                const tut =
-                  stage.type === 'tutorial' ? getTutorial(stage.id, stage.nodeId) : undefined
                 return (
                   <div
                     key={stage.id}
@@ -335,10 +332,12 @@ export function SkillTreeScreen() {
                   >
                     <span className="stage-type">{typeLabel(stage.type)}</span>
                     <span className="stage-name">{stage.title}</span>
-                    {tut && tut.newCommands.length > 0 && (
-                      <span className="stage-commands">{tut.newCommands.join(' ')}</span>
+                    {stage.type === 'tutorial' && stage.newCommands.length > 0 && (
+                      <span className="stage-commands">
+                        {stage.newCommands.map((c) => c.replace(/^Ctrl\+/, 'C-')).join(' ')}
+                      </span>
                     )}
-                    {scored ? (
+                    {scored && (
                       <span className="stage-stars">
                         {[0, 1, 2].map((i) => (
                           <span key={i} className={i < stars ? 'star-on' : 'star-off'}>
@@ -346,10 +345,8 @@ export function SkillTreeScreen() {
                           </span>
                         ))}
                       </span>
-                    ) : (
-                      <span className="stage-stars">{stars > 0 ? '✓' : ''}</span>
                     )}
-                    {hasTut && (
+                    {stage.tutorial != null && (
                       <button
                         className="stage-tutorial-btn"
                         onClick={(e) => {

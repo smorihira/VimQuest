@@ -9,7 +9,7 @@ export const N06_STAGES: Stage[] = [
   {
     id: 'N06-T',
     nodeId: 'N04',
-    type: 'teach',
+    type: 'tutorial',
     title: '検索せよ',
     language: 'javascript',
     initialText:
@@ -29,46 +29,39 @@ export const N06_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 9,
     stars: [3, 4, 6],
-    availableCommands: ['/'],
+    availableCommands: ['/', '?'],
     clearConditions: { cursor: { line: 5, col: 3 } },
     hints: [{ cost: 1, commands: ['/bug', 'Enter', 'n', 'n'] }],
     flavor: '/ で検索開始。bug を全部見つけろ',
+    newCommands: ['/', '?', 'n', 'N'],
+    tutorial: [
+      {
+        message: '/ を押して bug と入力し Enter で検索しろ',
+        expectedKey: null,
+        type: 'search',
+        searchCommand: '/bug',
+      },
+      {
+        message: 'n を押せ。次のマッチにジャンプする',
+        expectedKey: 'n',
+      },
+      {
+        message: 'N を押せ。前のマッチに戻れる',
+        expectedKey: 'N',
+      },
+      {
+        message: '/ で検索、n で次、N で前。最後の bug まで行け',
+        expectedKey: null,
+      },
+    ],
   },
 
-  // ── Practice: 検索 + n で次へ ──
-  // opt = 3 (/TODO + Enter, n, n)
-  {
-    id: 'N06-P',
-    nodeId: 'N04',
-    type: 'practice',
-    title: '全部見つけろ',
-    language: 'javascript',
-    initialText:
-      '// TODO: fix auth\n' +
-      'function login() {}\n' +
-      '// TODO: add validation\n' +
-      'function save() {}\n' +
-      '// TODO: write tests',
-    goalText:
-      '// TODO: fix auth\n' +
-      'function login() {}\n' +
-      '// TODO: add validation\n' +
-      'function save() {}\n' +
-      '// TODO: write tests',
-    initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['/'],
-    clearConditions: { cursor: { line: 4, col: 3 } },
-    hints: [{ cost: 1, commands: ['/TODO', 'Enter', 'n', 'n'] }],
-    flavor: '/TODO で検索して n で次のマッチへ。全3箇所の最後まで行け',
-  },
   // ── Teach: カーソル下の単語を検索 (5行、最後の foo へ) ──
   // opt = 2 (* + *)
   {
     id: 'N06-Ta',
     nodeId: 'N04',
-    type: 'teach',
+    type: 'tutorial',
     title: '同じ奴を探せ',
     language: 'javascript',
     initialText:
@@ -78,44 +71,42 @@ export const N06_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 4 },
     life: 8,
     stars: [2, 3, 5],
-    availableCommands: ['*', '#', '/'],
+    availableCommands: ['*', '#'],
     clearConditions: { cursor: { line: 4, col: 4 } },
     hints: [{ cost: 1, commands: ['*', '*'] }],
     flavor: '* でカーソル下の単語を即検索。最後の foo を見つけ出せ',
-  },
-
-  // ── Challenge: 検索と一括修正 ──
-  // opt = 8: /x(1)+ra(1)+n(1)+.(1)+n(1)+.(1)+/end(1)+ra(1)
-  {
-    id: 'N06-C',
-    nodeId: 'N04',
-    type: 'challenge',
-    title: '検索と一括修正',
-    language: 'javascript',
-    initialText:
-      'let x = 1;\n' +
-      'let y = "hello";\n' +
-      'let x = 2;\n' +
-      'let z = "world";\n' +
-      'let x = 3;\n' +
-      '// end',
-    goalText:
-      'let a = 1;\n' +
-      'let y = "hello";\n' +
-      'let a = 2;\n' +
-      'let z = "world";\n' +
-      'let a = 3;\n' +
-      '// and',
-    initialCursor: { line: 0, col: 0 },
-    life: 16,
-    stars: [8, 11, 14],
-    availableCommands: ['/', '*', '#'],
-    hints: [
+    newCommands: ['*', '#'],
+    tutorial: [
       {
-        cost: 1,
-        commands: ['/x', 'Enter', 'ra', 'n', '.', 'n', '.', '/end', 'Enter', 'ra'],
+        message: '* を押せ。カーソル下の foo を前方検索して次に飛ぶ',
+        expectedKey: '*',
+      },
+      {
+        message: '# を押せ。今度は後方に戻る',
+        expectedKey: '#',
+      },
+      {
+        message: '* で前方、# で後方。最後の foo まで飛べ',
+        expectedKey: null,
       },
     ],
-    flavor: '/ で検索、n で次へ、. で繰り返す。Vim の基本ワークフローだ',
+  },
+
+  // ── 🆕 Practice: 検索総合 ──
+  {
+    id: 'N04-P',
+    nodeId: 'N04',
+    type: 'practice' as const,
+    title: '検索総合',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['/', '?', '*', '#'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

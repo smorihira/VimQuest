@@ -1,202 +1,78 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N6: 半ページ移動 (Ctrl+d, Ctrl+u)
- * Teach(T) = 1ステージ
+ * N16: スクロール＋マーク (Ctrl+d, Ctrl+u, Ctrl+f, Ctrl+b, m, ', `, gi)
  */
 export const N04_STAGES: Stage[] = [
-  // ── Teach: 半ページジャンプ ──
-  // opt = 2 (Ctrl+d + Ctrl+d)
+  // ── 🆕 Teach: ページ移動 ──
   {
-    id: 'N04-T',
+    id: 'N16-T',
     nodeId: 'N16',
-    type: 'teach',
-    title: 'ページを飛べ',
-    language: 'javascript',
-    initialText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
-    goalText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
+    type: 'tutorial' as const,
+    title: 'ページ移動',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 8,
-    stars: [2, 3, 5],
-    availableCommands: ['Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 16, col: 0 } },
-    hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d'] }],
-    flavor: 'j 連打より Ctrl+d で半ページ分ジャンプだ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['Ctrl+d', 'Ctrl+u', 'Ctrl+f', 'Ctrl+b'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['Ctrl+d', 'Ctrl+u', 'Ctrl+f', 'Ctrl+b'],
   },
 
-  // ── Practice: Ctrl+u で半ページ戻る ──
-  // opt = 2 (Ctrl+u + Ctrl+u)
+  // ── 🆕 Teach: マーク ──
   {
-    id: 'N04-P',
+    id: 'N16-Ta',
     nodeId: 'N16',
-    type: 'practice',
-    title: '半ページ戻れ',
-    language: 'javascript',
-    initialText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
-    goalText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
-    initialCursor: { line: 16, col: 0 },
-    life: 8,
-    stars: [2, 4, 6],
-    availableCommands: ['Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 0, col: 0 } },
-    hints: [{ cost: 1, commands: ['Ctrl+u', 'Ctrl+u'] }],
-    flavor: 'Ctrl+u で半ページ戻れる。Ctrl+d の逆だ',
+    type: 'tutorial' as const,
+    title: 'マーク',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['m'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['m', "'", '`'],
   },
 
-  // ── Challenge: Ctrl+d/u 往復 ──
-  // opt = 3 (Ctrl+d + Ctrl+d + Ctrl+u)
+  // ── 🆕 Teach: 最終挿入位置 ──
   {
-    id: 'N04-C',
+    id: 'N16-Tb',
     nodeId: 'N16',
-    type: 'challenge',
-    title: 'スクロール総合',
-    language: 'javascript',
-    initialText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
-    goalText:
-      'function setup() {\n' +
-      '  const a = 1;\n' +
-      '  const b = 2;\n' +
-      '  const c = 3;\n' +
-      '  const d = 4;\n' +
-      '  const e = 5;\n' +
-      '  const f = 6;\n' +
-      '  const g = 7;\n' +
-      '  const h = 8;\n' +
-      '  const i = 9;\n' +
-      '  const j = 10;\n' +
-      '  const k = 11;\n' +
-      '  const l = 12;\n' +
-      '  const m = 13;\n' +
-      '  const n = 14;\n' +
-      '  const o = 15;\n' +
-      '  const p = 16;\n' +
-      '  const q = 17;\n' +
-      '  const r = 18;\n' +
-      '  const s = 19;\n' +
-      '  const t = 20;\n' +
-      '  return [a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t];\n' +
-      '}',
+    type: 'tutorial' as const,
+    title: '最終挿入位置',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [3, 6, 9],
-    availableCommands: ['Ctrl+d', 'Ctrl+u'],
-    clearConditions: { cursor: { line: 8, col: 0 } },
-    hints: [{ cost: 1, commands: ['Ctrl+d', 'Ctrl+d', 'Ctrl+u'] }],
-    flavor: 'Ctrl+d で下へ、Ctrl+u で戻る。大きなファイルを自在に移動せよ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['gi'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['gi'],
+  },
+
+  // ── 🆕 Practice: スクロール＋マーク総合 ──
+  {
+    id: 'N16-P',
+    nodeId: 'N16',
+    type: 'practice' as const,
+    title: 'スクロール＋マーク総合',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['Ctrl+d', 'Ctrl+u', 'm'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

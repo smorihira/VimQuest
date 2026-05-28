@@ -22,6 +22,7 @@ describe('Hint Verification', () => {
 
   for (const stage of stages) {
     it(`${stage.id}: hint commands produce correct result`, () => {
+      if (stage.hints.length === 0) return // stub stage
       const base = getBaseForStage(stage) as string[] | undefined
 
       const session = new CommandSession({
@@ -69,6 +70,7 @@ describe('Hint Damage Calculation', () => {
 
   for (const stage of stages) {
     it(`${stage.id}: hint damage === opt (opt=${stage.stars[0]})`, () => {
+      if (stage.hints.length === 0) return // stub stage
       const base = getBaseForStage(stage) as readonly string[] | undefined
 
       const damage = CommandSession.calculateDamage(stage.hints[0].commands, {

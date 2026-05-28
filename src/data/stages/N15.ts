@@ -4,75 +4,39 @@ import type { Stage } from '../../types/stage'
  * N15: 数値操作 (Ctrl+a, Ctrl+x)
  */
 export const N15_STAGES: Stage[] = [
-  // ── Teach: Ctrl+a で数値を増やす ──
-  // opt = 3 (Ctrl+a=1, j=1, Ctrl+a=1) → ☆3=3, ☆2=4, ☆1=6, life=9
+  // ── 🆕 Teach: 数値操作 ──
   {
     id: 'N15-T',
     nodeId: 'N15',
-    type: 'teach',
-    title: '数値を増やせ',
-    language: 'javascript',
-    initialText: 'a = 0;\nb = 0;',
-    goalText: 'a = 1;\nb = 1;',
-    initialCursor: { line: 0, col: 4 },
-    life: 9,
-    stars: [3, 4, 6],
-    availableCommands: ['Ctrl+a'],
-    hints: [{ cost: 1, commands: ['Ctrl+a', 'j', 'Ctrl+a'] }],
-    flavor: 'Ctrl+a でカーソル上の数値を +1 できる',
+    type: 'tutorial' as const,
+    title: '数値操作',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['Ctrl+a', 'Ctrl+x'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['Ctrl+a', 'Ctrl+x'],
   },
 
-  // ── Teach: Ctrl+x で数値を減らす ──
-  // opt = 3 (Ctrl+x=1, j=1, Ctrl+x=1) → ☆3=3, ☆2=4, ☆1=6, life=9
-  {
-    id: 'N15-Ta',
-    nodeId: 'N15',
-    type: 'teach',
-    title: '数値を減らせ',
-    language: 'javascript',
-    initialText: 'x = 10;\ny = 10;',
-    goalText: 'x = 9;\ny = 9;',
-    initialCursor: { line: 0, col: 4 },
-    life: 9,
-    stars: [3, 4, 6],
-    availableCommands: ['Ctrl+x'],
-    hints: [{ cost: 1, commands: ['Ctrl+x', 'j', 'Ctrl+x'] }],
-    flavor: 'Ctrl+x で数値を -1 する。Ctrl+a の逆だ',
-  },
-
-  // ── Practice: Ctrl+a と Ctrl+x を混ぜて使う ──
-  // opt = 5 (Ctrl+a, j, Ctrl+x, j, Ctrl+a) → ☆3=5, ☆2=7, ☆1=9, life=11
+  // ── 🆕 Practice: 数値調整 ──
   {
     id: 'N15-P',
     nodeId: 'N15',
-    type: 'practice',
+    type: 'practice' as const,
     title: '数値調整',
-    language: 'javascript',
-    initialText: 'r = 0;\ng = 255;\nb = 128;',
-    goalText: 'r = 1;\ng = 254;\nb = 129;',
-    initialCursor: { line: 0, col: 4 },
-    life: 11,
-    stars: [5, 7, 9],
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
     availableCommands: ['Ctrl+a', 'Ctrl+x'],
-    hints: [{ cost: 1, commands: ['Ctrl+a', 'j', 'Ctrl+x', 'j', 'Ctrl+a'] }],
-    flavor: 'RGB値を Ctrl+a / Ctrl+x で微調整せよ',
-  },
-
-  // ── Challenge: 数値一括調整 ──
-  // opt = 5: Ctrl+a(1)+j(1)+Ctrl+x(1)+j(1)+Ctrl+x(1)
-  {
-    id: 'N15-C',
-    nodeId: 'N15',
-    type: 'challenge',
-    title: '数値一括調整',
-    language: 'javascript',
-    initialText: 'a = 0;\nb = 2;\nc = 1;',
-    goalText: 'a = 1;\nb = 1;\nc = 0;',
-    initialCursor: { line: 0, col: 4 },
-    life: 13,
-    stars: [5, 8, 11],
-    availableCommands: ['Ctrl+a', 'Ctrl+x'],
-    hints: [{ cost: 1, commands: ['Ctrl+a', 'j', 'Ctrl+x', 'j', 'Ctrl+x'] }],
-    flavor: 'Ctrl+a で増やし Ctrl+x で減らす。数値を自在に操れ',
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

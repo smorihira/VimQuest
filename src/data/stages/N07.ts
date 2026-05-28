@@ -1,61 +1,78 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N07: y オペレータ (yw, ye, yb, yy, y$, y0, p, P)
- * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
+ * N05: オペレータ基礎 (y, p, P, d, c)
  */
 export const N07_STAGES: Stage[] = [
-  // ── Teach: yw でコピー → p でペースト ──
-  // opt = 3 (yw + $ + p) → ☆3=3, ☆2=4, ☆1=6, life=9
+  // ── 🆕 Teach: コピーせよ ──
   {
-    id: 'N07-T',
+    id: 'N05-T1',
     nodeId: 'N05',
-    type: 'teach',
+    type: 'tutorial' as const,
     title: 'コピーせよ',
-    language: 'plaintext',
-    initialText: 'hello world',
-    goalText: 'hello worldhello ',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
-    availableCommands: ['yw', 'ye', 'p', 'P'],
-    hints: [{ cost: 1, commands: ['yw', '$', 'p'] }],
-    flavor: 'yw で単語をヤンク（コピー）し、p でペーストだ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['y', 'p', 'P'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['y', 'p', 'P'],
   },
 
-  // ── Practice: yy で行コピー、p でペースト ──
-  // opt = 3 (j + yy + p) → ☆3=3, ☆2=5, ☆1=7, life=9
+  // ── 🆕 Teach: 消せ・変えろ ──
   {
-    id: 'N07-P',
+    id: 'N05-T2',
     nodeId: 'N05',
-    type: 'practice',
-    title: '行を複製',
-    language: 'javascript',
-    initialText: 'const a = 1;\nconst b = 2;',
-    goalText: 'const a = 1;\nconst b = 2;\nconst b = 2;',
+    type: 'tutorial' as const,
+    title: '消せ・変えろ',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['yy', 'yw', 'ye', 'p', 'P'],
-    hints: [{ cost: 1, commands: ['j', 'yy', 'p'] }],
-    flavor: 'yy で行全体をヤンクし、p で下に複製せよ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['d', 'c', 'p', 'P'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['d', 'c'],
   },
 
-  // ── Challenge: y$ + P で末尾コピー ──
-  // opt = 5 (w + y$ + j + 0 + P) → ☆3=5, ☆2=8, ☆1=11, life=13
+  // ── 🆕 Teach: モーションと組合せ ──
   {
-    id: 'N07-C',
+    id: 'N05-T3',
     nodeId: 'N05',
-    type: 'challenge',
-    title: 'ヤンク＆ペースト',
-    language: 'plaintext',
-    initialText: 'foo bar baz\nhello',
-    goalText: 'foo bar baz\nbar bazhello',
+    type: 'tutorial' as const,
+    title: 'モーションと組合せ',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 13,
-    stars: [5, 8, 11],
-    availableCommands: ['yw', 'ye', 'yb', 'yy', 'y$', 'y0', 'p', 'P'],
-    hints: [{ cost: 1, commands: ['w', 'y$', 'j', '0', 'P'] }],
-    flavor: 'y$ で行末までヤンクし、P でカーソルの前にペーストだ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
+  },
+
+  // ── 🆕 Practice: オペレータ総合 ──
+  {
+    id: 'N05-P',
+    nodeId: 'N05',
+    type: 'practice' as const,
+    title: 'オペレータ総合',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

@@ -9,7 +9,7 @@ export const N19_STAGES: Stage[] = [
   {
     id: 'N19-T',
     nodeId: 'N13',
-    type: 'teach',
+    type: 'tutorial',
     title: 'トグルせよ',
     language: 'plaintext',
     initialText: 'hello World',
@@ -20,13 +20,24 @@ export const N19_STAGES: Stage[] = [
     availableCommands: ['~'],
     hints: [{ cost: 1, commands: ['~', 'w', '~'] }],
     flavor: '~ で大小文字をトグル。カーソルも自動で進むぞ',
+    newCommands: ['~'],
+    tutorial: [
+      {
+        message: '~ を押せ。大文字と小文字を入れ替えるぞ',
+        expectedKey: '~',
+      },
+      {
+        message: '~ は大小トグル+カーソル前進。W も小文字に直せ',
+        expectedKey: null,
+      },
+    ],
   },
   // ── Teach: gu / gU で大小文字変換 ──
   // opt = 5 (guiw + w + gUiw + w + guiw)
   {
     id: 'N19-Ta',
     nodeId: 'N13',
-    type: 'teach',
+    type: 'tutorial',
     title: '大文字にしろ',
     language: 'javascript',
     initialText: 'HELLO world BYE',
@@ -34,44 +45,45 @@ export const N19_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 11,
     stars: [5, 6, 8],
-    availableCommands: ['gu', 'gU', 'f', 't'],
+    availableCommands: ['gu', 'gU', 'g~'],
     hints: [{ cost: 1, commands: ['guiw', 'w', 'gUiw', 'w', 'guiw'] }],
     flavor: 'gu で小文字、gU で大文字。TextObj と組み合わせろ',
+    newCommands: ['gu', 'gU', 'g~'],
+    tutorial: [
+      {
+        message: 'guiw と押せ。カーソル下の単語が小文字になる',
+        expectedKey: 'guiw',
+      },
+      {
+        message: 'w で次の単語へ',
+        expectedKey: 'w',
+      },
+      {
+        message: 'gUiw と押せ。今度は大文字になる',
+        expectedKey: 'gUiw',
+      },
+      {
+        message: 'gu で小文字、gU で大文字。残りも直せ',
+        expectedKey: null,
+      },
+    ],
   },
 
-  // ── Practice: ~ + >> + << + gu/gU ──
-  // opt = 5: <<(1)+guiw(1)+j(1)+>>(1)+gUiw(1)
+  // ── 🆕 Practice: 発展オペレータ総合 ──
   {
-    id: 'N19-P',
+    id: 'N13-P',
     nodeId: 'N13',
-    type: 'practice',
-    title: '大小文字とインデント',
-    language: 'plaintext',
-    initialText: '  HELLO\nworld',
-    goalText: 'hello\n  WORLD',
+    type: 'practice' as const,
+    title: '発展オペレータ総合',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 11,
-    stars: [5, 7, 9],
-    availableCommands: ['~', 'gu', 'gU', '>>', '<<'],
-    hints: [{ cost: 1, commands: ['<<', 'guiw', 'j', '>>', 'gUiw'] }],
-    flavor: '<< でインデント削除、gu/gU で大小変換。組み合わせろ',
-  },
-
-  // ── Challenge: 変換総合 ──
-  // opt = 6: guiw(1)+j(1)+<<(1)+j(1)+>>(1)+gUiw(1)
-  {
-    id: 'N19-C',
-    nodeId: 'N13',
-    type: 'challenge',
-    title: '変換総合',
-    language: 'plaintext',
-    initialText: 'HELLO\n  world\nhey',
-    goalText: 'hello\nworld\n  HEY',
-    initialCursor: { line: 0, col: 0 },
-    life: 14,
-    stars: [6, 9, 12],
-    availableCommands: ['~', 'gu', 'gU', '>>', '<<'],
-    hints: [{ cost: 1, commands: ['guiw', 'j', '<<', 'j', '>>', 'gUiw'] }],
-    flavor: '大小変換とインデントを使いこなせ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['~', 'gu', 'gU', 'g~', '>', '<'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

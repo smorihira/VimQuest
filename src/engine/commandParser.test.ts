@@ -307,8 +307,8 @@ describe('hand restriction', () => {
     expect(r.damage).toBe(0)
   })
 
-  it('dw allowed when in hand', () => {
-    const parser = new CommandParser(['h', 'l', 'dw'])
+  it('dw allowed when d and w both in hand', () => {
+    const parser = new CommandParser(['h', 'l', 'd', 'w'])
     const r = feedAll(parser, ['d', 'w'])!
     expect(r.command.valid).toBe(true)
     expect(r.damage).toBe(1)

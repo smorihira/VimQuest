@@ -512,7 +512,7 @@ export class CommandSession {
     const minimalStage: Stage = config.stage ?? {
       id: '_damage_calc',
       nodeId: '_',
-      type: 'teach',
+      type: 'tutorial',
       title: '',
       language: 'plaintext',
       initialText: config.initialText,
@@ -523,6 +523,7 @@ export class CommandSession {
       availableCommands: config.availableCommands as string[],
       hints: [],
       flavor: '',
+      newCommands: [],
     }
 
     const session = new CommandSession({

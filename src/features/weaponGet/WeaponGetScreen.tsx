@@ -6,7 +6,7 @@
 import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { getSkillNode } from '../../data/skillTree'
-import { hasTutorial } from '../../data/tutorials'
+import { hasTutorial } from '../../data/stages'
 import { getStagesByNode } from '../../data/stages'
 import './WeaponGetScreen.css'
 
@@ -17,7 +17,7 @@ export function WeaponGetScreen() {
 
   const stages = node ? getStagesByNode(node.id) : []
   const firstStage = stages[0]
-  const firstStageHasTutorial = firstStage ? hasTutorial(firstStage.id, node!.id) : false
+  const firstStageHasTutorial = firstStage ? hasTutorial(firstStage.id) : false
 
   const handleProceed = () => {
     if (!node) return

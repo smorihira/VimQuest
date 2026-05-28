@@ -1,43 +1,60 @@
 import type { Stage } from '../../types/stage'
 
 /**
- * N16: 基本TextObj (iw, aw)
- * Teach(T) + Practice(P) = 2ステージ
+ * N06: TextObj (iw, aw, is, as, ip, ap, i", a", ...)
  */
 export const N16_STAGES: Stage[] = [
-  // ── Teach: diw vs daw の違いを体験 ──
-  // opt = 3 (w + daw + daw)
+  // ── 🆕 Teach: テキストオブジェクト ──
   {
-    id: 'N16-T',
+    id: 'N06-T1',
     nodeId: 'N06',
-    type: 'teach',
-    title: '単語を掴め',
-    language: 'plaintext',
-    initialText: 'hello nice ugly world',
-    goalText: 'hello world',
+    type: 'tutorial' as const,
+    title: 'テキストオブジェクト',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 4, 6],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
-    flavor: 'daw で空白ごと単語を消せる。diw との違いを感じろ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['w', 's', 'p'],
   },
 
-  // ── Practice: 複数単語削除 ──
-  // opt = 3 (w + daw + daw)
+  // ── 🆕 Teach: デリミタ ──
   {
-    id: 'N16-P',
+    id: 'N06-T2',
     nodeId: 'N06',
-    type: 'practice',
-    title: '不要語削除',
-    language: 'plaintext',
-    initialText: 'remove bad ugly text here',
-    goalText: 'remove text here',
+    type: 'tutorial' as const,
+    title: 'デリミタ',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
-    life: 9,
-    stars: [3, 5, 7],
-    availableCommands: ['dw', 'de', 'db', 'diw', 'daw', 'f', 't'],
-    hints: [{ cost: 1, commands: ['w', 'daw', 'daw'] }],
-    flavor: '不要な形容詞を daw で消し去れ',
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: ['"', "'", '(', '{', '[', '<'],
+  },
+
+  // ── 🆕 Practice: TextObj 応用 ──
+  {
+    id: 'N06-P',
+    nodeId: 'N06',
+    type: 'practice' as const,
+    title: 'TextObj 応用',
+    language: 'plaintext' as const,
+    initialText: 'TODO',
+    goalText: 'TODO',
+    initialCursor: { line: 0, col: 0 },
+    life: 5,
+    stars: [999, 999, 999] as [number, number, number],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    hints: [],
+    flavor: 'TODO',
+    newCommands: [],
   },
 ]

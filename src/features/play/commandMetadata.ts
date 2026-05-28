@@ -2,6 +2,11 @@
  * Command metadata — card styling, key mapping, and parser helpers.
  */
 
+/** Convert internal command name to Vim-style display label (e.g. "Ctrl+d" → "C-d") */
+export function displayLabel(cmd: string): string {
+  return cmd.replace(/^Ctrl\+/, 'C-')
+}
+
 export function mapKeyEvent(e: KeyboardEvent): string | null {
   // Ctrl combos
   if (e.ctrlKey && e.key === 'r') return 'Ctrl+R'
@@ -80,10 +85,11 @@ export function getCardClass(cmd: string): string {
       '(',
       ')',
       '%',
+      '?',
     ].includes(cmd)
   )
     return 'motion'
-  if (['x', 'r', '~', 'J', '.', 'u', 'p', 'P'].includes(cmd)) return 'action'
+  if (['x', 'X', 'r', '~', 'J', '.', 'u', 'p', 'P'].includes(cmd)) return 'action'
   if (['i', 'a', 'I', 'A', 'o', 'O', 's', 'S', 'C', 'R'].includes(cmd)) return 'insert'
   if (cmd.startsWith('i') && cmd.length >= 2) return 'object'
   if (cmd.startsWith('a') && cmd.length >= 2) return 'object'
@@ -92,7 +98,8 @@ export function getCardClass(cmd: string): string {
 
 export function getCardHint(cmd: string, nodeId?: string): string | null {
   if (cmd === 'f' || cmd === 't') return '; ,'
-  if (cmd === '/' || cmd === '*' || cmd === '#') {
+  if (cmd === 'm') return "` '"
+  if (cmd === '/' || cmd === '?' || cmd === '*' || cmd === '#') {
     const POST_VISUAL_NODES = new Set(['N09', 'N10', 'N11', 'N12', 'N13', 'N14'])
     if (nodeId && POST_VISUAL_NODES.has(nodeId)) return 'n N gn gN'
     return 'n N'

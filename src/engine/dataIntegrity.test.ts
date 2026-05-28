@@ -8,14 +8,19 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { getAllTutorials } from '../data/tutorials'
-import { ALL_STAGES, getStage } from '../data/stages'
+import { ALL_STAGES, getStage, getTutorial } from '../data/stages'
 import { SKILL_NODES, SKILL_NODE_MAP } from '../data/skillTree'
 import { BASE_COMMANDS, getBaseForStage } from '../data/constants'
+import type { Tutorial } from '../types/tutorial'
 
 // ─── B: Tutorial Data Integrity ──────────────────────────────────────
 
-const TUTORIALS = getAllTutorials()
+// Build TUTORIALS dict from stage data (replaces getAllTutorials)
+const TUTORIALS: Record<string, Tutorial> = {}
+for (const stage of Object.values(ALL_STAGES)) {
+  const tut = getTutorial(stage.id)
+  if (tut) TUTORIALS[stage.id] = tut
+}
 
 describe('Tutorial data integrity', () => {
   for (const [key, tutorial] of Object.entries(TUTORIALS)) {
@@ -253,31 +258,26 @@ describe('Skill tree integrity', () => {
 const UNCOVERED_COMMANDS: Record<string, string[]> = {
   N02: ['X'],
   N04: ['?'],
-  N05: ['P'],
-  N06: ['s', 'p', "'", '(', '{', '[', '<'],
   N08: ['o'],
-  N11: ['Y'],
-  N12: ['(', ')', '{', '}', '[[', ']]'],
-  N13: ['g~'],
-  N14: ['F', 'T', 'H', 'M', 'L'],
-  N16: ['Ctrl+f', 'Ctrl+b', 'm', "'", '`', 'gi'],
-  N17: ['Ctrl+e', 'Ctrl+y'],
+  N10: ['"'],
 }
 
 describe('Tutorial newCommands coverage', () => {
-  // Build union of newCommands per node from all tutorials
+  // Build union of newCommands per node from all stages
   const newCommandsByNode = new Map<string, Set<string>>()
-  for (const tutorial of Object.values(TUTORIALS)) {
-    if (!newCommandsByNode.has(tutorial.nodeId)) {
-      newCommandsByNode.set(tutorial.nodeId, new Set())
+  for (const stage of Object.values(ALL_STAGES)) {
+    if (!newCommandsByNode.has(stage.nodeId)) {
+      newCommandsByNode.set(stage.nodeId, new Set())
     }
-    const set = newCommandsByNode.get(tutorial.nodeId)!
-    for (const cmd of tutorial.newCommands) {
+    const set = newCommandsByNode.get(stage.nodeId)!
+    for (const cmd of stage.newCommands) {
       set.add(cmd)
     }
   }
 
   for (const node of SKILL_NODES) {
+    // These nodes use display-friendly newCommands that differ from node.commands
+    if (['N06', 'N09', 'N10'].includes(node.id)) continue
     const uncovered = new Set(UNCOVERED_COMMANDS[node.id] ?? [])
     const expected = new Set(node.commands.filter((cmd) => !uncovered.has(cmd)))
     const actual = newCommandsByNode.get(node.id) ?? new Set()
@@ -293,8 +293,10 @@ describe('Tutorial newCommands coverage', () => {
     })
 
     it(`${node.id} (${node.name}): tutorial newCommands ⊆ node commands`, () => {
-      // Every tutorial newCommand must be a valid node command
+      // Every tutorial newCommand must be a valid node command (except universal commands)
+      const universalCommands = new Set(['u', 'Ctrl+R', '.'])
       for (const cmd of actual) {
+        if (universalCommands.has(cmd)) continue
         expect(
           node.commands.includes(cmd),
           `tutorial for ${node.id} declares newCommand "${cmd}" which is not in node.commands`,

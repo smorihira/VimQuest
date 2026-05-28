@@ -24,6 +24,7 @@ import {
 import { EditorView } from './EditorView'
 import { HintOverlay } from './HintOverlay'
 import { playTick, playHint } from '../../engine/sound'
+import { displayLabel } from './commandMetadata'
 import '../tutorial/TutorialScreen.css'
 
 interface Props {
@@ -563,7 +564,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
           </div>
           {keyHintText && (
             <div className="navi-key-hint">
-              <kbd>{keyHintText}</kbd>
+              <kbd>{displayLabel(keyHintText)}</kbd>
             </div>
           )}
         </div>

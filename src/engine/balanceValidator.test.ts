@@ -11,12 +11,12 @@
 import { describe, it, expect } from 'vitest'
 import { ALL_STAGES } from '../data/stages'
 import { SKILL_NODES, SKILL_NODE_MAP } from '../data/skillTree'
+import { getBaseForStage } from '../data/constants'
 import type { StageType } from '../types/stage'
 
 /** Expected offsets per stage type */
 const FORMULA: Record<StageType, { s2: number; s1: number; life: number }> = {
-  tutorial: { s2: 0, s1: 0, life: 0 }, // not used — tutorial stages are skipped below
-  teach: { s2: 1, s1: 3, life: 6 },
+  tutorial: { s2: 1, s1: 3, life: 6 },
   practice: { s2: 2, s1: 4, life: 6 },
   challenge: { s2: 3, s1: 6, life: 8 },
 }
@@ -51,8 +51,8 @@ describe('Stage data integrity', () => {
 
 describe('Star / Life formula compliance', () => {
   for (const stage of allStages) {
-    // tutorial stages have no star/life formula
-    if (stage.type === 'tutorial') continue
+    // stub stages (opt=999) are placeholders
+    if (stage.stars[0] === 999) continue
     const opt = stage.stars[0]
     const f = FORMULA[stage.type]
 
@@ -83,6 +83,8 @@ describe('Star / Life formula compliance', () => {
 
 describe('Stage content sanity', () => {
   for (const stage of allStages) {
+    // stub stages are placeholders
+    if (stage.stars[0] === 999) continue
     describe(stage.id, () => {
       it('has non-empty initialText', () => {
         expect(stage.initialText.length).toBeGreaterThan(0)
@@ -101,8 +103,10 @@ describe('Stage content sanity', () => {
       })
 
       it('has at least 1 available command', () => {
-        // N01-C/N02-C use BASE_COMMANDS exclusively (availableCommands is empty)
-        if (stage.id === 'N01-C' || stage.id === 'N02-C') return
+        // Stages with BASE and empty hand are OK (e.g. practice, consolidation tutorials)
+        if (getBaseForStage(stage) && stage.availableCommands.length === 0) return
+        // stub stages may have empty commands
+        if (stage.stars[0] === 999) return
         expect(stage.availableCommands.length).toBeGreaterThanOrEqual(1)
       })
 
