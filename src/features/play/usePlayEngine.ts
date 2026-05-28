@@ -37,6 +37,7 @@ export interface PlayState {
 
 export interface PlayActions {
   handleKey: (key: string) => void
+  feedColonCommand: (cmd: string) => void
   reset: () => void
   useHint: () => void
 }
@@ -121,6 +122,20 @@ export function usePlayEngine(
     setLastExecutedRaw(result.commandRaw)
   }, [])
 
+  const feedColonCommand = useCallback((cmd: string) => {
+    const session = sessionRef.current
+    if (session.status !== 'playing') return
+    const result = session.feedColonCommand(cmd)
+    const snap = session.getSnapshot()
+    setEditorState(snap.editorState)
+    if (!result.executed) return
+    setCommandSeq((s) => s + 1)
+    setDamage(snap.damage)
+    setStatus(snap.status)
+    setSpells(snap.spells)
+    setLastExecutedRaw(result.commandRaw)
+  }, [])
+
   const reset = useCallback(() => {
     const newSession = createSession()
     sessionRef.current = newSession
@@ -153,6 +168,7 @@ export function usePlayEngine(
     lastExecutedRaw,
     commandSeq,
     handleKey,
+    feedColonCommand,
     reset,
     useHint,
   }

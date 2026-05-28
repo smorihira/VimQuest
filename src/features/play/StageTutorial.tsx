@@ -17,6 +17,10 @@ import type { TutorialStatus } from '../../types/game'
 import { createEditorState } from '../../types/editor'
 import { executeCommand, finalizeInsertSession } from '../../engine/commandExecutor'
 import { parseKeys, CommandParser } from '../../engine/commandParser'
+import {
+  parseSubstituteCommand,
+  executeSubstituteCommand,
+} from '../../engine/executors/commandLine'
 import { EditorView } from './EditorView'
 import { HintOverlay } from './HintOverlay'
 import { playTick, playHint } from '../../engine/sound'
@@ -223,6 +227,12 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
                 playHint()
                 setShowHint(true)
                 return
+              } else {
+                // :s substitute commands
+                const args = parseSubstituteCommand(target)
+                if (args) {
+                  setEditorState((s) => executeSubstituteCommand(s, args))
+                }
               }
               advance()
             } else {

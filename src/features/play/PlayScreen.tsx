@@ -175,7 +175,7 @@ function PlayScreenInner({
       const key = mapKeyEvent(e)
       if (!key) return
 
-      // :q! / :e! / :h — colon-command buffer in normal mode
+      // :q! / :e! / :h / :s — colon-command buffer in normal mode
       // Skip when parser is accumulating (operator-pending, search, etc.)
       if (play.editorState.mode === 'normal' && !play.parserBuffer) {
         if (key === ':') {
@@ -202,6 +202,9 @@ function PlayScreenInner({
                 play.useHint()
                 setShowHint(true)
               }
+            } else if (cmd.startsWith(':s/') || cmd.startsWith(':%s/')) {
+              playTick()
+              play.feedColonCommand(cmd)
             }
             return
           }
@@ -211,8 +214,21 @@ function PlayScreenInner({
             if (!next) return
             return
           }
-          const validPrefixes = [':q', ':q!', ':e', ':e!', ':h']
           const next = colonBuffer + key
+          // Free-form input mode for :s and :%s (only when :s card is available)
+          const hasSubstitute = stage.availableCommands.includes(':s')
+          if (
+            hasSubstitute &&
+            (next === ':s' ||
+              next === ':%' ||
+              next === ':%s' ||
+              next.startsWith(':s/') ||
+              next.startsWith(':%s/'))
+          ) {
+            setColonBuffer(next)
+            return
+          }
+          const validPrefixes = [':q', ':q!', ':e', ':e!', ':h']
           if (validPrefixes.includes(next)) {
             setColonBuffer(next)
             return

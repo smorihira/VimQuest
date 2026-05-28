@@ -22,6 +22,7 @@ import { CommandParser } from './commandParser'
 import { executeCommand, finalizeInsertSession } from './commandExecutor'
 import { insertSessionDamage } from './damageModel'
 import { isStageClear } from './clearChecker'
+import { parseSubstituteCommand, executeSubstituteCommand } from './executors/commandLine'
 import type { Stage } from '../types/stage'
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -161,6 +162,51 @@ export class CommandSession {
       parserBuffer: this.parser.getState() === 'idle' ? '' : this.parser.getDisplayBuffer(),
       spells: this._spells,
     }
+  }
+
+  /**
+   * Feed a colon command (e.g., ':s/old/new/g', ':%s/old/new/').
+   * Returns SessionResult with damage/clear tracking.
+   */
+  feedColonCommand(cmd: string): SessionResult {
+    if (this._status !== 'playing') {
+      return { executed: false, commandRaw: '', invalid: false }
+    }
+
+    const args = parseSubstituteCommand(cmd)
+    if (!args) {
+      return { executed: false, commandRaw: cmd, invalid: true }
+    }
+
+    const next = stampDamageAtEntry(
+      executeSubstituteCommand(this.state, args),
+      this.state,
+      this._damage,
+    )
+
+    // No match found — no damage
+    if (next === this.state) {
+      return { executed: true, commandRaw: cmd, invalid: false }
+    }
+
+    const damage = 1
+    const newDamage = this._damage + damage
+    this._damage = newDamage
+    this._spells = [...this._spells, { command: cmd, damage }]
+
+    if (newDamage >= this.life) {
+      this._status = 'dead'
+      this.state = next
+      return { executed: true, commandRaw: cmd, invalid: false }
+    }
+
+    this.state = next
+
+    if (this.checkClear(next)) {
+      this._status = 'clear'
+    }
+
+    return { executed: true, commandRaw: cmd, invalid: false }
   }
 
   /**
@@ -433,6 +479,11 @@ export class CommandSession {
       }
       // Don't feed Enter here — it comes as the next hint command
       return { executed: true, commandRaw: cmd, invalid: false }
+    }
+
+    // Colon command: :s/old/new/g etc. → delegate to feedColonCommand
+    if (this.state.mode !== 'insert' && cmd.startsWith(':s')) {
+      return this.feedColonCommand(cmd)
     }
 
     // Normal/visual commands: tokenize and feed each key
