@@ -116,7 +116,8 @@ export function executeToggleCase(state: EditorState): EditorState {
 }
 
 /** Execute D — delete from cursor to end of line */
-export function executeDeleteToEnd(state: EditorState): EditorState {
+export function executeDeleteToEnd(state: EditorState, register?: string): EditorState {
+  const reg = register ?? ''
   const ls = lines(state.text)
   const line = ls[state.cursor.line]
   const deleted = line.slice(state.cursor.col)
@@ -126,7 +127,7 @@ export function executeDeleteToEnd(state: EditorState): EditorState {
   const newText = join(newLines)
   const newCol = Math.max(0, state.cursor.col - 1)
   const result = pushUndo(state, newText, { line: state.cursor.line, col: newCol }, 'normal', 1)
-  return { ...result, registers: { ...result.registers, '': deleted } }
+  return { ...result, registers: { ...result.registers, [reg]: deleted, '': deleted } }
 }
 
 /** Execute C — change from cursor to end of line */

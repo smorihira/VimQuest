@@ -257,7 +257,7 @@ export function executeOperatorMotion(state: EditorState, cmd: Command): EditorS
   const inclusive = isMotionInclusive(motion)
   const to = inclusive ? toOffset : Math.max(fromOffset, toOffset - 1)
 
-  return applyOperator(state, operator, { from: fromOffset, to, linewise: false })
+  return applyOperator(state, operator, { from: fromOffset, to, linewise: false }, cmd.register)
 }
 
 /** Resolve a text object to a range [from, to] (inclusive on both ends) */

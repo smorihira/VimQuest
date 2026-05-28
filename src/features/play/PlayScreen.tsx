@@ -9,7 +9,7 @@ import { useParams, useNavigate, useLocation, Navigate } from 'react-router'
 import { useAtomValue } from 'jotai'
 import { getStage } from '../../data/stages'
 import { getTutorial } from '../../data/tutorials'
-import { BASE_COMMANDS } from '../../data/constants'
+import { getBaseForStage } from '../../data/constants'
 import { gameProgressAtom } from '../../store/atoms'
 import type { EditorState } from '../../types/editor'
 import type { PlayMode } from '../../types/game'
@@ -80,16 +80,16 @@ function PlayScreenInner({
   playMode: PlayMode
   initialEditorState?: EditorState
 }) {
-  const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
-  const play = usePlayEngine(stage, showBase ? BASE_COMMANDS : undefined, initialEditorState)
+  const baseCommands = getBaseForStage(stage)
+  const play = usePlayEngine(stage, baseCommands, initialEditorState)
   const [spaceHeld, setSpaceHeld] = useState(false)
   const [muted, setMutedState] = useState(isMuted())
   const [showHint, setShowHint] = useState(false)
   const [focused, setFocused] = useState(true)
   const [colonBuffer, setColonBuffer] = useState('')
 
-  // Base row: only N01-C auto-expands, all others default closed
-  const [baseExpanded, setBaseExpanded] = useState(stage.id === 'N01-C')
+  // Base row: only N01-P auto-expands, all others default closed
+  const [baseExpanded, setBaseExpanded] = useState(stage.id === 'N01-P' || stage.id === 'N01-C')
 
   // Focus loss detection
   useEffect(() => {
@@ -247,7 +247,7 @@ function PlayScreenInner({
 
       play.handleKey(key)
     },
-    [play, navigate, colonBuffer, stage.nodeId, stage.hints.length, showBase],
+    [play, navigate, colonBuffer, stage.nodeId, stage.hints.length, baseCommands],
   )
 
   const onKeyUp = useCallback((e: KeyboardEvent) => {
@@ -318,7 +318,8 @@ function PlayScreenInner({
         availableCommands={stage.availableCommands}
         visualCommands={stage.visualCommands}
         parserBuffer={cardParserBuffer}
-        showBase={showBase}
+        showBase={!!baseCommands}
+        baseCommands={baseCommands}
         baseExpanded={baseExpanded}
         setBaseExpanded={setBaseExpanded}
       />

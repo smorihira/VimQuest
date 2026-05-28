@@ -1070,6 +1070,15 @@ export class CommandParser {
   private handleRegisterAction(key: string): ParseResult | null {
     this.buffer += key
 
+    // In visual mode, d/y/c/x are instant commands (operate on selection)
+    if (
+      this.editorMode === 'visual' &&
+      (key === 'd' || key === 'x' || key === 'y' || key === 'c')
+    ) {
+      const raw = this.buffer
+      return this.emit({ raw, register: this.registerName, valid: true }, 1)
+    }
+
     // Handle y, d, c operators after register
     if (OPERATORS.has(key)) {
       if (!isInHand(key, this.getEffectiveHand())) {
@@ -1080,16 +1089,10 @@ export class CommandParser {
       return null
     }
 
-    // Handle p, P after register
-    if (key === 'p' || key === 'P') {
+    // Handle p, P, Y, D, x after register
+    if (key === 'p' || key === 'P' || key === 'Y' || key === 'D' || key === 'x') {
       const raw = this.buffer
       return this.emit({ raw, register: this.registerName, valid: true }, 1)
-    }
-
-    // Handle yy, dd after register
-    if (key === 'y' || key === 'd') {
-      // Check if this is operator start (handled above for single y/d since they're operators)
-      // This shouldn't be reached since y/d are OPERATORS
     }
 
     return this.emitInvalid(this.buffer)

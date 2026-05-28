@@ -170,7 +170,8 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
   }
 
   // d/x — delete visual selection
-  if (raw === 'd' || raw === 'x') {
+  if (raw === 'd' || raw === 'x' || (cmd.register && (raw.endsWith('d') || raw.endsWith('x')))) {
+    const reg = cmd.register ?? ''
     if (!state.visualStart) return { ...state, mode: 'normal' }
 
     const startLine = Math.min(state.visualStart.line, state.cursor.line)
@@ -206,7 +207,7 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
         mode: 'normal',
         visualStart: undefined,
         visualType: undefined,
-        registers: { ...result.registers, '': deleted },
+        registers: { ...result.registers, [reg]: deleted, '': deleted },
       }
     }
 
@@ -222,12 +223,13 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
       mode: 'normal',
       visualStart: undefined,
       visualType: undefined,
-      registers: { ...result.registers, '': deleted },
+      registers: { ...result.registers, [reg]: deleted, '': deleted },
     }
   }
 
   // y — yank visual selection
-  if (raw === 'y') {
+  if (raw === 'y' || (cmd.register && raw.endsWith('y'))) {
+    const reg = cmd.register ?? ''
     if (!state.visualStart) return { ...state, mode: 'normal' }
     const ls = lines(state.text)
 
@@ -247,7 +249,7 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
         visualStart: undefined,
         visualType: undefined,
         cursor: { line: startLine, col: startCol },
-        registers: { ...state.registers, '': yanked },
+        registers: { ...state.registers, [reg]: yanked, '': yanked },
       }
     }
 
@@ -261,7 +263,7 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
         visualStart: undefined,
         visualType: undefined,
         cursor: { line: startLine, col: 0 },
-        registers: { ...state.registers, '': yanked },
+        registers: { ...state.registers, [reg]: yanked, '': yanked },
       }
     }
 
@@ -278,12 +280,13 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
       mode: 'normal',
       visualStart: undefined,
       visualType: undefined,
-      registers: { ...state.registers, '': yanked },
+      registers: { ...state.registers, [reg]: yanked, '': yanked },
     }
   }
 
   // c — change visual selection
-  if (raw === 'c') {
+  if (raw === 'c' || (cmd.register && raw.endsWith('c'))) {
+    const reg = cmd.register ?? ''
     if (!state.visualStart) return { ...state, mode: 'normal' }
 
     const startLine = Math.min(state.visualStart.line, state.cursor.line)
@@ -316,7 +319,7 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
         mode: 'insert',
         visualStart: undefined,
         visualType: undefined,
-        registers: { ...result.registers, '': deleted },
+        registers: { ...result.registers, [reg]: deleted, '': deleted },
       }
     }
 
@@ -331,7 +334,7 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
       mode: 'insert',
       visualStart: undefined,
       visualType: undefined,
-      registers: { ...result.registers, '': deleted },
+      registers: { ...result.registers, [reg]: deleted, '': deleted },
     }
   }
 
@@ -424,27 +427,29 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
   }
 
   // Delete character
-  if (raw === 'x') return executeDeleteChar(state, cmd)
+  if (raw === 'x' || (cmd.register && raw.endsWith('x'))) return executeDeleteChar(state, cmd)
 
   // Delete character before cursor (X)
   if (raw === 'X') return executeDeleteCharBefore(state)
 
   // Doubled operator (dd, cc, yy, >>, <<)
   if (cmd.operator && !cmd.motion && !cmd.textObject) {
-    return applyOperator(state, cmd.operator, resolveLineRange(state))
+    return applyOperator(state, cmd.operator, resolveLineRange(state), cmd.register)
   }
 
   // D — delete to end of line
-  if (raw === 'D') return executeDeleteToEnd(state)
+  if (raw === 'D' || (cmd.register && raw.endsWith('D')))
+    return executeDeleteToEnd(state, cmd.register)
 
   // C — change to end of line
   if (raw === 'C') return executeChangeToEnd(state)
 
   // Y — yank to end of line (Neovim: y$)
-  if (raw === 'Y') {
+  if (raw === 'Y' || (cmd.register && raw.endsWith('Y'))) {
+    const reg = cmd.register ?? ''
     const ls = lines(state.text)
     const yanked = ls[state.cursor.line].slice(state.cursor.col)
-    return { ...state, registers: { ...state.registers, '': yanked, '0': yanked } }
+    return { ...state, registers: { ...state.registers, [reg]: yanked, '': yanked, '0': yanked } }
   }
 
   // J — join lines

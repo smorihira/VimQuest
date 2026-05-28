@@ -5,7 +5,7 @@
  * and a handleKey function for the Play screen.
  */
 
-import { useState, useCallback, useRef, useMemo } from 'react'
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react'
 import type { Stage } from '../../types/stage'
 import { isScoredStage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
@@ -96,9 +96,15 @@ export function usePlayEngine(
     const session = sessionRef.current
     if (session.status !== 'playing') return
 
+    const prevPlus = session.editorState.registers['+']
     const wasInsertNonEsc = session.editorState.mode === 'insert' && key !== 'Esc'
     const result = session.feedKey(key)
     const snap = session.getSnapshot()
+
+    // Sync + register → system clipboard
+    if (snap.editorState.registers['+'] !== prevPlus && snap.editorState.registers['+']) {
+      navigator.clipboard.writeText(snap.editorState.registers['+']).catch(() => {})
+    }
 
     // Always sync editor state and parser buffer
     setEditorState(snap.editorState)
@@ -125,8 +131,12 @@ export function usePlayEngine(
   const feedColonCommand = useCallback((cmd: string) => {
     const session = sessionRef.current
     if (session.status !== 'playing') return
+    const prevPlus = session.editorState.registers['+']
     const result = session.feedColonCommand(cmd)
     const snap = session.getSnapshot()
+    if (snap.editorState.registers['+'] !== prevPlus && snap.editorState.registers['+']) {
+      navigator.clipboard.writeText(snap.editorState.registers['+']).catch(() => {})
+    }
     setEditorState(snap.editorState)
     if (!result.executed) return
     setCommandSeq((s) => s + 1)
@@ -152,6 +162,24 @@ export function usePlayEngine(
 
   const useHint = useCallback(() => {
     setUsedHint(true)
+  }, [])
+
+  // Sync system clipboard → + register on window focus
+  useEffect(() => {
+    const syncClipboard = () => {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          if (text && sessionRef.current) {
+            sessionRef.current.setRegister('+', text)
+          }
+        })
+        .catch(() => {})
+    }
+    window.addEventListener('focus', syncClipboard)
+    // Also sync on mount
+    syncClipboard()
+    return () => window.removeEventListener('focus', syncClipboard)
   }, [])
 
   return {

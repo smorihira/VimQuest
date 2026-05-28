@@ -11,7 +11,7 @@ import { describe, it, expect } from 'vitest'
 import { getAllTutorials } from '../data/tutorials'
 import { ALL_STAGES, getStage } from '../data/stages'
 import { SKILL_NODES, SKILL_NODE_MAP } from '../data/skillTree'
-import { BASE_COMMANDS } from '../data/constants'
+import { BASE_COMMANDS, getBaseForStage } from '../data/constants'
 
 // ─── B: Tutorial Data Integrity ──────────────────────────────────────
 
@@ -31,17 +31,16 @@ describe('Tutorial data integrity', () => {
         expect(SKILL_NODE_MAP[tutorial.nodeId], `node ${tutorial.nodeId} not found`).toBeDefined()
       })
 
-      // B2: every expectedKey is available in the stage's commands + BASE_COMMANDS
+      // B2: every expectedKey is available in the stage's commands + base
       it('all expectedKeys are available commands', () => {
         const stage = getStage(tutorial.stageId)
         if (!stage) return // covered by B1
 
-        const showBase =
-          stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
+        const base = getBaseForStage(stage) ?? []
         const allCommands = new Set([
           ...stage.availableCommands,
           ...(stage.visualCommands ?? []),
-          ...(showBase ? BASE_COMMANDS : []),
+          ...base,
         ])
 
         // Always-available keys (not part of stage commands but usable in tutorials)

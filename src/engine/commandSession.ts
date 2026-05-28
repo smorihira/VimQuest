@@ -154,6 +154,11 @@ export class CommandSession {
     return this.state
   }
 
+  /** Update a register value (used for clipboard sync) */
+  setRegister(name: string, value: string): void {
+    this.state = { ...this.state, registers: { ...this.state.registers, [name]: value } }
+  }
+
   getSnapshot(): SessionSnapshot {
     return {
       editorState: this.state,

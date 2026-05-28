@@ -207,25 +207,23 @@ export const N01_STAGES: Stage[] = [
   },
 
   // ── N01-C: 卒業試験 ──
-  // opt = 11 → ☆3=11, ☆2=14, ☆1=17, life=19
+  // opt = 5 (G + k + k + fg + h) → navigate to 'a' of 'age' at (4, 11)
   {
     id: 'N01-C',
     nodeId: 'N01',
     type: 'challenge',
     title: '卒業試験',
-    language: 'plaintext',
-    initialText: 'helo world\nthx quick brown fox\njumps ovr the\n  lazy dogg',
-    goalText: 'hello world\nthe quick brown fox\njumps over the\n  lazy dog',
+    language: 'javascript',
+    initialText:
+      'function validateInput(data) {\n  if (!data) return false;\n  if (!data.name) return false;\n  if (!data.email) return false;\n  if (data.age < 0) return false;\n  return true;\n}',
+    goalText:
+      'function validateInput(data) {\n  if (!data) return false;\n  if (!data.name) return false;\n  if (!data.email) return false;\n  if (data.age < 0) return false;\n  return true;\n}',
     initialCursor: { line: 0, col: 0 },
-    life: 19,
-    stars: [11, 14, 17],
+    life: 13,
+    stars: [5, 8, 11],
     availableCommands: [],
-    hints: [
-      {
-        cost: 1,
-        commands: ['e', 'i', 'l', 'Esc', 'j', 'h', 're', 'j', 'fv', 'a', 'e', 'Esc', 'j', 'e', 'x'],
-      },
-    ],
-    flavor: '全ての武器を使いこなせ',
+    clearConditions: { cursor: { line: 4, col: 11 } },
+    hints: [{ cost: 1, commands: ['G', 'k', 'k', 'fg', 'h'] }],
+    flavor: 'モーションを組み合わせて最短で目標に到達せよ',
   },
 ]

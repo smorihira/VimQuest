@@ -8,7 +8,7 @@ import type { Stage } from '../../types/stage'
 import type { EditorState } from '../../types/editor'
 import { createEditorState } from '../../types/editor'
 import { CommandSession } from '../../engine/commandSession'
-import { BASE_COMMANDS } from '../../data/constants'
+import { getBaseForStage } from '../../data/constants'
 import { isScoredStage } from '../../types/stage'
 import { EditorView } from './EditorView'
 import './HintOverlay.css'
@@ -28,8 +28,7 @@ export function HintOverlay({ stage, onClose }: HintOverlayProps) {
   const [currentCmd, setCurrentCmd] = useState('')
   const editorRef = useRef<HTMLDivElement>(null)
 
-  const showBase = stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
-  const baseCommands = showBase ? (BASE_COMMANDS as unknown as readonly string[]) : undefined
+  const baseCommands = getBaseForStage(stage)
   const life = isScoredStage(stage.type) ? stage.life : 999
 
   // Session used for step-by-step replay

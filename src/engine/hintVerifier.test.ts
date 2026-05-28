@@ -12,21 +12,17 @@
 
 import { describe, it, expect } from 'vitest'
 import { ALL_STAGES } from '../data/stages'
-import { BASE_COMMANDS } from '../data/constants'
+import { getBaseForStage } from '../data/constants'
 import { CommandSession } from './commandSession'
 
-// ─── Tests ──────────────────────────────────────────────────────────
-
-function showBase(stage: { nodeId: string; id: string }): boolean {
-  return stage.nodeId !== 'N01' || stage.id === 'N01-C' || !stage.id.startsWith('N01-')
-}
+// ─── Tests ────────────────────────────────────────────────────────────────
 
 describe('Hint Verification', () => {
   const stages = Object.values(ALL_STAGES)
 
   for (const stage of stages) {
     it(`${stage.id}: hint commands produce correct result`, () => {
-      const base = showBase(stage) ? (BASE_COMMANDS as unknown as string[]) : undefined
+      const base = getBaseForStage(stage) as string[] | undefined
 
       const session = new CommandSession({
         initialText: stage.initialText,
@@ -73,7 +69,7 @@ describe('Hint Damage Calculation', () => {
 
   for (const stage of stages) {
     it(`${stage.id}: hint damage === opt (opt=${stage.stars[0]})`, () => {
-      const base = showBase(stage) ? (BASE_COMMANDS as unknown as readonly string[]) : undefined
+      const base = getBaseForStage(stage) as readonly string[] | undefined
 
       const damage = CommandSession.calculateDamage(stage.hints[0].commands, {
         initialText: stage.initialText,

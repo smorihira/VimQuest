@@ -2,7 +2,6 @@
  * CardPanel — displays HAND cards and BASE row during play.
  */
 
-import { BASE_COMMANDS } from '../../../data/constants'
 import { playTick } from '../../../engine/sound'
 import { getCardClass, getPendingOperator, buildCardDisplayList } from '../commandMetadata'
 
@@ -12,6 +11,7 @@ interface CardPanelProps {
   visualCommands?: readonly string[]
   parserBuffer: string
   showBase: boolean
+  baseCommands?: readonly string[]
   baseExpanded: boolean
   setBaseExpanded: (fn: (v: boolean) => boolean) => void
 }
@@ -22,6 +22,7 @@ export function CardPanel({
   visualCommands,
   parserBuffer,
   showBase,
+  baseCommands,
   baseExpanded,
   setBaseExpanded,
 }: CardPanelProps) {
@@ -49,11 +50,11 @@ export function CardPanel({
         </div>
       ) : (
         <>
-          {showBase && baseExpanded && (
+          {showBase && baseExpanded && baseCommands && (
             <div className="base-row">
               {(mode === 'visual'
-                ? BASE_COMMANDS.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v')
-                : BASE_COMMANDS
+                ? baseCommands.filter((c) => c !== 'v' && c !== 'V' && c !== 'Ctrl+v')
+                : baseCommands
               ).map((cmd) => (
                 <span key={cmd} className={`base-card ${getCardClass(cmd)}`}>
                   {cmd}
