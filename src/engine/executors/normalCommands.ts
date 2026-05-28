@@ -654,3 +654,46 @@ export function executeGn(state: EditorState): EditorState {
   }
   return state
 }
+
+/** gN — select previous search match in visual mode */
+export function executeGN(state: EditorState): EditorState {
+  if (!state.lastSearchPattern) return state
+
+  const flat = state.text
+  const ls = lines(flat)
+  let curOffset = 0
+  for (let i = 0; i < state.cursor.line; i++) curOffset += ls[i].length + 1
+  curOffset += state.cursor.col
+
+  try {
+    const escaped = state.lastSearchPattern.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    const regex = new RegExp(escaped, 'g')
+
+    // Collect all matches, find last one before cursor
+    let match: RegExpExecArray | null
+    let lastBefore: RegExpExecArray | null = null
+    let lastOverall: RegExpExecArray | null = null
+    while ((match = regex.exec(flat)) !== null) {
+      lastOverall = match
+      if (match.index < curOffset) {
+        lastBefore = match
+      }
+    }
+
+    const found = lastBefore ?? lastOverall // Wrap around if no match before cursor
+    if (found) {
+      const matchStart = offsetToPos(flat, found.index)
+      const matchEnd = offsetToPos(flat, found.index + found[0].length - 1)
+      return {
+        ...state,
+        mode: 'visual',
+        visualStart: matchStart,
+        cursor: matchEnd,
+        visualType: 'char',
+      }
+    }
+  } catch {
+    // Invalid pattern
+  }
+  return state
+}

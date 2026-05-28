@@ -511,7 +511,9 @@ export class CommandParser {
         key === '>' ||
         key === '<' ||
         key === 'v' ||
-        key === 'V')
+        key === 'V' ||
+        key === 'I' ||
+        key === 'A')
     ) {
       return this.emit({ raw: key, valid: true }, 1)
     }
@@ -805,6 +807,15 @@ export class CommandParser {
         return this.emitInvalid(raw)
       }
       return this.emit({ raw, operator: this.operator, motion: 'gn' as Motion, valid: true }, 1)
+    }
+
+    // gN — select previous search match in visual mode
+    if (key === 'N') {
+      const raw = this.buffer
+      if (!isInHand('gn', this.getEffectiveHand())) {
+        return this.emitInvalid(raw)
+      }
+      return this.emit({ raw, operator: this.operator, motion: 'gN' as Motion, valid: true }, 1)
     }
 
     return this.emitInvalid(this.buffer)

@@ -164,15 +164,35 @@ export function finalizeInsertSession(
       ...state,
       undoStack: entryState.undoStack,
       redoStack: [],
+      blockInsertInfo: undefined,
+    }
+  }
+
+  // Visual block insert: replicate inserted text to all affected lines
+  let finalState = state
+  if (state.blockInsertInfo) {
+    const { startLine, endLine, col } = state.blockInsertInfo
+    const insertedText = getInsertedText(entryState.text, state.text, entryState.cursor)
+    if (insertedText) {
+      const ls = lines(finalState.text)
+      for (let i = startLine; i <= endLine; i++) {
+        if (i === startLine) continue // Already inserted on the first line
+        if (i < ls.length) {
+          const line = ls[i]
+          const insertAt = Math.min(col, line.length)
+          ls[i] = line.slice(0, insertAt) + insertedText + line.slice(insertAt)
+        }
+      }
+      finalState = { ...finalState, text: join(ls) }
     }
   }
 
   const damage = 1 + Math.max(0, charCount - 5)
   const op: Operation = {
     oldText: entryState.text,
-    newText: state.text,
+    newText: finalState.text,
     oldCursor: entryState.cursor,
-    newCursor: state.cursor,
+    newCursor: finalState.cursor,
     oldMode: 'normal',
     newMode: 'normal',
     damage,
@@ -180,10 +200,11 @@ export function finalizeInsertSession(
   }
 
   return {
-    ...state,
+    ...finalState,
     undoStack: [...entryState.undoStack, op],
     redoStack: [],
     lastInsertText: getInsertedText(entryState.text, state.text, entryState.cursor),
+    blockInsertInfo: undefined,
   }
 }
 

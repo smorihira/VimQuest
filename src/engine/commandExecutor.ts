@@ -73,6 +73,7 @@ import {
   executeJumpForward,
   executeReplaceMode,
   executeGn,
+  executeGN,
 } from './executors/normalCommands'
 
 // Re-export for external consumers
@@ -132,6 +133,14 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
     if (cmd.motion === 'gn') {
       // In visual mode, gn extends selection to end of next match
       const result = executeGn(state)
+      if (result.mode === 'visual') {
+        return { ...result, visualStart: state.visualStart }
+      }
+      return state
+    }
+    if (cmd.motion === 'gN') {
+      // In visual mode, gN extends selection to end of previous match
+      const result = executeGN(state)
       if (result.mode === 'visual') {
         return { ...result, visualStart: state.visualStart }
       }
@@ -377,6 +386,23 @@ function executeVisualModeCommand(state: EditorState, cmd: Command, raw: string)
     }
   }
 
+  // I/A — block insert (only in visual block mode)
+  if ((raw === 'I' || raw === 'A') && state.visualType === 'block' && state.visualStart) {
+    const startLine = Math.min(state.visualStart.line, state.cursor.line)
+    const endLine = Math.max(state.visualStart.line, state.cursor.line)
+    const startCol = Math.min(state.visualStart.col, state.cursor.col)
+    const endCol = Math.max(state.visualStart.col, state.cursor.col)
+    const insertCol = raw === 'I' ? startCol : endCol + 1
+    return {
+      ...state,
+      mode: 'insert',
+      cursor: { line: startLine, col: insertCol },
+      visualStart: undefined,
+      visualType: undefined,
+      blockInsertInfo: { startLine, endLine, col: insertCol, type: raw },
+    }
+  }
+
   return state
 }
 
@@ -414,10 +440,11 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
   // C — change to end of line
   if (raw === 'C') return executeChangeToEnd(state)
 
-  // Y — yank line
+  // Y — yank to end of line (Neovim: y$)
   if (raw === 'Y') {
     const ls = lines(state.text)
-    return { ...state, registers: { ...state.registers, '': ls[state.cursor.line] + '\n' } }
+    const yanked = ls[state.cursor.line].slice(state.cursor.col)
+    return { ...state, registers: { ...state.registers, '': yanked, '0': yanked } }
   }
 
   // J — join lines
@@ -567,9 +594,9 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
     return executeOperatorTextObject(state, cmd)
   }
 
-  // Operator + gn — apply operator to next search match
-  if (cmd.operator && cmd.motion === 'gn') {
-    const gnState = executeGn(state)
+  // Operator + gn/gN — apply operator to search match
+  if (cmd.operator && (cmd.motion === 'gn' || cmd.motion === 'gN')) {
+    const gnState = cmd.motion === 'gn' ? executeGn(state) : executeGN(state)
     if (gnState.mode !== 'visual') return state
     return executeVisualModeCommand(gnState, cmd, cmd.operator)
   }
@@ -581,9 +608,12 @@ function executeNormalModeCommand(state: EditorState, cmd: Command, raw: string)
 
   // Pure motions
   if (cmd.motion && !cmd.operator) {
-    // gn — select next search match in visual mode
+    // gn/gN — select search match in visual mode
     if (cmd.motion === 'gn') {
       return executeGn(state)
+    }
+    if (cmd.motion === 'gN') {
+      return executeGN(state)
     }
 
     // Jump-list motions: record position before jumping

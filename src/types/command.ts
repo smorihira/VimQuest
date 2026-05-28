@@ -38,6 +38,7 @@ export type Motion =
   | 'gj'
   | 'gk'
   | 'gn'
+  | 'gN'
   | '{'
   | '}'
   | '('

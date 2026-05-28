@@ -70,6 +70,16 @@ export interface EditorState {
   jumpIndex?: number
   /** Named marks: ma sets marks['a'] = cursor position */
   marks?: Record<string, CursorPosition>
+  /** Visual block insert info (for Ctrl+v + I/A) */
+  blockInsertInfo?: {
+    /** Lines affected by the block insert */
+    startLine: number
+    endLine: number
+    /** Column where insertion starts */
+    col: number
+    /** 'I' = insert at block start, 'A' = append at block end */
+    type: 'I' | 'A'
+  }
 }
 
 /** Create initial editor state from text and cursor */
