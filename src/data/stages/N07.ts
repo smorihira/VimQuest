@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N05: オペレータ基礎 (y, p, P, d, c)
+ * operator: オペレータ基礎 (y, p, P, d, c)
  */
 export const N07_STAGES: Stage[] = [
   // ── 🆕 Teach: コピーせよ ──
   {
-    id: 'N05-T1',
-    nodeId: 'N05',
+    id: 'operator-yank',
+    nodeId: NodeId.Operator,
     type: 'tutorial' as const,
     title: 'コピーせよ',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N07_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 消せ・変えろ ──
   {
-    id: 'N05-T2',
-    nodeId: 'N05',
+    id: 'operator-dc',
+    nodeId: NodeId.Operator,
     type: 'tutorial' as const,
     title: '消せ・変えろ',
     language: 'plaintext' as const,
@@ -42,8 +43,8 @@ export const N07_STAGES: Stage[] = [
 
   // ── 🆕 Teach: モーションと組合せ ──
   {
-    id: 'N05-T3',
-    nodeId: 'N05',
+    id: 'operator-combo',
+    nodeId: NodeId.Operator,
     type: 'tutorial' as const,
     title: 'モーションと組合せ',
     language: 'plaintext' as const,
@@ -60,8 +61,8 @@ export const N07_STAGES: Stage[] = [
 
   // ── 🆕 Practice: オペレータ総合 ──
   {
-    id: 'N05-P',
-    nodeId: 'N05',
+    id: 'operator-practice',
+    nodeId: NodeId.Operator,
     type: 'practice' as const,
     title: 'オペレータ総合',
     language: 'plaintext' as const,

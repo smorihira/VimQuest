@@ -1,4 +1,5 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
  * N19: 大小文字操作 (~, gu, gU)
@@ -7,8 +8,8 @@ export const N19_STAGES: Stage[] = [
   // ── Teach: 2箇所の大小を直す ──
   // opt = 3 (~ + w + ~)
   {
-    id: 'N19-T',
-    nodeId: 'N13',
+    id: 'operator-adv-tilde',
+    nodeId: NodeId.OperatorAdv,
     type: 'tutorial',
     title: 'トグルせよ',
     language: 'plaintext',
@@ -35,8 +36,8 @@ export const N19_STAGES: Stage[] = [
   // ── Teach: gu / gU で大小文字変換 ──
   // opt = 5 (guiw + w + gUiw + w + guiw)
   {
-    id: 'N19-Ta',
-    nodeId: 'N13',
+    id: 'operator-adv-case',
+    nodeId: NodeId.OperatorAdv,
     type: 'tutorial',
     title: '大文字にしろ',
     language: 'javascript',
@@ -71,8 +72,8 @@ export const N19_STAGES: Stage[] = [
 
   // ── 🆕 Practice: 発展オペレータ総合 ──
   {
-    id: 'N13-P',
-    nodeId: 'N13',
+    id: 'operator-adv-practice',
+    nodeId: NodeId.OperatorAdv,
     type: 'practice' as const,
     title: '発展オペレータ総合',
     language: 'plaintext' as const,

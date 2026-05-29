@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N16: スクロール＋マーク (Ctrl+d, Ctrl+u, Ctrl+f, Ctrl+b, m, ', `, gi)
+ * 'scroll-mark': スクロール＋マーク (Ctrl+d, Ctrl+u, Ctrl+f, Ctrl+b, m, ', `, gi)
  */
 export const N04_STAGES: Stage[] = [
   // ── 🆕 Teach: ページ移動 ──
   {
-    id: 'N16-T',
-    nodeId: 'N16',
+    id: 'scroll-mark-page',
+    nodeId: NodeId.ScrollMark,
     type: 'tutorial' as const,
     title: 'ページ移動',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N04_STAGES: Stage[] = [
 
   // ── 🆕 Teach: マーク ──
   {
-    id: 'N16-Ta',
-    nodeId: 'N16',
+    id: 'scroll-mark-mark',
+    nodeId: NodeId.ScrollMark,
     type: 'tutorial' as const,
     title: 'マーク',
     language: 'plaintext' as const,
@@ -42,8 +43,8 @@ export const N04_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 最終挿入位置 ──
   {
-    id: 'N16-Tb',
-    nodeId: 'N16',
+    id: 'scroll-mark-gi',
+    nodeId: NodeId.ScrollMark,
     type: 'tutorial' as const,
     title: '最終挿入位置',
     language: 'plaintext' as const,
@@ -60,8 +61,8 @@ export const N04_STAGES: Stage[] = [
 
   // ── 🆕 Practice: スクロール＋マーク総合 ──
   {
-    id: 'N16-P',
-    nodeId: 'N16',
+    id: 'scroll-mark-practice',
+    nodeId: NodeId.ScrollMark,
     type: 'practice' as const,
     title: 'スクロール＋マーク総合',
     language: 'plaintext' as const,

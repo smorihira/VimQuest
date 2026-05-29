@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N11: ショートカット (s, S, Y, D, C, J)
+ * shortcut: ショートカット (s, S, Y, D, C, J)
  */
 export const N10_STAGES: Stage[] = [
   // ── 🆕 Teach: 置き換え ──
   {
-    id: 'N11-T1',
-    nodeId: 'N11',
+    id: 'shortcut-sub',
+    nodeId: NodeId.Shortcut,
     type: 'tutorial' as const,
     title: '置き換え',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N10_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 行末操作 ──
   {
-    id: 'N11-T2',
-    nodeId: 'N11',
+    id: 'shortcut-line-end',
+    nodeId: NodeId.Shortcut,
     type: 'tutorial' as const,
     title: '行末操作',
     language: 'plaintext' as const,
@@ -42,8 +43,8 @@ export const N10_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 行結合 ──
   {
-    id: 'N11-T3',
-    nodeId: 'N11',
+    id: 'shortcut-join',
+    nodeId: NodeId.Shortcut,
     type: 'tutorial' as const,
     title: '行結合',
     language: 'plaintext' as const,
@@ -60,8 +61,8 @@ export const N10_STAGES: Stage[] = [
 
   // ── 🆕 Practice: ショートカット総合 ──
   {
-    id: 'N11-P',
-    nodeId: 'N11',
+    id: 'shortcut-practice',
+    nodeId: NodeId.Shortcut,
     type: 'practice' as const,
     title: 'ショートカット総合',
     language: 'plaintext' as const,

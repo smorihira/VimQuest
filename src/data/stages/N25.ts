@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N14: 発展モーション（その他）(F, T, H, M, L)
+ * 'motion-adv': 発展モーション（その他）(F, T, H, M, L)
  */
 export const N25_STAGES: Stage[] = [
   // ── 🆕 Teach: 後方文字検索 ──
   {
-    id: 'N14-T1',
-    nodeId: 'N14',
+    id: 'motion-adv-back-find',
+    nodeId: NodeId.MotionAdv,
     type: 'tutorial' as const,
     title: '後方文字検索',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N25_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 画面位置ジャンプ ──
   {
-    id: 'N14-T2',
-    nodeId: 'N14',
+    id: 'motion-adv-screen-pos',
+    nodeId: NodeId.MotionAdv,
     type: 'tutorial' as const,
     title: '画面位置ジャンプ',
     language: 'plaintext' as const,
@@ -42,8 +43,8 @@ export const N25_STAGES: Stage[] = [
 
   // ── 🆕 Practice: 発展モーション総合 ──
   {
-    id: 'N14-P',
-    nodeId: 'N14',
+    id: 'motion-adv-practice',
+    nodeId: NodeId.MotionAdv,
     type: 'practice' as const,
     title: '発展モーション総合',
     language: 'plaintext' as const,

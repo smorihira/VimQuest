@@ -1,4 +1,5 @@
 import type { StageResult } from './stage'
+import { NodeId } from './nodeId'
 
 /** Tutorial completion state */
 export type TutorialStatus = 'completed' | 'skipped'
@@ -25,7 +26,7 @@ export const SAVE_KEY = 'vimquest_save_v1'
 export function createInitialProgress(): GameProgress {
   return {
     dataVersion: 1,
-    unlockedNodes: ['N01'],
+    unlockedNodes: [NodeId.Motion],
     stageResults: {},
     tutorialStatus: {},
   }
@@ -33,7 +34,7 @@ export function createInitialProgress(): GameProgress {
 
 /** Skill tree node definition (static data) */
 export interface SkillNodeDef {
-  /** Node ID (e.g., "N01") */
+  /** Node ID (e.g., "motion") */
   id: string
   /** Commands unlocked by this node */
   commands: string[]

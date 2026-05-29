@@ -1,7 +1,8 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N01: 基礎訓練 (h/j/k/l/w/b/e/W/B/E/0/^/$/gg/G/x/i/a)
+ * motion: 基礎訓練 (h/j/k/l/w/b/e/W/B/E/0/^/$/gg/G/x/i/a)
  * ゲーム最初のノード。8ステージ構成のチュートリアルノード。
  * 連続プレイ（ツリー非表示）。ライフ/☆評価なし。
  */
@@ -9,8 +10,8 @@ import type { Stage } from '../../types/stage'
 export const N01_STAGES: Stage[] = [
   // ── N01-1: 左右に動け ──
   {
-    id: 'N01-1',
-    nodeId: 'N01',
+    id: 'motion-hl',
+    nodeId: NodeId.Motion,
     type: 'tutorial',
     title: '左右に動け',
     language: 'plaintext',
@@ -75,8 +76,8 @@ export const N01_STAGES: Stage[] = [
 
   // ── N01-2: 上下に動け ──
   {
-    id: 'N01-2',
-    nodeId: 'N01',
+    id: 'motion-jk',
+    nodeId: NodeId.Motion,
     type: 'tutorial',
     title: '上下に動け',
     language: 'plaintext',
@@ -112,8 +113,8 @@ export const N01_STAGES: Stage[] = [
 
   // ── N01-3: 単語を飛べ ──
   {
-    id: 'N01-3',
-    nodeId: 'N01',
+    id: 'motion-word',
+    nodeId: NodeId.Motion,
     type: 'tutorial',
     title: '単語を飛べ',
     language: 'plaintext',
@@ -153,8 +154,8 @@ export const N01_STAGES: Stage[] = [
 
   // ── N01-4: WORDで飛べ ──
   {
-    id: 'N01-4',
-    nodeId: 'N14',
+    id: 'motion-adv-word',
+    nodeId: NodeId.MotionAdv,
     type: 'tutorial',
     title: 'WORDで飛べ',
     language: 'javascript',
@@ -190,8 +191,8 @@ export const N01_STAGES: Stage[] = [
 
   // ── N01-5: 行頭末ジャンプ ──
   {
-    id: 'N01-5',
-    nodeId: 'N01',
+    id: 'motion-line',
+    nodeId: NodeId.Motion,
     type: 'tutorial',
     title: '行の端へ飛べ',
     language: 'plaintext',
@@ -227,8 +228,8 @@ export const N01_STAGES: Stage[] = [
 
   // ── N01-6: ファイルの端へ ──
   {
-    id: 'N01-6',
-    nodeId: 'N01',
+    id: 'motion-file',
+    nodeId: NodeId.Motion,
     type: 'tutorial',
     title: 'ファイルの端へ',
     language: 'plaintext',
@@ -260,8 +261,8 @@ export const N01_STAGES: Stage[] = [
 
   // ── N01-7: 文字を消せ ──
   {
-    id: 'N01-7',
-    nodeId: 'N02',
+    id: 'edit-delete',
+    nodeId: NodeId.Edit,
     type: 'tutorial',
     title: '文字を消せ',
     language: 'plaintext',
@@ -308,8 +309,8 @@ export const N01_STAGES: Stage[] = [
 
   // ── N01-8: 文字を書け ──
   {
-    id: 'N01-8',
-    nodeId: 'N02',
+    id: 'edit-insert',
+    nodeId: NodeId.Edit,
     type: 'tutorial',
     title: '文字を書け',
     language: 'plaintext',
@@ -412,8 +413,8 @@ export const N01_STAGES: Stage[] = [
   // ── N01-P: 卒業試験 (旧 N01-C) ──
   // opt = 5 (G + k + k + fg + h) → navigate to 'a' of 'age' at (4, 11)
   {
-    id: 'N01-P',
-    nodeId: 'N01',
+    id: 'motion-practice',
+    nodeId: NodeId.Motion,
     type: 'practice',
     title: '卒業試験',
     language: 'javascript',

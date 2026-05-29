@@ -1,15 +1,16 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N11: ドットリピート (.)
+ * shortcut: ドットリピート (.)
  * Teach(T) のみ残存
  */
 export const N11_STAGES: Stage[] = [
   // ── Teach: I で行頭挿入 → . で繰り返し ──
   // opt = 7 (I + '* ' + Esc + j + . + j + .)
   {
-    id: 'N11-T',
-    nodeId: 'N02',
+    id: 'edit-repeat',
+    nodeId: NodeId.Edit,
     type: 'tutorial',
     title: 'リピートせよ',
     language: 'plaintext',

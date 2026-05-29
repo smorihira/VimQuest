@@ -12,6 +12,7 @@ import { ALL_STAGES, getStage, getTutorial } from '../data/stages'
 import { SKILL_NODES, SKILL_NODE_MAP } from '../data/skillTree'
 import { BASE_COMMANDS, getBaseForStage } from '../data/constants'
 import type { Tutorial } from '../types/tutorial'
+import { NodeId } from '../types/nodeId'
 
 // ─── B: Tutorial Data Integrity ──────────────────────────────────────
 
@@ -66,7 +67,7 @@ describe('Tutorial data integrity', () => {
           if (step.expectedKey === null) continue // info step, any key
           if (step.type === 'hold_space') continue // Space hold step
           if (step.type === 'colon_command') continue // handled separately
-          if (step.type === 'search') continue // handled separately
+          if (step.type === NodeId.Search) continue // handled separately
 
           const key = step.expectedKey
           if (builtinKeys.has(key)) continue
@@ -119,8 +120,8 @@ describe('Skill tree integrity', () => {
   // C1: All nodes are reachable from N01
   it('all nodes are reachable from N01', () => {
     const reachable = new Set<string>()
-    const queue = ['N01']
-    reachable.add('N01')
+    const queue: string[] = [NodeId.Motion]
+    reachable.add(NodeId.Motion)
 
     // Build adjacency: prerequisite → dependent
     const dependents = new Map<string, string[]>()
@@ -256,10 +257,10 @@ describe('Skill tree integrity', () => {
 
 // Commands not yet covered by any tutorial's newCommands (TODO: remove as tutorials are created)
 const UNCOVERED_COMMANDS: Record<string, string[]> = {
-  N02: ['X'],
-  N04: ['?'],
-  N08: ['o'],
-  N10: ['"'],
+  [NodeId.Edit]: ['X'],
+  [NodeId.Search]: ['?'],
+  [NodeId.Visual]: ['o'],
+  [NodeId.Register]: ['"'],
 }
 
 describe('Tutorial newCommands coverage', () => {
@@ -277,7 +278,8 @@ describe('Tutorial newCommands coverage', () => {
 
   for (const node of SKILL_NODES) {
     // These nodes use display-friendly newCommands that differ from node.commands
-    if (['N06', 'N09', 'N10'].includes(node.id)) continue
+    if (([NodeId.TextObj, NodeId.VisualAdv, NodeId.Register] as string[]).includes(node.id))
+      continue
     const uncovered = new Set(UNCOVERED_COMMANDS[node.id] ?? [])
     const expected = new Set(node.commands.filter((cmd) => !uncovered.has(cmd)))
     const actual = newCommandsByNode.get(node.id) ?? new Set()

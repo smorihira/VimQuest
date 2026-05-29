@@ -1,4 +1,5 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
  * N21: Visualモード (v, V, Ctrl+v)
@@ -8,8 +9,8 @@ export const N21_STAGES: Stage[] = [
   // ── Teach 1: v で文字選択して削除 ──
   // opt = 6 (f<(1)+v(0)+f>(1)+d(1) + f<(1)+v(0)+f>(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
-    id: 'N21-T',
-    nodeId: 'N08',
+    id: 'visual-char',
+    nodeId: NodeId.Visual,
     type: 'tutorial',
     title: '文字を選べ',
     language: 'html',
@@ -50,8 +51,8 @@ export const N21_STAGES: Stage[] = [
   // ── Teach 2: V で行選択して削除 ──
   // opt = 4 (j(1)+V(0)+j(1)+d(1) + V(0)+d(1)) → ☆3=4, ☆2=5, ☆1=7, life=10
   {
-    id: 'N21-Ta',
-    nodeId: 'N08',
+    id: 'visual-line',
+    nodeId: NodeId.Visual,
     type: 'tutorial',
     title: '行を選べ',
     language: 'javascript',
@@ -92,8 +93,8 @@ export const N21_STAGES: Stage[] = [
   // ── Teach 3: Ctrl+v で矩形選択して削除 ──
   // opt = 6 (Ctrl+v(0)+j(1)+d(1) + jj(2)+Ctrl+v(0)+j(1)+d(1)) → ☆3=6, ☆2=7, ☆1=9, life=12
   {
-    id: 'N21-Tb',
-    nodeId: 'N08',
+    id: 'visual-block',
+    nodeId: NodeId.Visual,
     type: 'tutorial',
     title: '矩形で切れ',
     language: 'plaintext',
@@ -129,8 +130,8 @@ export const N21_STAGES: Stage[] = [
 
   // ── 🆕 Practice: Visual 総合 ──
   {
-    id: 'N08-P',
-    nodeId: 'N08',
+    id: 'visual-practice',
+    nodeId: NodeId.Visual,
     type: 'practice' as const,
     title: 'Visual 総合',
     language: 'plaintext' as const,

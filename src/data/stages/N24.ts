@@ -1,10 +1,11 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 export const N24_STAGES: Stage[] = [
   // ─── Teach: gn (select next search match) ─────────────────────
   {
-    id: 'N24-T',
-    nodeId: 'N09',
+    id: 'visual-adv-cgn',
+    nodeId: NodeId.VisualAdv,
     type: 'tutorial',
     title: '検索マッチを選べ',
     language: 'javascript',
@@ -46,8 +47,8 @@ export const N24_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 選択を操れ ──
   {
-    id: 'N09-T1',
-    nodeId: 'N09',
+    id: 'visual-adv-select',
+    nodeId: NodeId.VisualAdv,
     type: 'tutorial' as const,
     title: '選択を操れ',
     language: 'plaintext' as const,
@@ -65,8 +66,8 @@ export const N24_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 矩形コメント ──
   {
-    id: 'N09-T2',
-    nodeId: 'N09',
+    id: 'visual-adv-block',
+    nodeId: NodeId.VisualAdv,
     type: 'tutorial' as const,
     title: '矩形コメント',
     language: 'plaintext' as const,
@@ -83,8 +84,8 @@ export const N24_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 連続置換 ──
   {
-    id: 'N09-T3',
-    nodeId: 'N09',
+    id: 'visual-adv-replace',
+    nodeId: NodeId.VisualAdv,
     type: 'tutorial' as const,
     title: '連続置換',
     language: 'plaintext' as const,
@@ -102,8 +103,8 @@ export const N24_STAGES: Stage[] = [
 
   // ── 🆕 Practice: Visual応用 総合 ──
   {
-    id: 'N09-P',
-    nodeId: 'N09',
+    id: 'visual-adv-practice',
+    nodeId: NodeId.VisualAdv,
     type: 'practice' as const,
     title: 'Visual応用 総合',
     language: 'plaintext' as const,

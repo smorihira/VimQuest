@@ -1,15 +1,16 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N12: 行内ジャンプ (f, t, ;, ,)
+ * 'struct-jump': 行内ジャンプ (f, t, ;, ,)
  * Teach(T) + Practice(P) + Challenge(C) = 3ステージ
  */
 export const N12_STAGES: Stage[] = [
   // ── Teach: f/t/;/, で行内ジャンプ ──
   // opt = 2 (f; + ;)
   {
-    id: 'N12-T',
-    nodeId: 'N01',
+    id: 'motion-find',
+    nodeId: NodeId.Motion,
     type: 'tutorial',
     title: '狙い撃て',
     language: 'javascript',

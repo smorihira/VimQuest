@@ -1,10 +1,11 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 export const N23_STAGES: Stage[] = [
   // ─── Teach: v (visual select) ──────────────────────────────────
   {
-    id: 'N23-T',
-    nodeId: 'N03',
+    id: 'mode-visual-delete',
+    nodeId: NodeId.Mode,
     type: 'tutorial',
     title: '選んで消せ',
     language: 'plaintext',
@@ -35,8 +36,8 @@ export const N23_STAGES: Stage[] = [
 
   // ─── Teach: R (replace mode) ──────────────────────────────────
   {
-    id: 'N23-Ta',
-    nodeId: 'N03',
+    id: 'mode-overwrite',
+    nodeId: NodeId.Mode,
     type: 'tutorial',
     title: '上書きモード',
     language: 'plaintext',
@@ -67,8 +68,8 @@ export const N23_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 置換コマンド ──
   {
-    id: 'N03-Tb',
-    nodeId: 'N03',
+    id: 'mode-substitute',
+    nodeId: NodeId.Mode,
     type: 'tutorial' as const,
     title: '置換コマンド',
     language: 'plaintext' as const,
@@ -85,8 +86,8 @@ export const N23_STAGES: Stage[] = [
 
   // ─── Practice: v + R combined (旧 N23-C) ─────────────────────────────────
   {
-    id: 'N23-P',
-    nodeId: 'N03',
+    id: 'mode-practice',
+    nodeId: NodeId.Mode,
     type: 'practice',
     title: 'モード総合',
     language: 'javascript',

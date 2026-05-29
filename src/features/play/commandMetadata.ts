@@ -1,3 +1,4 @@
+import { NodeId } from '../../types/nodeId'
 /**
  * Command metadata — card styling, key mapping, and parser helpers.
  */
@@ -100,7 +101,14 @@ export function getCardHint(cmd: string, nodeId?: string): string | null {
   if (cmd === 'f' || cmd === 't') return '; ,'
   if (cmd === 'm') return "` '"
   if (cmd === '/' || cmd === '?' || cmd === '*' || cmd === '#') {
-    const POST_VISUAL_NODES = new Set(['N09', 'N10', 'N11', 'N12', 'N13', 'N14'])
+    const POST_VISUAL_NODES: Set<string> = new Set([
+      NodeId.VisualAdv,
+      NodeId.Register,
+      NodeId.Shortcut,
+      NodeId.StructJump,
+      NodeId.OperatorAdv,
+      NodeId.MotionAdv,
+    ])
     if (nodeId && POST_VISUAL_NODES.has(nodeId)) return 'n N gn gN'
     return 'n N'
   }

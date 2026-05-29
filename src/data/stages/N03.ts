@@ -1,7 +1,8 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N03: 1文字置換 (r)
+ * mode: 1文字置換 (r)
  * 渇望→報酬サイクル #2: x+i → r 一発
  * Teach(T) = 1ステージ
  */
@@ -9,8 +10,8 @@ export const N03_STAGES: Stage[] = [
   // ── Teach: typo を直す (2行分) ──
   // opt = 4 (l + re + j + ro)
   {
-    id: 'N03-T',
-    nodeId: 'N02',
+    id: 'edit-replace',
+    nodeId: NodeId.Edit,
     type: 'tutorial',
     title: '一文字直せ',
     language: 'plaintext',

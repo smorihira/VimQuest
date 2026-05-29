@@ -1,6 +1,7 @@
 /** Global game constants */
 
 import type { Stage } from '../types/stage'
+import { NodeId } from '../types/nodeId'
 
 /**
  * BASE_N01 — N01 (モーション基礎) commands.
@@ -52,15 +53,15 @@ export const BASE_COMMANDS: readonly string[] = [
 export function getBaseForStage(stage: Stage): readonly string[] | undefined {
   const node = stage.nodeId
   // N01 tutorial stages: no base
-  if (node === 'N01' && stage.type === 'tutorial') {
+  if (node === NodeId.Motion && stage.type === 'tutorial') {
     return undefined
   }
   // N01 practice/challenge: BASE_N01 only
-  if (node === 'N01') {
+  if (node === NodeId.Motion) {
     return BASE_N01
   }
   // N02 tutorial: BASE_N01 inherited (full BASE if no hand cards)
-  if (node === 'N02' && stage.type === 'tutorial') {
+  if (node === NodeId.Edit && stage.type === 'tutorial') {
     if (stage.availableCommands.length === 0) return BASE_COMMANDS
     return BASE_N01
   }

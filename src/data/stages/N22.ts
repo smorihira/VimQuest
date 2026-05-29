@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N10: レジスタ (")
+ * register: レジスタ (")
  */
 export const N22_STAGES: Stage[] = [
   // ── 🆕 Teach: レジスタ入門 ──
   {
-    id: 'N10-T',
-    nodeId: 'N10',
+    id: 'register-intro',
+    nodeId: NodeId.Register,
     type: 'tutorial' as const,
     title: 'レジスタ入門',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N22_STAGES: Stage[] = [
 
   // ── 🆕 Teach: クリップボード ──
   {
-    id: 'N10-Ta',
-    nodeId: 'N10',
+    id: 'register-clipboard',
+    nodeId: NodeId.Register,
     type: 'tutorial' as const,
     title: 'クリップボード',
     language: 'plaintext' as const,
@@ -42,8 +43,8 @@ export const N22_STAGES: Stage[] = [
 
   // ── 🆕 Practice: レジスタ活用 ──
   {
-    id: 'N10-P',
-    nodeId: 'N10',
+    id: 'register-practice',
+    nodeId: NodeId.Register,
     type: 'practice' as const,
     title: 'レジスタ活用',
     language: 'plaintext' as const,

@@ -135,7 +135,7 @@ export function ResultScreen() {
 
   // Auto-show guide on first N01-C clear
   useEffect(() => {
-    if (stageId !== 'N01-C' || localStorage.getItem(GUIDE_KEY)) return
+    if (stageId !== 'motion-challenge' || localStorage.getItem(GUIDE_KEY)) return
     const timer = setTimeout(() => setShowGuide(true), 1200)
     return () => clearTimeout(timer)
   }, [stageId])

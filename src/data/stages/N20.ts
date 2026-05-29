@@ -1,4 +1,5 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
  * N20: インデント (>>, <<)
@@ -8,8 +9,8 @@ export const N20_STAGES: Stage[] = [
   // ── Teach: >> と << でインデント調整 ──
   // opt = 6 (j + >> + j + >> + j + <<)
   {
-    id: 'N20-T',
-    nodeId: 'N13',
+    id: 'operator-adv-indent',
+    nodeId: NodeId.OperatorAdv,
     type: 'tutorial',
     title: 'インデントせよ',
     language: 'python',

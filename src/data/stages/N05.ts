@@ -1,4 +1,5 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
  * N05/N17: 画面操作 (zz, zt, zb, Ctrl+e, Ctrl+y)
@@ -7,8 +8,8 @@ export const N05_STAGES: Stage[] = [
   // ── Teach: カーソルを移動 + zz で画面中央に合わせる ──
   // opt = 5 (Ctrl+d + Ctrl+d + j + j + zz)
   {
-    id: 'N05-T',
-    nodeId: 'N17',
+    id: 'screen-center',
+    nodeId: NodeId.Screen,
     type: 'tutorial',
     title: '画面を合わせろ',
     language: 'javascript',
@@ -101,8 +102,8 @@ export const N05_STAGES: Stage[] = [
 
   // ── 🆕 Teach: 1行スクロール ──
   {
-    id: 'N17-T1',
-    nodeId: 'N17',
+    id: 'screen-scroll',
+    nodeId: NodeId.Screen,
     type: 'tutorial' as const,
     title: '1行スクロール',
     language: 'plaintext' as const,
@@ -119,8 +120,8 @@ export const N05_STAGES: Stage[] = [
 
   // ── 🆕 Practice: 画面操作総合 ──
   {
-    id: 'N17-P',
-    nodeId: 'N17',
+    id: 'screen-practice',
+    nodeId: NodeId.Screen,
     type: 'practice' as const,
     title: '画面操作総合',
     language: 'plaintext' as const,

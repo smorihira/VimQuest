@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N12: 発展モーション（構造ジャンプ）(%, (, ), {, }, [[, ]])
+ * 'struct-jump': 発展モーション（構造ジャンプ）(%, (, ), {, }, [[, ]])
  */
 export const N13_STAGES: Stage[] = [
   // ── 🆕 Teach: 対応ジャンプ ──
   {
-    id: 'N12-T1',
-    nodeId: 'N12',
+    id: 'struct-jump-match',
+    nodeId: NodeId.StructJump,
     type: 'tutorial' as const,
     title: '対応ジャンプ',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N13_STAGES: Stage[] = [
 
   // ── 🆕 Teach: セクション移動 ──
   {
-    id: 'N12-T2',
-    nodeId: 'N12',
+    id: 'struct-jump-section',
+    nodeId: NodeId.StructJump,
     type: 'tutorial' as const,
     title: 'セクション移動',
     language: 'plaintext' as const,
@@ -42,8 +43,8 @@ export const N13_STAGES: Stage[] = [
 
   // ── 🆕 Practice: 構造ジャンプ総合 ──
   {
-    id: 'N12-P',
-    nodeId: 'N12',
+    id: 'struct-jump-practice',
+    nodeId: NodeId.StructJump,
     type: 'practice' as const,
     title: '構造ジャンプ総合',
     language: 'plaintext' as const,

@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N06: TextObj (iw, aw, is, as, ip, ap, i", a", ...)
+ * textobj: TextObj (iw, aw, is, as, ip, ap, i", a", ...)
  */
 export const N16_STAGES: Stage[] = [
   // ── 🆕 Teach: テキストオブジェクト ──
   {
-    id: 'N06-T1',
-    nodeId: 'N06',
+    id: 'textobj-word',
+    nodeId: NodeId.TextObj,
     type: 'tutorial' as const,
     title: 'テキストオブジェクト',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N16_STAGES: Stage[] = [
 
   // ── 🆕 Teach: デリミタ ──
   {
-    id: 'N06-T2',
-    nodeId: 'N06',
+    id: 'textobj-delim',
+    nodeId: NodeId.TextObj,
     type: 'tutorial' as const,
     title: 'デリミタ',
     language: 'plaintext' as const,
@@ -42,8 +43,8 @@ export const N16_STAGES: Stage[] = [
 
   // ── 🆕 Practice: TextObj 応用 ──
   {
-    id: 'N06-P',
-    nodeId: 'N06',
+    id: 'textobj-practice',
+    nodeId: NodeId.TextObj,
     type: 'practice' as const,
     title: 'TextObj 応用',
     language: 'plaintext' as const,

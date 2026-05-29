@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N15: 数値操作 (Ctrl+a, Ctrl+x)
+ * number: 数値操作 (Ctrl+a, Ctrl+x)
  */
 export const N15_STAGES: Stage[] = [
   // ── 🆕 Teach: 数値操作 ──
   {
-    id: 'N15-T',
-    nodeId: 'N15',
+    id: 'number-intro',
+    nodeId: NodeId.Number,
     type: 'tutorial' as const,
     title: '数値操作',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N15_STAGES: Stage[] = [
 
   // ── 🆕 Practice: 数値調整 ──
   {
-    id: 'N15-P',
-    nodeId: 'N15',
+    id: 'number-practice',
+    nodeId: NodeId.Number,
     type: 'practice' as const,
     title: '数値調整',
     language: 'plaintext' as const,

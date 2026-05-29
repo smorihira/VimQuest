@@ -37,7 +37,7 @@ export interface ClearCondition {
 export interface Stage {
   /** Unique stage ID (e.g., "N01-T", "N15-C") */
   id: string
-  /** Skill tree node ID (e.g., "N01") */
+  /** Skill tree node ID (e.g., "motion") */
   nodeId: string
   /** Stage type */
   type: StageType

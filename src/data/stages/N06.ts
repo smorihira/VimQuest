@@ -1,14 +1,15 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N06: 検索 (/, n, N, *, #)
+ * textobj: 検索 (/, n, N, *, #)
  */
 export const N06_STAGES: Stage[] = [
   // ── Teach: 検索でジャンプ ──
   // opt = 3 (/bug Enter + n + n)
   {
-    id: 'N06-T',
-    nodeId: 'N04',
+    id: 'search-find',
+    nodeId: NodeId.Search,
     type: 'tutorial',
     title: '検索せよ',
     language: 'javascript',
@@ -59,8 +60,8 @@ export const N06_STAGES: Stage[] = [
   // ── Teach: カーソル下の単語を検索 (5行、最後の foo へ) ──
   // opt = 2 (* + *)
   {
-    id: 'N06-Ta',
-    nodeId: 'N04',
+    id: 'search-star',
+    nodeId: NodeId.Search,
     type: 'tutorial',
     title: '同じ奴を探せ',
     language: 'javascript',
@@ -94,8 +95,8 @@ export const N06_STAGES: Stage[] = [
 
   // ── 🆕 Practice: 検索総合 ──
   {
-    id: 'N04-P',
-    nodeId: 'N04',
+    id: 'search-practice',
+    nodeId: NodeId.Search,
     type: 'practice' as const,
     title: '検索総合',
     language: 'plaintext' as const,

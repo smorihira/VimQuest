@@ -9,11 +9,12 @@ import type { GameProgress } from '../types/game'
 import type { StarRating, StageResult } from '../types/stage'
 import { getStagesByNode } from '../data/stages'
 import { SKILL_NODES } from '../data/skillTree'
+import { NodeId } from '../types/nodeId'
 
 function makeProgress(overrides?: Partial<GameProgress>): GameProgress {
   return {
     dataVersion: 1,
-    unlockedNodes: ['N01'],
+    unlockedNodes: [NodeId.Motion],
     stageResults: {},
     tutorialStatus: {},
     ...overrides,
@@ -47,8 +48,8 @@ describe('D1: normal mode progress update', () => {
   it('first clear sets bestStars and bestDamage', () => {
     const prev = makeProgress()
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 3,
       stars: 2 as StarRating,
       usedHint: false,
@@ -56,7 +57,7 @@ describe('D1: normal mode progress update', () => {
       stageLife: 10,
     })
 
-    const result = next.stageResults['N02-T']
+    const result = next.stageResults['edit-surround']
     expect(result).toBeDefined()
     expect(result.bestStars).toBe(2)
     expect(result.bestDamage).toBe(3)
@@ -66,12 +67,12 @@ describe('D1: normal mode progress update', () => {
   it('better stars updates bestStars', () => {
     const prev = makeProgress({
       stageResults: {
-        'N02-T': { stageId: 'N02-T', bestStars: 1, bestDamage: 5, usedHint: true },
+        'edit-surround': { stageId: 'edit-surround', bestStars: 1, bestDamage: 5, usedHint: true },
       },
     })
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 3,
       stars: 3 as StarRating,
       usedHint: false,
@@ -79,18 +80,18 @@ describe('D1: normal mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].bestStars).toBe(3)
+    expect(next.stageResults['edit-surround'].bestStars).toBe(3)
   })
 
   it('worse stars does not downgrade bestStars', () => {
     const prev = makeProgress({
       stageResults: {
-        'N02-T': { stageId: 'N02-T', bestStars: 3, bestDamage: 2, usedHint: false },
+        'edit-surround': { stageId: 'edit-surround', bestStars: 3, bestDamage: 2, usedHint: false },
       },
     })
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 5,
       stars: 1 as StarRating,
       usedHint: true,
@@ -98,18 +99,18 @@ describe('D1: normal mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].bestStars).toBe(3)
+    expect(next.stageResults['edit-surround'].bestStars).toBe(3)
   })
 
   it('lower damage updates bestDamage', () => {
     const prev = makeProgress({
       stageResults: {
-        'N02-T': { stageId: 'N02-T', bestStars: 2, bestDamage: 5, usedHint: false },
+        'edit-surround': { stageId: 'edit-surround', bestStars: 2, bestDamage: 5, usedHint: false },
       },
     })
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 3,
       stars: 2 as StarRating,
       usedHint: false,
@@ -117,18 +118,18 @@ describe('D1: normal mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].bestDamage).toBe(3)
+    expect(next.stageResults['edit-surround'].bestDamage).toBe(3)
   })
 
   it('higher damage does not worsen bestDamage', () => {
     const prev = makeProgress({
       stageResults: {
-        'N02-T': { stageId: 'N02-T', bestStars: 2, bestDamage: 3, usedHint: false },
+        'edit-surround': { stageId: 'edit-surround', bestStars: 2, bestDamage: 3, usedHint: false },
       },
     })
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 8,
       stars: 1 as StarRating,
       usedHint: false,
@@ -136,18 +137,18 @@ describe('D1: normal mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].bestDamage).toBe(3)
+    expect(next.stageResults['edit-surround'].bestDamage).toBe(3)
   })
 
   it('usedHint clears once played without hint (AND logic)', () => {
     const prev = makeProgress({
       stageResults: {
-        'N02-T': { stageId: 'N02-T', bestStars: 1, bestDamage: 5, usedHint: true },
+        'edit-surround': { stageId: 'edit-surround', bestStars: 1, bestDamage: 5, usedHint: true },
       },
     })
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 4,
       stars: 2 as StarRating,
       usedHint: false,
@@ -155,18 +156,18 @@ describe('D1: normal mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].usedHint).toBe(false)
+    expect(next.stageResults['edit-surround'].usedHint).toBe(false)
   })
 
   it('usedHint stays false once cleared without hint', () => {
     const prev = makeProgress({
       stageResults: {
-        'N02-T': { stageId: 'N02-T', bestStars: 2, bestDamage: 3, usedHint: false },
+        'edit-surround': { stageId: 'edit-surround', bestStars: 2, bestDamage: 3, usedHint: false },
       },
     })
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 4,
       stars: 1 as StarRating,
       usedHint: true,
@@ -174,7 +175,7 @@ describe('D1: normal mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].usedHint).toBe(false)
+    expect(next.stageResults['edit-surround'].usedHint).toBe(false)
   })
 })
 
@@ -184,8 +185,8 @@ describe('D2: fromTutorial mode progress update', () => {
   it('first tutorial clear sets bestStars=1 and bestDamage=stageLife', () => {
     const prev = makeProgress()
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 2,
       stars: 3 as StarRating,
       usedHint: false,
@@ -193,19 +194,19 @@ describe('D2: fromTutorial mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].bestStars).toBe(1)
-    expect(next.stageResults['N02-T'].bestDamage).toBe(10)
+    expect(next.stageResults['edit-surround'].bestStars).toBe(1)
+    expect(next.stageResults['edit-surround'].bestDamage).toBe(10)
   })
 
   it('does not overwrite existing higher bestStars', () => {
     const prev = makeProgress({
       stageResults: {
-        'N02-T': { stageId: 'N02-T', bestStars: 3, bestDamage: 2, usedHint: false },
+        'edit-surround': { stageId: 'edit-surround', bestStars: 3, bestDamage: 2, usedHint: false },
       },
     })
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 5,
       stars: 2 as StarRating,
       usedHint: true,
@@ -213,8 +214,8 @@ describe('D2: fromTutorial mode progress update', () => {
       stageLife: 10,
     })
 
-    expect(next.stageResults['N02-T'].bestStars).toBe(3)
-    expect(next.stageResults['N02-T'].bestDamage).toBe(2)
+    expect(next.stageResults['edit-surround'].bestStars).toBe(3)
+    expect(next.stageResults['edit-surround'].bestDamage).toBe(2)
   })
 })
 
@@ -228,15 +229,15 @@ describe('D3: practice mode is not saved by computeProgressUpdate', () => {
   it('normal mode does save (contrast test)', () => {
     const prev = makeProgress()
     const next = computeProgressUpdate(prev, {
-      stageId: 'N02-T',
-      nodeId: 'N02',
+      stageId: 'edit-surround',
+      nodeId: NodeId.Edit,
       damage: 3,
       stars: 2 as StarRating,
       usedHint: false,
       playMode: 'normal',
       stageLife: 10,
     })
-    expect(next.stageResults['N02-T']).toBeDefined()
+    expect(next.stageResults['edit-surround']).toBeDefined()
   })
 })
 
@@ -245,23 +246,23 @@ describe('D3: practice mode is not saved by computeProgressUpdate', () => {
 describe('D4: node unlock when all stages cleared', () => {
   it('clearing all stages in N08 unlocks N10 (N10 depends only on N08)', () => {
     // Clear all N08 stages except N08-C, then clear N08-C to trigger unlock
-    const n07Stages = getStagesByNode('N08')
+    const n07Stages = getStagesByNode(NodeId.Visual)
     const allButLast: Record<string, StageResult> = {}
     for (const s of n07Stages.filter((s) => s.id !== 'N08-C')) {
       allButLast[s.id] = makeResult(s.id, 3 as StarRating, 1)
     }
 
     const prev = makeProgress({
-      unlockedNodes: ['N01', 'N08'],
+      unlockedNodes: [NodeId.Motion, NodeId.Visual],
       stageResults: {
-        ...clearNodeStages('N01'),
+        ...clearNodeStages(NodeId.Motion),
         ...allButLast,
       },
     })
 
     const next = computeProgressUpdate(prev, {
       stageId: 'N08-C',
-      nodeId: 'N08',
+      nodeId: NodeId.Visual,
       damage: 3,
       stars: 2 as StarRating,
       usedHint: false,
@@ -269,11 +270,11 @@ describe('D4: node unlock when all stages cleared', () => {
       stageLife: 10,
     })
 
-    expect(next.unlockedNodes).toContain('N10')
+    expect(next.unlockedNodes).toContain(NodeId.Register)
   })
 
   it('does not unlock node when not all stages in node are cleared', () => {
-    const n01Stages = getStagesByNode('N01')
+    const n01Stages = getStagesByNode(NodeId.Motion)
     const partial: Record<string, StageResult> = {}
     for (const s of n01Stages.slice(0, -1)) {
       partial[s.id] = makeResult(s.id, 3 as StarRating, 1)
@@ -283,7 +284,7 @@ describe('D4: node unlock when all stages cleared', () => {
 
     const next = computeProgressUpdate(prev, {
       stageId: n01Stages[0].id,
-      nodeId: 'N01',
+      nodeId: NodeId.Motion,
       damage: 1,
       stars: 3 as StarRating,
       usedHint: false,
@@ -291,14 +292,14 @@ describe('D4: node unlock when all stages cleared', () => {
       stageLife: 999,
     })
 
-    const n01Dependents = SKILL_NODES.filter((n) => n.prerequisites.includes('N01'))
+    const n01Dependents = SKILL_NODES.filter((n) => n.prerequisites.includes(NodeId.Motion))
     for (const dep of n01Dependents) {
       expect(next.unlockedNodes).not.toContain(dep.id)
     }
   })
 
   it('clearing last N01 stage unlocks all direct dependents', () => {
-    const n01Stages = getStagesByNode('N01')
+    const n01Stages = getStagesByNode(NodeId.Motion)
     const partial: Record<string, StageResult> = {}
     for (const s of n01Stages.slice(0, -1)) {
       partial[s.id] = makeResult(s.id, 1 as StarRating, 5)
@@ -309,7 +310,7 @@ describe('D4: node unlock when all stages cleared', () => {
 
     const next = computeProgressUpdate(prev, {
       stageId: lastStage.id,
-      nodeId: 'N01',
+      nodeId: NodeId.Motion,
       damage: 5,
       stars: 1 as StarRating,
       usedHint: false,
@@ -318,7 +319,7 @@ describe('D4: node unlock when all stages cleared', () => {
     })
 
     const n01Dependents = SKILL_NODES.filter(
-      (n) => n.prerequisites.length === 1 && n.prerequisites[0] === 'N01',
+      (n) => n.prerequisites.length === 1 && n.prerequisites[0] === NodeId.Motion,
     )
     for (const dep of n01Dependents) {
       expect(next.unlockedNodes, `${dep.id} should be unlocked`).toContain(dep.id)
@@ -332,7 +333,7 @@ describe('D4: node unlock when all stages cleared', () => {
     const results = clearNodeStages(multiPreNode.prerequisites[0])
 
     const prev = makeProgress({
-      unlockedNodes: ['N01', ...multiPreNode.prerequisites],
+      unlockedNodes: [NodeId.Motion, ...multiPreNode.prerequisites],
       stageResults: results,
     })
 
@@ -352,18 +353,18 @@ describe('D4: node unlock when all stages cleared', () => {
 
   it('does not duplicate already unlocked nodes', () => {
     const n01Dependents = SKILL_NODES.filter(
-      (n) => n.prerequisites.length === 1 && n.prerequisites[0] === 'N01',
+      (n) => n.prerequisites.length === 1 && n.prerequisites[0] === NodeId.Motion,
     ).map((n) => n.id)
 
     const prev = makeProgress({
-      unlockedNodes: ['N01', ...n01Dependents],
-      stageResults: clearNodeStages('N01'),
+      unlockedNodes: [NodeId.Motion, ...n01Dependents],
+      stageResults: clearNodeStages(NodeId.Motion),
     })
 
-    const n01Stages = getStagesByNode('N01')
+    const n01Stages = getStagesByNode(NodeId.Motion)
     const next = computeProgressUpdate(prev, {
       stageId: n01Stages[0].id,
-      nodeId: 'N01',
+      nodeId: NodeId.Motion,
       damage: 1,
       stars: 3 as StarRating,
       usedHint: false,

@@ -277,7 +277,7 @@ export function SkillTreeScreen() {
                 if (e.key === 'Enter') handleNodeClick(node)
               }}
             >
-              <div className="node-id">{node.id}</div>
+              <div className="node-id">#{idx + 1}</div>
               <div className="node-name">{node.name}</div>
               <div className="node-commands">
                 {node.commands

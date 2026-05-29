@@ -1,13 +1,14 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N07: 行単位操作 (dd, cc, yy)
+ * linewise: 行単位操作 (dd, cc, yy)
  */
 export const N08_STAGES: Stage[] = [
   // ── 🆕 Teach: 行単位操作 ──
   {
-    id: 'N07-T',
-    nodeId: 'N07',
+    id: 'linewise-intro',
+    nodeId: NodeId.Linewise,
     type: 'tutorial' as const,
     title: '行単位操作',
     language: 'plaintext' as const,
@@ -24,8 +25,8 @@ export const N08_STAGES: Stage[] = [
 
   // ── 🆕 Practice: 行操作の実践 ──
   {
-    id: 'N07-P',
-    nodeId: 'N07',
+    id: 'linewise-practice',
+    nodeId: NodeId.Linewise,
     type: 'practice' as const,
     title: '行操作の実践',
     language: 'plaintext' as const,

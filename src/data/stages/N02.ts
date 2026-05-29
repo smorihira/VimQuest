@@ -1,14 +1,15 @@
 import type { Stage } from '../../types/stage'
+import { NodeId } from '../../types/nodeId'
 
 /**
- * N02: Insertバリエーション (I, A, o, O, gi)
+ * edit: Insertバリエーション (I, A, o, O, gi)
  */
 export const N02_STAGES: Stage[] = [
   // ── Teach: /* */ で囲む (I で行頭、A で行末) ──
   // opt = 5 (I…Esc(1) + A…Esc(1) + j(1) + I…Esc(1) + A…Esc(1))
   {
-    id: 'N02-T',
-    nodeId: 'N02',
+    id: 'edit-surround',
+    nodeId: NodeId.Edit,
     type: 'tutorial',
     title: 'コメントで囲め',
     language: 'javascript',
@@ -76,8 +77,8 @@ export const N02_STAGES: Stage[] = [
   // ── Teach: 上下に行を追加 (O で上、o で下) ──
   // opt = 5 (O…Esc(1) + j(1) + o…Esc(1) + j(1) + o…Esc(1))
   {
-    id: 'N02-Ta',
-    nodeId: 'N02',
+    id: 'edit-newline',
+    nodeId: NodeId.Edit,
     type: 'tutorial',
     title: '行を足せ',
     language: 'plaintext',
@@ -134,8 +135,8 @@ export const N02_STAGES: Stage[] = [
   // ── Practice: 編集基礎の総合 (旧 N02-C) ──
   // opt = 11: l(1)+a…p…Esc(1)+j(1)+x(1)+j(1)+re(1)+I…Esc(1)+k(1)+.(1)+k(1)+.(1)
   {
-    id: 'N02-P',
-    nodeId: 'N02',
+    id: 'edit-practice',
+    nodeId: NodeId.Edit,
     type: 'practice',
     title: '編集基礎の総合',
     language: 'plaintext',

@@ -4,58 +4,59 @@
  * Design doc: docs/reviews/NODE-REDESIGN-V2.md
  *
  * Dependency graph:
- *   N01→N02→N03→N04 (一本道: motion→編集→モード→検索)
- *     ├→ N15 数値操作
- *     ├→ N16 スクロール+マーク → N17 画面操作
- *     └→ N05→N06→N07→N08 (一本道: operator→TextObj→行単位→Visual)
- *                       ├→ N09 Visual応用
- *                       ├→ N10 レジスタ
- *                       ├→ N11 ショートカット
- *                       ├→ N12 構造ジャンプ
- *                       ├→ N13 発展オペレータ
- *                       └→ N14 その他モーション
+ *   motion→edit→mode→search (一本道: モーション→編集→モード→検索)
+ *     ├→ number 数値操作
+ *     ├→ scroll-mark スクロール+マーク → screen 画面操作
+ *     └→ operator→textobj→linewise→visual (一本道: オペレータ→TextObj→行単位→Visual)
+ *                       ├→ visual-adv Visual応用
+ *                       ├→ register レジスタ
+ *                       ├→ shortcut ショートカット
+ *                       ├→ struct-jump 構造ジャンプ
+ *                       ├→ operator-adv 発展オペレータ
+ *                       └→ motion-adv その他モーション
  */
 
 import type { SkillNodeDef, SkillTreeEdge } from '../types/game'
+import { NodeId } from '../types/nodeId'
 
 export const SKILL_NODES: SkillNodeDef[] = [
   {
-    id: 'N01',
+    id: NodeId.Motion,
     name: 'モーション基礎',
     commands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '^', '$', 'gg', 'G', 'f', 't', ';', ','],
     stageCount: 7,
     prerequisites: [],
   },
   {
-    id: 'N02',
+    id: NodeId.Edit,
     name: '編集基礎',
     commands: ['x', 'X', 'r', 'i', 'a', 'I', 'A', 'o', 'O'],
     stageCount: 7,
-    prerequisites: ['N01'],
+    prerequisites: [NodeId.Motion],
   },
   {
-    id: 'N03',
+    id: NodeId.Mode,
     name: 'モード概念',
     commands: ['v', 'R', ':s'],
     stageCount: 4,
-    prerequisites: ['N02'],
+    prerequisites: [NodeId.Edit],
   },
   {
-    id: 'N04',
+    id: NodeId.Search,
     name: '検索',
     commands: ['/', '?', 'n', 'N', '*', '#'],
     stageCount: 3,
-    prerequisites: ['N03'],
+    prerequisites: [NodeId.Mode],
   },
   {
-    id: 'N05',
+    id: NodeId.Operator,
     name: 'オペレータ基礎',
     commands: ['d', 'c', 'y', 'p', 'P'],
     stageCount: 4,
-    prerequisites: ['N04'],
+    prerequisites: [NodeId.Search],
   },
   {
-    id: 'N06',
+    id: NodeId.TextObj,
     name: 'TextObj',
     commands: [
       'iw',
@@ -78,84 +79,84 @@ export const SKILL_NODES: SkillNodeDef[] = [
       'a<',
     ],
     stageCount: 3,
-    prerequisites: ['N05'],
+    prerequisites: [NodeId.Operator],
   },
   {
-    id: 'N07',
+    id: NodeId.Linewise,
     name: '行単位操作',
     commands: ['dd', 'cc', 'yy'],
     stageCount: 2,
-    prerequisites: ['N06'],
+    prerequisites: [NodeId.TextObj],
   },
   {
-    id: 'N08',
+    id: NodeId.Visual,
     name: 'Visual基礎',
     commands: ['v', 'V', 'Ctrl+v', 'o'],
     stageCount: 4,
-    prerequisites: ['N07'],
+    prerequisites: [NodeId.Linewise],
   },
   {
-    id: 'N09',
+    id: NodeId.VisualAdv,
     name: 'Visual応用',
     commands: ['o', 'O', 'gv', 'gn', 'gN'],
     stageCount: 5,
-    prerequisites: ['N08'],
+    prerequisites: [NodeId.Visual],
   },
   {
-    id: 'N10',
+    id: NodeId.Register,
     name: 'レジスタ',
     commands: ['"', '+'],
     stageCount: 3,
-    prerequisites: ['N08'],
+    prerequisites: [NodeId.Visual],
   },
   {
-    id: 'N11',
+    id: NodeId.Shortcut,
     name: 'ショートカット',
     commands: ['D', 'C', 'Y', 'S', 's', 'J'],
     stageCount: 4,
-    prerequisites: ['N08'],
+    prerequisites: [NodeId.Visual],
   },
   {
-    id: 'N12',
+    id: NodeId.StructJump,
     name: '発展モーション（構造ジャンプ）',
     commands: ['%', '(', ')', '{', '}', '[[', ']]'],
     stageCount: 3,
-    prerequisites: ['N08'],
+    prerequisites: [NodeId.Visual],
   },
   {
-    id: 'N14',
+    id: NodeId.MotionAdv,
     name: '発展モーション（その他）',
     commands: ['W', 'B', 'E', 'F', 'T', 'H', 'M', 'L'],
     stageCount: 4,
-    prerequisites: ['N08'],
+    prerequisites: [NodeId.Visual],
   },
   {
-    id: 'N13',
+    id: NodeId.OperatorAdv,
     name: '発展オペレータ',
     commands: ['>', '<', 'gu', 'gU', 'g~', '~'],
     stageCount: 4,
-    prerequisites: ['N08'],
+    prerequisites: [NodeId.Visual],
   },
   {
-    id: 'N15',
+    id: NodeId.Number,
     name: '数値操作',
     commands: ['Ctrl+a', 'Ctrl+x'],
     stageCount: 2,
-    prerequisites: ['N04'],
+    prerequisites: [NodeId.Search],
   },
   {
-    id: 'N16',
+    id: NodeId.ScrollMark,
     name: 'スクロール＋マーク',
     commands: ['Ctrl+d', 'Ctrl+u', 'Ctrl+f', 'Ctrl+b', 'm', "'", '`', 'gi'],
     stageCount: 4,
-    prerequisites: ['N04'],
+    prerequisites: [NodeId.Search],
   },
   {
-    id: 'N17',
+    id: NodeId.Screen,
     name: '画面操作',
     commands: ['zz', 'zt', 'zb', 'Ctrl+e', 'Ctrl+y'],
     stageCount: 3,
-    prerequisites: ['N16'],
+    prerequisites: [NodeId.ScrollMark],
   },
 ]
 
