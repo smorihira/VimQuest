@@ -103,9 +103,38 @@
   color: var(--text-primary);
 }
 
+.demo-preview .demo-comment {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.demo-lines {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  padding: 6px 20px;
+  text-align: center;
+}
+
+.demo-lines-inner {
+  display: inline-block;
+  text-align: left;
+}
+
+.demo-line {
+  line-height: 1.7;
+  color: var(--text-primary);
+}
+
+.demo-line.dim {
+  color: var(--text-dim);
+}
+
+.demo-line.success {
+  color: var(--success);
+}
+
 .demo-preview .arrow {
   color: var(--accent);
-  margin: 4px 0;
+  margin: 12px 0;
 }
 
 .demo-preview .cmd {
@@ -198,12 +227,16 @@
   margin-top: 12px;
 }
 
+.cta-sub > span {
+  display: block;
+  margin-bottom: 8px;
+}
+
 .requirements {
   display: inline-flex;
   gap: 12px;
   font-size: 11px;
   color: var(--text-dim);
-  margin-top: 8px;
 }
 
 .req-badge {

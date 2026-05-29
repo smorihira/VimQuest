@@ -41,21 +41,27 @@ export function LandingScreen() {
         <div className="tagline">
           <em>ライフを管理</em>しながら解く、<em>Vim戦略パズル</em>。
           <br />
-          最短の手順を見つけ出し、テキストを目標の形に変えろ。
+          最短の手順を見つけ出し、テキストを目標の形に変えよう。
         </div>
 
         {/* Demo preview */}
         <div className="demo-preview">
-          <div className="before">
-            color: &quot;<span className="demo-value">#ff0000</span>&quot;;
+          <div className="demo-lines">
+            <div className="demo-lines-inner">
+              <div className="demo-line dim">console.log(name);</div>
+              <div className="demo-line">const name = &apos;Vim&apos;;</div>
+            </div>
           </div>
           <div className="arrow">
-            ↓ <span className="cmd">ci&quot;</span> → #333333 → Esc
+            ↓ <span className="cmd">ddp</span>
           </div>
-          <div className="after">color: &quot;#333333&quot;;</div>
-          <div className="demo-note">
-            ci&quot; = &quot;&quot; の中身を丸ごと変更。たった1コマンド。
+          <div className="demo-lines">
+            <div className="demo-lines-inner">
+              <div className="demo-line">const name = &apos;Vim&apos;;</div>
+              <div className="demo-line success">console.log(name);</div>
+            </div>
           </div>
+          <div className="demo-note">dd = 行を切り取り、p = 下に貼り付け。2キーで行入れ替え。</div>
         </div>
 
         {/* Features */}
@@ -63,19 +69,21 @@ export function LandingScreen() {
           <div className="feature">
             <div className="feature-icon">♥</div>
             <div className="feature-title">ライフ制パズル</div>
-            <div className="feature-desc">
-              1コマンド＝1ダメージ。少ない手数でクリアするほど高評価。
-            </div>
+            <div className="feature-desc">1コマンド＝1ダメージ。少ないダメージで★3を目指せ。</div>
           </div>
           <div className="feature">
             <div className="feature-icon">🃏</div>
             <div className="feature-title">スキルカード</div>
-            <div className="feature-desc">動詞と対象が合体する「合成UI」でVimの文法を視覚化。</div>
+            <div className="feature-desc">
+              コマンドを見やすくスキルカード化。手札のカードで最適解を探せ。
+            </div>
           </div>
           <div className="feature">
             <div className="feature-icon">🌳</div>
             <div className="feature-title">スキルツリー</div>
-            <div className="feature-desc">60+のコマンドを段階的に習得。渇望→報酬の感情設計。</div>
+            <div className="feature-desc">
+              60+のコマンドを体系的に配置。基本移動から合成技まで段階的にステップアップ。
+            </div>
           </div>
         </div>
 
@@ -85,7 +93,7 @@ export function LandingScreen() {
             はじめる
           </button>
           <div className="cta-sub">
-            アカウント不要・無料・ブラウザだけで遊べます
+            <span>アカウント不要・無料・ブラウザだけで遊べます</span>
             <div className="requirements">
               <span className="req-badge">⌨️ キーボード必須</span>
               <span className="req-badge">🖥️ デスクトップ専用</span>
@@ -94,7 +102,7 @@ export function LandingScreen() {
         </div>
       </div>
 
-      <div className="footer">VimQuest — 「指の慣れ」を卒業し、「最短の思考」を手に入れる</div>
+      <div className="footer">VimQuest — hjkl連打を卒業し、最短の一手が浮かぶ頭をつくる</div>
     </div>
   )
 }
