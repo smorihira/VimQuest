@@ -63,6 +63,9 @@ export function TopBar({
             :h
           </button>
         )}
+        <button className="mute-btn" onClick={toggleMute} title={muted ? '音声ON' : '音声OFF'}>
+          {muted ? '♪OFF' : '♪ON'}
+        </button>
         {onTutorial && (
           <button
             className="quit-btn"
@@ -75,9 +78,6 @@ export function TopBar({
             📖
           </button>
         )}
-        <button className="mute-btn" onClick={toggleMute} title={muted ? '音声ON' : '音声OFF'}>
-          {muted ? '♪OFF' : '♪ON'}
-        </button>
         <div className="life-gauge">
           <span className="life-icon">♥</span>
           <div className="life-bar-container">
@@ -96,11 +96,11 @@ export function TopBar({
       </div>
 
       <div className="play-center">
-        <div className="stage-title">{stage.title}</div>
-        <span className="mode-indicator">{mode.toUpperCase()}</span>
+        <span className="stage-title">{stage.title}</span>
       </div>
 
       <div className="play-right">
+        <span className="mode-indicator">{mode.toUpperCase()}</span>
         <div className="star-display">
           {[0, 1, 2].map((i) => (
             <span key={i} className={`star${i < projectedStars ? ' earned' : ''}`}>

@@ -44,9 +44,9 @@ export function CardPanel({
               setBaseExpanded((v) => !v)
               playTick()
             }}
-            title="BASE コマンド表示切替 (?)"
+            title="Base Commands 表示切替 (?)"
           >
-            BASE {baseExpanded ? '▾' : '▸'}
+            Base Commands {baseExpanded ? '▾' : '▸'}
           </button>
         )}
       </div>

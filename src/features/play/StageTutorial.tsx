@@ -478,9 +478,7 @@ export function StageTutorial({ tutorial, stage, onComplete, isReview }: Props) 
       <div className="tutorial-top-bar">
         <div className="tutorial-top-left">
           <span className="tutorial-badge">TUTORIAL</span>
-          <span className="tutorial-title">
-            {stage ? `${stage.id}: ${stage.title}` : tutorial.nodeId}
-          </span>
+          <span className="tutorial-title">{stage ? stage.title : tutorial.nodeId}</span>
         </div>
 
         <div className="step-progress">
