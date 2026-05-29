@@ -1,10 +1,8 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * textobj: 検索 (/, n, N, *, #)
- */
-export const N06_STAGES: Stage[] = [
+/** 検索 — /, ?, *, # */
+export const SEARCH_STAGES: Stage[] = [
   // ── Teach: 検索でジャンプ ──
   // opt = 3 (/bug Enter + n + n)
   {
@@ -56,7 +54,6 @@ export const N06_STAGES: Stage[] = [
       },
     ],
   },
-
   // ── Teach: カーソル下の単語を検索 (5行、最後の foo へ) ──
   // opt = 2 (* + *)
   {
@@ -92,7 +89,6 @@ export const N06_STAGES: Stage[] = [
       },
     ],
   },
-
   // ── 🆕 Practice: 検索総合 ──
   {
     id: 'search-practice',

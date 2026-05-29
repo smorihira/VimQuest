@@ -1,10 +1,8 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * N19: 大小文字操作 (~, gu, gU)
- */
-export const N19_STAGES: Stage[] = [
+/** 発展オペレータ — >/< (indent), gu/gU/g~/~ (case) */
+export const OPERATOR_ADV_STAGES: Stage[] = [
   // ── Teach: 2箇所の大小を直す ──
   // opt = 3 (~ + w + ~)
   {
@@ -69,7 +67,55 @@ export const N19_STAGES: Stage[] = [
       },
     ],
   },
-
+  // ── Teach: >> と << でインデント調整 ──
+  // opt = 6 (j + >> + j + >> + j + <<)
+  {
+    id: 'operator-adv-indent',
+    nodeId: NodeId.OperatorAdv,
+    type: 'tutorial',
+    title: 'インデントせよ',
+    language: 'python',
+    initialText: 'def greet():\nprint("hi")\nprint("bye")\n  return None',
+    goalText: 'def greet():\n  print("hi")\n  print("bye")\nreturn None',
+    initialCursor: { line: 0, col: 0 },
+    life: 12,
+    stars: [6, 7, 9],
+    availableCommands: ['>', '<'],
+    hints: [
+      {
+        cost: 1,
+        commands: ['j', '>>', 'j', '>>', 'j', '<<'],
+      },
+    ],
+    flavor: '>> でインデント追加、<< で削除。Python の構造を直せ',
+    newCommands: ['>', '<'],
+    tutorial: [
+      {
+        message: 'j で print の行に移動しろ',
+        expectedKey: 'j',
+      },
+      {
+        message: '>> と押せ。インデントを追加する',
+        expectedKey: '>>',
+      },
+      {
+        message: 'j を2回押して return の行に移動しろ',
+        expectedKey: 'j',
+      },
+      {
+        message: 'もう一回 j',
+        expectedKey: 'j',
+      },
+      {
+        message: '<< と押せ。今度はインデントを削除する',
+        expectedKey: '<<',
+      },
+      {
+        message: '>> で追加、<< で削除。残りの行も直せ',
+        expectedKey: null,
+      },
+    ],
+  },
   // ── 🆕 Practice: 発展オペレータ総合 ──
   {
     id: 'operator-adv-practice',

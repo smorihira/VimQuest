@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { ALL_STAGES, getStage, getTutorial } from '../data/stages'
+import { ALL_STAGES, getStage, getTutorial } from '../data/nodes'
 import { SKILL_NODES, SKILL_NODE_MAP } from '../data/skillTree'
 import { BASE_COMMANDS, getBaseForStage } from '../data/constants'
 import type { Tutorial } from '../types/tutorial'

@@ -1,59 +1,55 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * register: レジスタ (")
- */
-export const N22_STAGES: Stage[] = [
-  // ── 🆕 Teach: レジスタ入門 ──
+/** TextObj — iw/aw, is/as, デリミタ */
+export const TEXTOBJ_STAGES: Stage[] = [
+  // ── 🆕 Teach: テキストオブジェクト ──
   {
-    id: 'register-intro',
-    nodeId: NodeId.Register,
+    id: 'textobj-word',
+    nodeId: NodeId.TextObj,
     type: 'tutorial' as const,
-    title: 'レジスタ入門',
+    title: 'テキストオブジェクト',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['"', 'y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
     hints: [],
     flavor: 'TODO',
-    newCommands: ['"a'],
+    newCommands: ['w', 's', 'p'],
   },
-
-  // ── 🆕 Teach: クリップボード ──
+  // ── 🆕 Teach: デリミタ ──
   {
-    id: 'register-clipboard',
-    nodeId: NodeId.Register,
+    id: 'textobj-delim',
+    nodeId: NodeId.TextObj,
     type: 'tutorial' as const,
-    title: 'クリップボード',
+    title: 'デリミタ',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['"', 'y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
     hints: [],
     flavor: 'TODO',
-    newCommands: ['"+'],
+    newCommands: ['"', "'", '(', '{', '[', '<'],
   },
-
-  // ── 🆕 Practice: レジスタ活用 ──
+  // ── 🆕 Practice: TextObj 応用 ──
   {
-    id: 'register-practice',
-    nodeId: NodeId.Register,
+    id: 'textobj-practice',
+    nodeId: NodeId.TextObj,
     type: 'practice' as const,
-    title: 'レジスタ活用',
+    title: 'TextObj 応用',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['"'],
+    availableCommands: ['y', 'd', 'c', 'p', 'P'],
     hints: [],
     flavor: 'TODO',
     newCommands: [],

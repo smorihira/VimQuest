@@ -6,8 +6,8 @@
 import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router'
 import { getSkillNode } from '../../data/skillTree'
-import { hasTutorial } from '../../data/stages'
-import { getStagesByNode } from '../../data/stages'
+import { hasTutorial } from '../../data/nodes'
+import { getStagesByNode } from '../../data/nodes'
 import './WeaponGetScreen.css'
 
 export function WeaponGetScreen() {

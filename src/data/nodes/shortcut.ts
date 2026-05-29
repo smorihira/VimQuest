@@ -1,77 +1,72 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * operator: オペレータ基礎 (y, p, P, d, c)
- */
-export const N07_STAGES: Stage[] = [
-  // ── 🆕 Teach: コピーせよ ──
+/** ショートカット — D/C/Y, s/S, J */
+export const SHORTCUT_STAGES: Stage[] = [
+  // ── 🆕 Teach: 置き換え ──
   {
-    id: 'operator-yank',
-    nodeId: NodeId.Operator,
+    id: 'shortcut-sub',
+    nodeId: NodeId.Shortcut,
     type: 'tutorial' as const,
-    title: 'コピーせよ',
+    title: '置き換え',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'p', 'P'],
+    availableCommands: ['s', 'S'],
     hints: [],
     flavor: 'TODO',
-    newCommands: ['y', 'p', 'P'],
+    newCommands: ['s', 'S'],
   },
-
-  // ── 🆕 Teach: 消せ・変えろ ──
+  // ── 🆕 Teach: 行末操作 ──
   {
-    id: 'operator-dc',
-    nodeId: NodeId.Operator,
+    id: 'shortcut-line-end',
+    nodeId: NodeId.Shortcut,
     type: 'tutorial' as const,
-    title: '消せ・変えろ',
+    title: '行末操作',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['d', 'c', 'p', 'P'],
+    availableCommands: ['Y', 'D', 'C'],
     hints: [],
     flavor: 'TODO',
-    newCommands: ['d', 'c'],
+    newCommands: ['Y', 'D', 'C'],
   },
-
-  // ── 🆕 Teach: モーションと組合せ ──
+  // ── 🆕 Teach: 行結合 ──
   {
-    id: 'operator-combo',
-    nodeId: NodeId.Operator,
+    id: 'shortcut-join',
+    nodeId: NodeId.Shortcut,
     type: 'tutorial' as const,
-    title: 'モーションと組合せ',
+    title: '行結合',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['J'],
     hints: [],
     flavor: 'TODO',
-    newCommands: [],
+    newCommands: ['J'],
   },
-
-  // ── 🆕 Practice: オペレータ総合 ──
+  // ── 🆕 Practice: ショートカット総合 ──
   {
-    id: 'operator-practice',
-    nodeId: NodeId.Operator,
+    id: 'shortcut-practice',
+    nodeId: NodeId.Shortcut,
     type: 'practice' as const,
-    title: 'オペレータ総合',
+    title: 'ショートカット総合',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['s', 'S', 'Y', 'D', 'C', 'J'],
     hints: [],
     flavor: 'TODO',
     newCommands: [],

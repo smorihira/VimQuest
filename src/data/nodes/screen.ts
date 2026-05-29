@@ -1,10 +1,8 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * N05/N17: 画面操作 (zz, zt, zb, Ctrl+e, Ctrl+y)
- */
-export const N05_STAGES: Stage[] = [
+/** 画面操作 — zz/zt/zb, Ctrl+e/y */
+export const SCREEN_STAGES: Stage[] = [
   // ── Teach: カーソルを移動 + zz で画面中央に合わせる ──
   // opt = 5 (Ctrl+d + Ctrl+d + j + j + zz)
   {
@@ -99,7 +97,6 @@ export const N05_STAGES: Stage[] = [
       },
     ],
   },
-
   // ── 🆕 Teach: 1行スクロール ──
   {
     id: 'screen-scroll',
@@ -117,7 +114,6 @@ export const N05_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: ['Ctrl+e', 'Ctrl+y'],
   },
-
   // ── 🆕 Practice: 画面操作総合 ──
   {
     id: 'screen-practice',

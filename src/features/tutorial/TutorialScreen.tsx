@@ -5,8 +5,8 @@
 
 import { useParams, useNavigate } from 'react-router'
 import { useSetAtom } from 'jotai'
-import { getTutorial } from '../../data/stages'
-import { getStage } from '../../data/stages'
+import { getTutorial } from '../../data/nodes'
+import { getStage } from '../../data/nodes'
 import { gameProgressAtom } from '../../store/atoms'
 import type { TutorialStatus, PlayMode } from '../../types/game'
 import type { EditorState } from '../../types/editor'

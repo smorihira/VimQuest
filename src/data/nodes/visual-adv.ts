@@ -1,7 +1,8 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-export const N24_STAGES: Stage[] = [
+/** Visual応用 — gn/gN, o/O, gv, 矩形操作 */
+export const VISUAL_ADV_STAGES: Stage[] = [
   // ─── Teach: gn (select next search match) ─────────────────────
   {
     id: 'visual-adv-cgn',
@@ -44,7 +45,6 @@ export const N24_STAGES: Stage[] = [
       },
     ],
   },
-
   // ── 🆕 Teach: 選択を操れ ──
   {
     id: 'visual-adv-select',
@@ -63,7 +63,6 @@ export const N24_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: ['o', 'O', 'gv'],
   },
-
   // ── 🆕 Teach: 矩形コメント ──
   {
     id: 'visual-adv-block',
@@ -81,7 +80,6 @@ export const N24_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: [],
   },
-
   // ── 🆕 Teach: 連続置換 ──
   {
     id: 'visual-adv-replace',
@@ -100,7 +98,6 @@ export const N24_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: ['cgn', 'dgn'],
   },
-
   // ── 🆕 Practice: Visual応用 総合 ──
   {
     id: 'visual-adv-practice',

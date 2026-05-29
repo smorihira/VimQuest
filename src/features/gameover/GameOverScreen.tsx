@@ -5,7 +5,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router'
-import { getStage } from '../../data/stages'
+import { getStage } from '../../data/nodes'
 import type { SpellEntry } from '../../types/spell'
 import './GameOverScreen.css'
 import { playTick } from '../../engine/sound'

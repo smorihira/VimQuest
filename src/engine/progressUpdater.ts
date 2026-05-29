@@ -5,7 +5,7 @@
 
 import type { GameProgress, PlayMode } from '../types/game'
 import type { StarRating, StageResult } from '../types/stage'
-import { getStagesByNode } from '../data/stages'
+import { getStagesByNode } from '../data/nodes'
 import { SKILL_NODES } from '../data/skillTree'
 
 export interface StageCompleteParams {

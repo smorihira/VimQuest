@@ -1,7 +1,8 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-export const N23_STAGES: Stage[] = [
+/** モード概念 — v(visual delete), R(overwrite), :s(substitute) */
+export const MODE_STAGES: Stage[] = [
   // ─── Teach: v (visual select) ──────────────────────────────────
   {
     id: 'mode-visual-delete',
@@ -33,7 +34,6 @@ export const N23_STAGES: Stage[] = [
       },
     ],
   },
-
   // ─── Teach: R (replace mode) ──────────────────────────────────
   {
     id: 'mode-overwrite',
@@ -65,7 +65,6 @@ export const N23_STAGES: Stage[] = [
       },
     ],
   },
-
   // ── 🆕 Teach: 置換コマンド ──
   {
     id: 'mode-substitute',
@@ -83,7 +82,6 @@ export const N23_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: [':s'],
   },
-
   // ─── Practice: v + R combined (旧 N23-C) ─────────────────────────────────
   {
     id: 'mode-practice',

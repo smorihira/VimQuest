@@ -1,41 +1,38 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * linewise: 行単位操作 (dd, cc, yy)
- */
-export const N08_STAGES: Stage[] = [
-  // ── 🆕 Teach: 行単位操作 ──
+/** 数値操作 — Ctrl+a, Ctrl+x */
+export const NUMBER_STAGES: Stage[] = [
+  // ── 🆕 Teach: 数値操作 ──
   {
-    id: 'linewise-intro',
-    nodeId: NodeId.Linewise,
+    id: 'number-intro',
+    nodeId: NodeId.Number,
     type: 'tutorial' as const,
-    title: '行単位操作',
+    title: '数値操作',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['Ctrl+a', 'Ctrl+x'],
     hints: [],
     flavor: 'TODO',
-    newCommands: ['dd', 'cc', 'yy'],
+    newCommands: ['Ctrl+a', 'Ctrl+x'],
   },
-
-  // ── 🆕 Practice: 行操作の実践 ──
+  // ── 🆕 Practice: 数値調整 ──
   {
-    id: 'linewise-practice',
-    nodeId: NodeId.Linewise,
+    id: 'number-practice',
+    nodeId: NodeId.Number,
     type: 'practice' as const,
-    title: '行操作の実践',
+    title: '数値調整',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['Ctrl+a', 'Ctrl+x'],
     hints: [],
     flavor: 'TODO',
     newCommands: [],

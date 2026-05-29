@@ -1,13 +1,8 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * motion: 基礎訓練 (h/j/k/l/w/b/e/W/B/E/0/^/$/gg/G/x/i/a)
- * ゲーム最初のノード。8ステージ構成のチュートリアルノード。
- * 連続プレイ（ツリー非表示）。ライフ/☆評価なし。
- */
-
-export const N01_STAGES: Stage[] = [
+/** モーション基礎 — h/j/k/l, w/b/e, 0/^/$, gg/G, f/t */
+export const MOTION_STAGES: Stage[] = [
   // ── N01-1: 左右に動け ──
   {
     id: 'motion-hl',
@@ -73,7 +68,6 @@ export const N01_STAGES: Stage[] = [
       },
     },
   },
-
   // ── N01-2: 上下に動け ──
   {
     id: 'motion-jk',
@@ -110,7 +104,6 @@ export const N01_STAGES: Stage[] = [
       },
     ],
   },
-
   // ── N01-3: 単語を飛べ ──
   {
     id: 'motion-word',
@@ -151,44 +144,6 @@ export const N01_STAGES: Stage[] = [
       },
     ],
   },
-
-  // ── N01-4: WORDで飛べ ──
-  {
-    id: 'motion-adv-word',
-    nodeId: NodeId.MotionAdv,
-    type: 'tutorial',
-    title: 'WORDで飛べ',
-    language: 'javascript',
-    initialText: 'arr.push(x); return obj.key;',
-    goalText: 'arr.push(x); return obj.key;',
-    initialCursor: { line: 0, col: 0 },
-    life: 999,
-    stars: [999, 999, 999],
-    availableCommands: ['W', 'B', 'E'],
-    clearConditions: { cursor: { line: 0, col: 27 } },
-    hints: [{ cost: 1, commands: ['W', 'W', 'W'] }],
-    flavor: 'W は記号をまたいで空白区切りで飛ぶ。末尾の ; まで一気に行け',
-    newCommands: ['W', 'B', 'E'],
-    tutorial: [
-      {
-        message: 'w を押してみろ。. で止まるだろう',
-        expectedKey: 'w',
-      },
-      {
-        message: 'b で前の単語に戻れ',
-        expectedKey: 'b',
-      },
-      {
-        message: '今度は W だ。空白まで一気に飛ぶ',
-        expectedKey: 'W',
-      },
-      {
-        message: 'W は記号をまたいで飛ぶ。末尾の ; まで W で一気に行け',
-        expectedKey: null,
-      },
-    ],
-  },
-
   // ── N01-5: 行頭末ジャンプ ──
   {
     id: 'motion-line',
@@ -225,7 +180,6 @@ export const N01_STAGES: Stage[] = [
       },
     ],
   },
-
   // ── N01-6: ファイルの端へ ──
   {
     id: 'motion-file',
@@ -258,158 +212,47 @@ export const N01_STAGES: Stage[] = [
       },
     ],
   },
-
-  // ── N01-7: 文字を消せ ──
+  // ── Teach: f/t/;/, で行内ジャンプ ──
+  // opt = 2 (f; + ;)
   {
-    id: 'edit-delete',
-    nodeId: NodeId.Edit,
+    id: 'motion-find',
+    nodeId: NodeId.Motion,
     type: 'tutorial',
-    title: '文字を消せ',
-    language: 'plaintext',
-    initialText: 'hellllo worrld',
-    goalText: 'hello world',
-    initialCursor: { line: 0, col: 3 },
-    life: 999,
-    stars: [999, 999, 999],
-    availableCommands: ['x', 'X'],
-    hints: [{ cost: 1, commands: ['x', 'x', 'w', 'l', 'l', 'l', 'x'] }],
-    flavor: '余分な文字を x で消せ',
-    newCommands: ['x', 'X', 'u', 'Ctrl+R'],
+    title: '狙い撃て',
+    language: 'javascript',
+    initialText: 'fn(a, b); fn(c, d);',
+    goalText: 'fn(a, b); fn(c, d);',
+    initialCursor: { line: 0, col: 0 },
+    life: 8,
+    stars: [2, 3, 5],
+    availableCommands: ['h', 'j', 'k', 'l', 'w', 'b', 'e', '0', '^', '$', 'gg', 'G', 'f', 't'],
+    clearConditions: { cursor: { line: 0, col: 18 } },
+    hints: [{ cost: 1, commands: ['f;', ';'] }],
+    flavor: 'f で狙った文字に一瞬で飛べ。; で繰り返しだ',
+    newCommands: ['f', 't', ';', ','],
     tutorial: [
       {
-        message: 'x でカーソル上の文字を消せ',
-        expectedKey: 'x',
+        message: 'f( と押せ。行内の ( に一瞬でジャンプ',
+        expectedKey: 'f(',
       },
       {
-        message: 'いいぞ。もう一度 x だ',
-        expectedKey: 'x',
+        message: '; を押せ。直前の f を繰り返す',
+        expectedKey: ';',
       },
       {
-        message: '調子に乗ってもう一発',
-        expectedKey: 'x',
+        message: ', を押せ。逆方向に繰り返す',
+        expectedKey: ',',
       },
       {
-        message: 'おっと、消しすぎたな。u で元に戻せ',
-        expectedKey: 'u',
+        message: 't) と押せ。) の1文字手前に止まる',
+        expectedKey: 't)',
       },
       {
-        message: 'もう一回 u を押してみろ',
-        expectedKey: 'u',
-      },
-      {
-        message: '戻しすぎた！ Ctrl+R でやり直せるぞ',
-        expectedKey: 'Ctrl+R',
-      },
-      {
-        message: 'u と Ctrl+R はいつでも使えるセーフティネットだ。残りの余分な文字も x で消せ',
+        message: 'f で直接、t で手前。; で繰り返し、, で逆方向だ',
         expectedKey: null,
       },
     ],
   },
-
-  // ── N01-8: 文字を書け ──
-  {
-    id: 'edit-insert',
-    nodeId: NodeId.Edit,
-    type: 'tutorial',
-    title: '文字を書け',
-    language: 'plaintext',
-    initialText: 'hllo ',
-    goalText: 'hello, world!',
-    initialCursor: { line: 0, col: 1 },
-    life: 999,
-    stars: [999, 999, 999],
-    availableCommands: ['x', 'X', 'i', 'a'],
-    hints: [
-      {
-        cost: 1,
-        commands: [
-          'i',
-          'e',
-          'Esc',
-          '$',
-          'a',
-          'w',
-          'o',
-          'r',
-          'l',
-          'd',
-          '!',
-          'Esc',
-          '0',
-          'e',
-          'a',
-          ',',
-          'Esc',
-        ],
-      },
-    ],
-    flavor: 'i と a で hello, world! を完成させろ',
-    newCommands: ['i', 'a'],
-    tutorial: [
-      {
-        message: 'i を押してみろ。カーソルの前に文字を挿入できるぞ',
-        expectedKey: 'i',
-      },
-      {
-        message: 'e と打て',
-        expectedKey: 'e',
-      },
-      {
-        message: 'Esc で NORMAL に戻れ',
-        expectedKey: 'Esc',
-      },
-      {
-        message: 'INSERT 1回で最低1ダメージ。なるべく少ない回数で済ませろ',
-        expectedKey: null,
-      },
-      {
-        message: '$ で行末に飛べ',
-        expectedKey: '$',
-      },
-      {
-        message: '今度は a だ。カーソルの後ろに挿入する。i との違いを覚えろ',
-        expectedKey: 'a',
-      },
-      {
-        message: 'world! と6文字打ってみろ。まず w',
-        expectedKey: 'w',
-      },
-      {
-        message: 'o',
-        expectedKey: 'o',
-      },
-      {
-        message: 'r',
-        expectedKey: 'r',
-      },
-      {
-        message: 'l',
-        expectedKey: 'l',
-      },
-      {
-        message: 'd',
-        expectedKey: 'd',
-      },
-      {
-        message: '!',
-        expectedKey: '!',
-      },
-      {
-        message: 'Esc。Insert に入ったら必ず Esc。これが Vim の基本だ',
-        expectedKey: 'Esc',
-      },
-      {
-        message: '6文字で2ダメージ。5文字までは無料、超えた分は1文字1ダメージだ',
-        expectedKey: null,
-      },
-      {
-        message: 'Spaceで重ねてゴールと見比べ、残りも直せ',
-        expectedKey: null,
-      },
-    ],
-  },
-
   // ── N01-P: 卒業試験 (旧 N01-C) ──
   // opt = 5 (G + k + k + fg + h) → navigate to 'a' of 'age' at (4, 11)
   {

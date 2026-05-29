@@ -1,59 +1,55 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * textobj: TextObj (iw, aw, is, as, ip, ap, i", a", ...)
- */
-export const N16_STAGES: Stage[] = [
-  // ── 🆕 Teach: テキストオブジェクト ──
+/** 構造ジャンプ — %, (, ), {, }, [[, ]] */
+export const STRUCT_JUMP_STAGES: Stage[] = [
+  // ── 🆕 Teach: 対応ジャンプ ──
   {
-    id: 'textobj-word',
-    nodeId: NodeId.TextObj,
+    id: 'struct-jump-match',
+    nodeId: NodeId.StructJump,
     type: 'tutorial' as const,
-    title: 'テキストオブジェクト',
+    title: '対応ジャンプ',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['%', '(', ')', '{', '}'],
     hints: [],
     flavor: 'TODO',
-    newCommands: ['w', 's', 'p'],
+    newCommands: ['%', '(', ')', '{', '}'],
   },
-
-  // ── 🆕 Teach: デリミタ ──
+  // ── 🆕 Teach: セクション移動 ──
   {
-    id: 'textobj-delim',
-    nodeId: NodeId.TextObj,
+    id: 'struct-jump-section',
+    nodeId: NodeId.StructJump,
     type: 'tutorial' as const,
-    title: 'デリミタ',
+    title: 'セクション移動',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['[[', ']]'],
     hints: [],
     flavor: 'TODO',
-    newCommands: ['"', "'", '(', '{', '[', '<'],
+    newCommands: ['[[', ']]'],
   },
-
-  // ── 🆕 Practice: TextObj 応用 ──
+  // ── 🆕 Practice: 構造ジャンプ総合 ──
   {
-    id: 'textobj-practice',
-    nodeId: NodeId.TextObj,
+    id: 'struct-jump-practice',
+    nodeId: NodeId.StructJump,
     type: 'practice' as const,
-    title: 'TextObj 応用',
+    title: '構造ジャンプ総合',
     language: 'plaintext' as const,
     initialText: 'TODO',
     goalText: 'TODO',
     initialCursor: { line: 0, col: 0 },
     life: 5,
     stars: [999, 999, 999] as [number, number, number],
-    availableCommands: ['y', 'd', 'c', 'p', 'P'],
+    availableCommands: ['%', '(', ')', '{', '}', '[[', ']]'],
     hints: [],
     flavor: 'TODO',
     newCommands: [],

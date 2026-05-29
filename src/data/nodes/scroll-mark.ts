@@ -1,10 +1,8 @@
 import type { Stage } from '../../types/stage'
 import { NodeId } from '../../types/nodeId'
 
-/**
- * 'scroll-mark': スクロール＋マーク (Ctrl+d, Ctrl+u, Ctrl+f, Ctrl+b, m, ', `, gi)
- */
-export const N04_STAGES: Stage[] = [
+/** スクロール＋マーク — Ctrl+d/u/f/b, m, gi */
+export const SCROLL_MARK_STAGES: Stage[] = [
   // ── 🆕 Teach: ページ移動 ──
   {
     id: 'scroll-mark-page',
@@ -22,7 +20,6 @@ export const N04_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: ['Ctrl+d', 'Ctrl+u', 'Ctrl+f', 'Ctrl+b'],
   },
-
   // ── 🆕 Teach: マーク ──
   {
     id: 'scroll-mark-mark',
@@ -40,7 +37,6 @@ export const N04_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: ['m', "'", '`'],
   },
-
   // ── 🆕 Teach: 最終挿入位置 ──
   {
     id: 'scroll-mark-gi',
@@ -58,7 +54,6 @@ export const N04_STAGES: Stage[] = [
     flavor: 'TODO',
     newCommands: ['gi'],
   },
-
   // ── 🆕 Practice: スクロール＋マーク総合 ──
   {
     id: 'scroll-mark-practice',

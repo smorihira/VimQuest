@@ -6,7 +6,7 @@
 import { useEffect, useRef, useCallback, useMemo, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router'
 import { useAtom } from 'jotai'
-import { getStage, getStagesByNode } from '../../data/stages'
+import { getStage, getStagesByNode } from '../../data/nodes'
 import { calculateStars, applyHintPenalty } from '../../engine/damageCalculator'
 import { gameProgressAtom } from '../../store/atoms'
 import { SKILL_NODES, getSkillNode } from '../../data/skillTree'

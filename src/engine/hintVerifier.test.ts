@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { ALL_STAGES } from '../data/stages'
+import { ALL_STAGES } from '../data/nodes'
 import { getBaseForStage } from '../data/constants'
 import { CommandSession } from './commandSession'
 

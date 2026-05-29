@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest'
 import { computeProgressUpdate } from './progressUpdater'
 import type { GameProgress } from '../types/game'
 import type { StarRating, StageResult } from '../types/stage'
-import { getStagesByNode } from '../data/stages'
+import { getStagesByNode } from '../data/nodes'
 import { SKILL_NODES } from '../data/skillTree'
 import { NodeId } from '../types/nodeId'
 

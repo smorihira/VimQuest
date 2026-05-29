@@ -1,59 +1,41 @@
 import type { Stage } from '../../types/stage'
 import type { Tutorial } from '../../types/tutorial'
-import { N01_STAGES } from './N01'
-import { N02_STAGES } from './N02'
-import { N03_STAGES } from './N03'
-import { N04_STAGES } from './N04'
-import { N05_STAGES } from './N05'
-import { N06_STAGES } from './N06'
-import { N07_STAGES } from './N07'
-import { N08_STAGES } from './N08'
-import { N09_STAGES } from './N09'
-import { N10_STAGES } from './N10'
-import { N11_STAGES } from './N11'
-import { N12_STAGES } from './N12'
-import { N13_STAGES } from './N13'
-import { N14_STAGES } from './N14'
-import { N15_STAGES } from './N15'
-import { N16_STAGES } from './N16'
-import { N17_STAGES } from './N17'
-import { N18_STAGES } from './N18'
-import { N19_STAGES } from './N19'
-import { N20_STAGES } from './N20'
-import { N21_STAGES } from './N21'
-import { N22_STAGES } from './N22'
-import { N23_STAGES } from './N23'
-import { N24_STAGES } from './N24'
-import { N25_STAGES } from './N25'
-import { N26_STAGES } from './N26'
+import { MOTION_STAGES } from './motion'
+import { EDIT_STAGES } from './edit'
+import { MODE_STAGES } from './mode'
+import { SEARCH_STAGES } from './search'
+import { OPERATOR_STAGES } from './operator'
+import { TEXTOBJ_STAGES } from './textobj'
+import { LINEWISE_STAGES } from './linewise'
+import { VISUAL_STAGES } from './visual'
+import { VISUAL_ADV_STAGES } from './visual-adv'
+import { REGISTER_STAGES } from './register'
+import { SHORTCUT_STAGES } from './shortcut'
+import { STRUCT_JUMP_STAGES } from './struct-jump'
+import { MOTION_ADV_STAGES } from './motion-adv'
+import { OPERATOR_ADV_STAGES } from './operator-adv'
+import { NUMBER_STAGES } from './number'
+import { SCROLL_MARK_STAGES } from './scroll-mark'
+import { SCREEN_STAGES } from './screen'
 
 const ALL_STAGE_ARRAYS: Stage[][] = [
-  N01_STAGES,
-  N02_STAGES,
-  N03_STAGES,
-  N04_STAGES,
-  N05_STAGES,
-  N06_STAGES,
-  N07_STAGES,
-  N08_STAGES,
-  N09_STAGES,
-  N10_STAGES,
-  N11_STAGES,
-  N12_STAGES,
-  N13_STAGES,
-  N14_STAGES,
-  N15_STAGES,
-  N16_STAGES,
-  N17_STAGES,
-  N18_STAGES,
-  N19_STAGES,
-  N20_STAGES,
-  N21_STAGES,
-  N22_STAGES,
-  N23_STAGES,
-  N24_STAGES,
-  N25_STAGES,
-  N26_STAGES,
+  MOTION_STAGES,
+  EDIT_STAGES,
+  MODE_STAGES,
+  SEARCH_STAGES,
+  OPERATOR_STAGES,
+  TEXTOBJ_STAGES,
+  LINEWISE_STAGES,
+  VISUAL_STAGES,
+  VISUAL_ADV_STAGES,
+  REGISTER_STAGES,
+  SHORTCUT_STAGES,
+  STRUCT_JUMP_STAGES,
+  MOTION_ADV_STAGES,
+  OPERATOR_ADV_STAGES,
+  NUMBER_STAGES,
+  SCROLL_MARK_STAGES,
+  SCREEN_STAGES,
 ]
 
 /** All stages keyed by stage ID */

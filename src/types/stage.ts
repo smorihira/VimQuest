@@ -33,7 +33,7 @@ export interface ClearCondition {
   viewportTop?: number
 }
 
-/** Stage definition — static data in data/stages/ */
+/** Stage definition — static data in data/nodes/ */
 export interface Stage {
   /** Unique stage ID (e.g., "N01-T", "N15-C") */
   id: string

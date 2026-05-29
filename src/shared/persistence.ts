@@ -6,7 +6,7 @@
 import type { GameProgress } from '../types/game'
 import { SAVE_KEY, createInitialProgress } from '../types/game'
 import { SKILL_NODES } from '../data/skillTree'
-import { getStagesByNode } from '../data/stages'
+import { getStagesByNode } from '../data/nodes'
 
 // ── Migration maps (v1 numeric IDs → v2 semantic slugs) ────────────
 
