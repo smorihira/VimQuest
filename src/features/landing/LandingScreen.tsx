@@ -2,15 +2,18 @@
  * LandingScreen — title screen with logo, features, and start button.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import './LandingScreen.css'
 
 export function LandingScreen() {
   const navigate = useNavigate()
+  const [showNotice, setShowNotice] = useState(false)
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName
+      if (tag === 'BUTTON' || tag === 'A') return
       if (e.key === 'Enter' || e.code === 'Space') {
         e.preventDefault()
         navigate('/tree')
@@ -103,6 +106,37 @@ export function LandingScreen() {
       </div>
 
       <div className="footer">VimQuest — hjkl連打を卒業し、最短の一手が浮かぶ頭をつくる</div>
+      <button className="notice-link" onClick={() => setShowNotice(true)}>
+        ご利用にあたって
+      </button>
+
+      {showNotice && (
+        <div className="notice-overlay" onClick={() => setShowNotice(false)}>
+          <div className="notice-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="notice-header">
+              <span>ご利用にあたって</span>
+              <button className="notice-close" onClick={() => setShowNotice(false)}>
+                ✕
+              </button>
+            </div>
+            <div className="notice-body">
+              <p>
+                VimQuestは現在も開発中のプロジェクトです。バグや不具合を見つけた場合は、ご報告いただけると助かります。
+              </p>
+              <p>
+                現時点ではデータはブラウザのローカルストレージに保存されます。キャッシュ削除等で進捗がリセットされる可能性があります。
+              </p>
+              <p className="notice-subtitle">既知の仕様・制限</p>
+              <ul>
+                <li>インサートモード中の矢印キーは無効です</li>
+                <li>数値プレフィクス（3w, 5dd 等）は無効です</li>
+                <li>u や :e! でカーソル位置も巻き戻ります</li>
+                <li>実装コストが高いコマンド（例: it/at, = 等の構造解析系）の多くは未対応です</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
