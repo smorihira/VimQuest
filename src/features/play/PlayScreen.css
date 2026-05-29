@@ -345,8 +345,8 @@
 }
 
 .card.verb {
-  border-color: #aa4444;
-  background: rgba(170, 68, 68, 0.15);
+  border-color: #4488cc;
+  background: rgba(68, 136, 204, 0.15);
 }
 
 .card.motion {
@@ -354,31 +354,57 @@
   background: rgba(68, 170, 68, 0.15);
 }
 
-.card.object {
-  border-color: #aa8844;
-  background: rgba(170, 136, 68, 0.15);
+.card.insert {
+  border-color: #cc5555;
+  background: rgba(204, 85, 85, 0.15);
+}
+
+.card.visual {
+  border-color: #8855bb;
+  background: rgba(136, 85, 187, 0.15);
+}
+
+.card.replace {
+  border-color: #cc9944;
+  background: rgba(204, 153, 68, 0.15);
+}
+
+.card.search {
+  border-color: #cc66aa;
+  background: rgba(204, 102, 170, 0.15);
 }
 
 .card.action {
-  border-color: #aa44aa;
-  background: rgba(170, 68, 170, 0.15);
-}
-
-.card.insert {
-  border-color: #4488aa;
-  background: rgba(68, 136, 170, 0.15);
+  border-color: #44aaaa;
+  background: rgba(68, 170, 170, 0.15);
 }
 
 .base-card.motion {
   border-color: rgba(68, 170, 68, 0.4);
 }
 
-.base-card.action {
-  border-color: rgba(170, 68, 170, 0.4);
+.base-card.verb {
+  border-color: rgba(68, 136, 204, 0.4);
 }
 
 .base-card.insert {
-  border-color: rgba(68, 136, 170, 0.4);
+  border-color: rgba(204, 85, 85, 0.4);
+}
+
+.base-card.visual {
+  border-color: rgba(136, 85, 187, 0.4);
+}
+
+.base-card.replace {
+  border-color: rgba(204, 153, 68, 0.4);
+}
+
+.base-card.search {
+  border-color: rgba(204, 102, 170, 0.4);
+}
+
+.base-card.action {
+  border-color: rgba(68, 170, 170, 0.4);
 }
 
 .card-hint {
@@ -395,6 +421,42 @@
   color: var(--accent);
   text-align: center;
   animation: pulse 1s infinite;
+}
+
+.textobj-ref {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  animation: fadeIn 0.15s ease-in;
+}
+
+.textobj-ref-label {
+  color: rgba(255, 255, 255, 0.5);
+  margin-right: 2px;
+}
+
+.textobj-ref-target {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.textobj-ref-sep {
+  color: rgba(255, 255, 255, 0.15);
+  margin: 0 2px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes pulse {

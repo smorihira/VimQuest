@@ -5,7 +5,12 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { INSERT_FREE_CHARS, insertSessionDamage } from './damageModel'
+import {
+  INSERT_FREE_CHARS,
+  insertSessionDamage,
+  PASTE_FREE_CHARS,
+  pasteDamage,
+} from './damageModel'
 import { CommandSession } from './commandSession'
 import type { CursorPosition } from '../types/editor'
 
@@ -30,6 +35,28 @@ describe('damageModel', () => {
     expect(insertSessionDamage(INSERT_FREE_CHARS + 1)).toBe(2)
     expect(insertSessionDamage(INSERT_FREE_CHARS + 3)).toBe(4)
     expect(insertSessionDamage(INSERT_FREE_CHARS + 10)).toBe(11)
+  })
+})
+
+describe('pasteDamage', () => {
+  it('PASTE_FREE_CHARS is 5', () => {
+    expect(PASTE_FREE_CHARS).toBe(5)
+  })
+
+  it('pasteDamage: 0 chars → 1', () => {
+    expect(pasteDamage(0)).toBe(1)
+  })
+
+  it('pasteDamage: up to FREE_CHARS → 1', () => {
+    for (let i = 0; i <= PASTE_FREE_CHARS; i++) {
+      expect(pasteDamage(i)).toBe(1)
+    }
+  })
+
+  it('pasteDamage: excess chars → 1 + excess', () => {
+    expect(pasteDamage(PASTE_FREE_CHARS + 1)).toBe(2)
+    expect(pasteDamage(PASTE_FREE_CHARS + 3)).toBe(4)
+    expect(pasteDamage(PASTE_FREE_CHARS + 10)).toBe(11)
   })
 })
 
@@ -146,5 +173,18 @@ describe('CommandSession.calculateDamage: damage rules', () => {
   it('mixed: motion + insert + motion', () => {
     // w(1) + i(0) + "ab"(2chars) + Esc(1) + w(1) = 3
     expect(calcDamage(['w', 'i', 'ab', 'Esc', 'w'])).toBe(3)
+  })
+
+  it('paste short content (<=5 chars) = 1 damage', () => {
+    // dd yanks "hello world\n" (12 chars) then p pastes it
+    // dd(1) + p(pasteDamage(12) = 1+(12-5)=8) = 9
+    expect(calcDamage(['dd', 'p'])).toBe(9)
+  })
+
+  it('paste after yank word: yank "hello " (6 chars) then paste', () => {
+    // yw yanks "hello " (6 chars including space up to next word)
+    // yw(1) + p(pasteDamage(6) = 1+(6-5)=2) = 3
+    const result = calcDamage(['yw', 'p'], 'hello world')
+    expect(result).toBe(3)
   })
 })

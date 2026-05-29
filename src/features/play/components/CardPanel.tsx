@@ -97,6 +97,19 @@ export function CardPanel({
         </>
       )}
       {parserBuffer && <div className="parser-buffer">{parserBuffer}_</div>}
+      {getPendingOperator(parserBuffer) && (
+        <div className="textobj-ref">
+          <span className="textobj-ref-label">TextObj:</span>
+          <span className="textobj-ref-target">i</span>
+          <span className="textobj-ref-target">a</span>
+          <span className="textobj-ref-sep">|</span>
+          {['w', 's', 'p', '"', "'", '(', '{', '[', '<'].map((t) => (
+            <span key={t} className="textobj-ref-target">
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

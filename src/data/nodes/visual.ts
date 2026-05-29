@@ -16,7 +16,7 @@ export const VISUAL_STAGES: Stage[] = [
     initialCursor: { line: 0, col: 0 },
     life: 12,
     stars: [6, 7, 9],
-    availableCommands: ['v', 'V', 'Ctrl+v', 'f', 't'],
+    availableCommands: ['v', 'V', 'Ctrl+v'],
     visualCommands: ['d'],
     hints: [{ cost: 1, commands: ['f<', 'v', 'f>', 'd', 'f<', 'v', 'f>', 'd'] }],
     flavor: 'v で選択開始。カーソルを動かして範囲を決め、d で消せ',

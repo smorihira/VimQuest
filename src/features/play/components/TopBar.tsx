@@ -96,9 +96,7 @@ export function TopBar({
       </div>
 
       <div className="play-center">
-        <div className="stage-title">
-          <span className="stage-num">{stage.id}</span> {stage.title}
-        </div>
+        <div className="stage-title">{stage.title}</div>
         <span className="mode-indicator">{mode.toUpperCase()}</span>
       </div>
 

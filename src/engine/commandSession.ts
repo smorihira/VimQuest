@@ -20,7 +20,7 @@ import type { SpellEntry } from '../types/spell'
 import { createEditorState } from '../types/editor'
 import { CommandParser } from './commandParser'
 import { executeCommand, finalizeInsertSession } from './commandExecutor'
-import { insertSessionDamage } from './damageModel'
+import { insertSessionDamage, pasteDamage } from './damageModel'
 import { isStageClear } from './clearChecker'
 import { parseSubstituteCommand, executeSubstituteCommand } from './executors/commandLine'
 import type { Stage } from '../types/stage'
@@ -437,9 +437,21 @@ export class CommandSession {
       return { executed: true, commandRaw: raw, invalid: false }
     }
 
-    const newDamage = this._damage + parseResult.damage
+    // Calculate damage (paste uses content-length-based damage)
+    const isPaste =
+      raw === 'p' ||
+      raw === 'P' ||
+      (parseResult.command.register != null && (raw.endsWith('p') || raw.endsWith('P')))
+    let damage = parseResult.damage
+    if (isPaste) {
+      const reg = parseResult.command.register ?? ''
+      const content = this.state.registers[reg] ?? ''
+      damage = pasteDamage(content.length)
+    }
+
+    const newDamage = this._damage + damage
     this._damage = newDamage
-    this._spells = [...this._spells, { command: raw, damage: parseResult.damage }]
+    this._spells = [...this._spells, { command: raw, damage }]
 
     if (newDamage >= this.life) {
       this._status = 'dead'

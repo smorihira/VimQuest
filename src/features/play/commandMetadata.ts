@@ -49,12 +49,30 @@ export function getPendingOperator(buffer: string): string | null {
   // Strip leading count
   const stripped = buffer.replace(/^\d+/, '')
   if (['d', 'c', 'y', '>', '<'].includes(stripped)) return stripped
+  if (['gu', 'gU', 'g~'].includes(stripped)) return stripped
   return null
 }
 
 export function getCardClass(cmd: string): string {
-  if (['d', 'c', 'y'].includes(cmd[0]) && cmd.length >= 2) return 'verb'
-  if (['d', 'c', 'y', '>', '<'].includes(cmd)) return 'verb'
+  // Operator combos (dw, de, cw, yy, dd, cgn, etc.)
+  if (cmd.length >= 2 && ['d', 'c', 'y', '>', '<'].includes(cmd[0])) return 'verb'
+  if (cmd.startsWith('gU') || cmd.startsWith('gu') || cmd.startsWith('g~')) return 'verb'
+  // Bare operators
+  if (['d', 'c', 'y', '>', '<', '~'].includes(cmd)) return 'verb'
+
+  // Visual mode
+  if (['v', 'V', 'Ctrl+v', 'gv', 'gn', 'gN'].includes(cmd)) return 'visual'
+
+  // Search / command-line
+  if (['/', '?', '*', '#', ':s'].includes(cmd)) return 'search'
+
+  // Insert mode
+  if (['i', 'a', 'I', 'A', 'o', 'O'].includes(cmd)) return 'insert'
+
+  // Replace mode
+  if (cmd === 'R') return 'replace'
+
+  // Motions
   if (
     [
       'h',
@@ -74,31 +92,33 @@ export function getCardClass(cmd: string): string {
       'gg',
       'f',
       't',
+      'F',
+      'T',
       ';',
       ',',
-      '/',
       'n',
       'N',
-      '*',
-      '#',
-      '{',
-      '}',
+      'H',
+      'M',
+      'L',
+      '%',
       '(',
       ')',
-      '%',
-      '?',
+      '{',
+      '}',
+      '[[',
+      ']]',
     ].includes(cmd)
   )
     return 'motion'
-  if (['x', 'X', 'r', '~', 'J', '.', 'u', 'p', 'P'].includes(cmd)) return 'action'
-  if (['i', 'a', 'I', 'A', 'o', 'O', 's', 'S', 'C', 'R'].includes(cmd)) return 'insert'
-  if (cmd.startsWith('i') && cmd.length >= 2) return 'object'
-  if (cmd.startsWith('a') && cmd.length >= 2) return 'object'
-  return ''
+
+  // Everything else (x, X, r, J, ., u, p, P, s, S, D, C, Y,
+  // Ctrl+d/u/f/b/e/y/a/x, Ctrl+R, zz, zt, zb, m, gi, ", etc.)
+  return 'action'
 }
 
 export function getCardHint(cmd: string, nodeId?: string): string | null {
-  if (cmd === 'f' || cmd === 't') return '; ,'
+  if (cmd === 'f' || cmd === 't' || cmd === 'F' || cmd === 'T') return '; ,'
   if (cmd === 'm') return "` '"
   if (cmd === '/' || cmd === '?' || cmd === '*' || cmd === '#') {
     const POST_VISUAL_NODES: Set<string> = new Set([
